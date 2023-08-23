@@ -1,0 +1,16 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ${OPENEBS_STORAGECLASS_NAME}
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  shared: "no"
+  storage: "lvm"
+  volgroup: "${OPENEBS_VG_NAME}"
+  fsType: ext4
+provisioner: local.csi.openebs.io
+allowedTopologies:
+  - matchLabelExpressions:
+      - key: openebs.io/node
+        values: ["enable"]
