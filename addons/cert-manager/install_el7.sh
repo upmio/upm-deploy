@@ -4,6 +4,7 @@ readonly NAMESPACE="cert-manager"
 readonly CHART="jetstack/cert-manager"
 readonly RELEASE="cert-manager"
 readonly TIME_OUT_SECOND="600s"
+readonly VERSION="v1.12.3"
 
 INSTALL_LOG_PATH=""
 
@@ -47,6 +48,7 @@ install_cert_managers() {
   info "Install cert-manager, It might take a long time..."
   helm install ${RELEASE} ${CHART} \
     --debug \
+    --version ${VERSION} \
     --namespace ${NAMESPACE} \
     --create-namespace \
     --set installCRDs='true' \
