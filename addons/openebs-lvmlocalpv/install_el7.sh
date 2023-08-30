@@ -23,6 +23,7 @@ readonly NAMESPACE="openebs"
 readonly CHART="openebs-lvmlocalpv/lvm-localpv"
 readonly RELEASE="openebs-lvmlocalpv"
 readonly TIME_OUT_SECOND="600s"
+readonly VERSION="1.2.0"
 
 INSTALL_LOG_PATH=""
 
@@ -66,6 +67,7 @@ install_lvmlocalpv() {
   info "Install openebs-lvmlocalpv, It might take a long time..."
   helm install ${RELEASE} ${CHART} \
     --debug \
+    --version ${VERSION} \
     --namespace ${NAMESPACE} \
     --create-namespace \
     --set lvmController.nodeSelector."openebs\.io/control-plane"="enable" \
