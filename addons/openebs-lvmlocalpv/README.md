@@ -4,6 +4,8 @@
 
 ## 快速安装指南
 
+helm chart 为默认版本1.2.0
+
 ### 1. 创建VolumeGroup
 
 **注意⚠️：每个数据节点都必须保证VolumeGroup 存在，才能部署 openebs-lvmlocalpv。**
