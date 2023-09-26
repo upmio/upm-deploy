@@ -11,7 +11,7 @@
 运行安装脚本
 ```console
 # BASH
-curl -sSL https://raw.githubusercontent.com/upmio/infini-scale-install/main/addons/cert-manager/install_el7.sh | sh -
+curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/cert-manager/install_el7.sh | sh -
 ```
 
 等几分钟。 如果所有 cert-manager  pod 都在运行，则 cert-manager 将成功安装。
@@ -34,4 +34,4 @@ _请参阅 [helm uninstall](https://helm.sh/docs/helm/helm_uninstall/) 获取命
 ## License
 
 <!-- Keep full URL links to repo files because this README syncs from main to gh-pages.  -->
-[Apache 2.0 License](https://raw.githubusercontent.com/upmio/infini-scale-install/main/LICENSE).
+[Apache 2.0 License](https://raw.githubusercontent.com/upmio/upm-deploy/main/LICENSE).

@@ -44,7 +44,7 @@ export CLUSTERPEDIA_MYSQL_PASSWORD="password"
 运行安装脚本
 ```console
 # BASH
-curl -sSL https://raw.githubusercontent.com/upmio/infini-scale-install/main/addons/clusterpedia/install_external_storage_el7.sh | sh -
+curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/clusterpedia/install_external_storage_el7.sh | sh -
 ```
 
 等待几分钟。 如果所有 clusterpedia pod 都在运行，则 clusterpedia 将成功安装。
@@ -89,7 +89,7 @@ export CLUSTERPEDIA_MYSQL_NODE="mysql01"
 运行安装脚本
 ```console
 # BASH
-curl -sSL https://raw.githubusercontent.com/upmio/infini-scale-install/main/addons/clusterpedia/install_internal_storage_el7.sh | sh -
+curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/clusterpedia/install_internal_storage_el7.sh | sh -
 ```
 
 等待几分钟。 如果所有 clusterpedia pod 都在运行，则 clusterpedia 将成功安装。
@@ -112,4 +112,4 @@ _请参阅 [helm uninstall](https://helm.sh/docs/helm/helm_uninstall/) 获取命
 ## License
 
 <!-- Keep full URL links to repo files because this README syncs from main to gh-pages.  -->
-[Apache 2.0 License](https://raw.githubusercontent.com/upmio/infini-scale-install/main/LICENSE).
+[Apache 2.0 License](https://raw.githubusercontent.com/upmio/upm-deploy/main/LICENSE).
