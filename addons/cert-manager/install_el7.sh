@@ -4,7 +4,7 @@ readonly NAMESPACE="cert-manager"
 readonly CHART="jetstack/cert-manager"
 readonly RELEASE="cert-manager"
 readonly TIME_OUT_SECOND="600s"
-readonly VERSION="v1.12.3"
+readonly VERSION="v1.13.0"
 
 INSTALL_LOG_PATH=""
 
