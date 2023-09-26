@@ -23,7 +23,7 @@ readonly NAMESPACE="openebs"
 readonly CHART="openebs-lvmlocalpv/lvm-localpv"
 readonly RELEASE="openebs-lvmlocalpv"
 readonly TIME_OUT_SECOND="600s"
-readonly VERSION="1.2.0"
+readonly VERSION="1.3.0"
 
 INSTALL_LOG_PATH=""
 
