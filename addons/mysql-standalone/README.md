@@ -52,7 +52,10 @@ kubectl get --namespace mysql pods -w
 
 ```console
 # Helm
-helm uninstall -n upm-system mysql 
+helm uninstall -n upm-system mysql
+
+# clean pvc
+kubectl delete pvc -n upm-system data-mysql-0
 ```
 
 这将删除与 Charts 关联的所有 Kubernetes 组件并删除发布。
