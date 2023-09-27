@@ -18,7 +18,9 @@ MYSQL_PVC_SIZE_G：指定持久化卷的大小，单位为Gi。
 
 MYSQL_NODE_NAMES：指定安装 MySQL pod 的节点名称，节点名称可以使用","作为分隔符，表示多个节点名称，安装程序会对节点进行label固定安装节点。
 
-MYSQL_PORT：指定安装 MySQL 端口。
+MYSQL_PORT：指定安装 MySQL 端口，非必填项，默认值为3306。
+
+MYSQL_NAMESPACE：指定安装命名空间，非必填项，默认值为default。
 
 ```console
 export MYSQL_PWD='password'
@@ -27,7 +29,6 @@ export MYSQL_USER_PWD='password'
 export MYSQL_STORAGECLASS_NAME="openebs-lvmsc-hdd"
 export MYSQL_PVC_SIZE_G="50"
 export MYSQL_NODE_NAMES="db-node01"
-export MYSQL_PORT="3306"
 ```
 
 ### 3. 运行安装脚本

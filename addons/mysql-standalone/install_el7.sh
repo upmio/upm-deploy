@@ -26,12 +26,7 @@
 #
 #        export MYSQL_NODE_NAMES="kube-node01"
 #
-# 7. MYSQL_PORT MUST be set as environment variable, for an example:
-#
-#        export MYSQL_PORT="3306"
-#
 
-readonly NAMESPACE="upm-system"
 readonly CHART="bitnami/mysql"
 readonly RELEASE="mysql"
 readonly TIME_OUT_SECOND="600s"
@@ -41,6 +36,8 @@ readonly RESOURCE_REQUESTS_CPU="2"
 readonly RESOURCE_REQUESTS_MEMORY="4Gi"
 readonly MYSQL_VERSION="8.0.34"
 
+MYSQL_PORT="${MYSQL_PORT:-3306}"
+NAMESPACE="${MYSQL_NAMESPACE:-default}"
 INSTALL_LOG_PATH=""
 
 info() {
@@ -77,13 +74,13 @@ install_helm() {
 
 install_mysql() {
   # check if mysql already installed
-  if helm status ${RELEASE} -n ${NAMESPACE} &>/dev/null; then
+  if helm status ${RELEASE} -n "${NAMESPACE}" &>/dev/null; then
     error "${RELEASE} already installed. Use helm remove it first"
   fi
   info "Install mysql, It might take a long time..."
   helm install ${RELEASE} ${CHART} \
     --debug \
-    --namespace ${NAMESPACE} \
+    --namespace "${NAMESPACE}" \
     --create-namespace \
     --set image.debug=true \
     --set image.tag=''${MYSQL_VERSION}'' \
@@ -158,6 +155,7 @@ verify_supported() {
     error "DB_NODE_NAMES MUST set in environment variable."
   fi
 
+  local node
   local db_node_array
   IFS="," read -r -a db_node_array <<<"${MYSQL_NODE_NAMES}"
   for node in "${db_node_array[@]}"; do
