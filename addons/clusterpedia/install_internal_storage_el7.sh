@@ -179,11 +179,36 @@ init_log() {
   info "Log file create in path ${INSTALL_LOG_PATH}"
 }
 
+############################################
+# Check if helm release deployment correctly
+# Arguments:
+#   release
+#   namespace
+############################################
+verify_installed() {
+  helm status "${RELEASE}" -n "${NAMESPACE}" | grep deployed &>/dev/null || {
+    error "${RELEASE} installed fail, check log use helm and kubectl."
+  }
+
+  info "${RELEASE} Deployment Completed!"
+}
+
+create_clustersyncresources() {
+  info "create clustersyncresources..."
+  curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/clusterpedia/yaml/clustersyncresources.yaml | envsubst | kubectl apply -f - || {
+    error "kubectl create clustersyncresources fail, check log use kubectl."
+  }
+
+  info "create clustersyncresources successful!"
+}
+
 main() {
   init_log
   verify_supported
   init_helm_repo
   install_clusterpedia
+  verify_installed
+  create_clustersyncresources
 }
 
 main

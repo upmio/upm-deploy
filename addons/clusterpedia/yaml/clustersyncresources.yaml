@@ -1,0 +1,22 @@
+apiVersion: cluster.clusterpedia.io/v1alpha2
+kind: ClusterSyncResources
+metadata:
+  name: global-base
+spec:
+  syncResources:
+    - group: ""
+      resources:
+        - nodes
+        - pods
+        - namespaces
+        - configmaps
+        - secrets
+    - group: "apps"
+      resources:
+        - "*"
+    - group: "storage.k8s.io"
+      resources:
+        - "*"
+    - group: "cluster.clusterpedia.io"
+      resources:
+        - "*"
