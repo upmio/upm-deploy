@@ -77,6 +77,8 @@ CLUSTERPEDIA_MYSQL_NODE：内置数据库所在节点名称。
 
 CLUSTERPEDIA_NAMESPACE：指定安装命名空间，非必填项，默认值为clusterpedia-system。
 
+CLUSTERPEDIA_STORAGE_HOSTPATH：指定MYSQL所在节点使用hostpath目录路径，非必填项，默认值为/var/local/clusterpedia/internalstorage/mysql。
+
 ```console
 export CLUSTERPEDIA_CONTROLLER_NODE_NAMES="clusterpedia-control-plan01"
 export CLUSTERPEDIA_WORKER_NODE_NAMES="clusterpedia-control-plan01"

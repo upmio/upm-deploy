@@ -26,6 +26,7 @@ readonly CLUSTERPEDIA_MYSQL_DATABASE="clusterpedia"
 readonly TIME_OUT_SECOND="600s"
 readonly VERSION="1.9.1"
 
+STORAGE_HOSTPATH="${CLUSTERPEDIA_STORAGE_HOSTPATH:-/var/local/clusterpedia/internalstorage/mysql}"
 NAMESPACE="${CLUSTERPEDIA_NAMESPACE:-clusterpedia-system}"
 INSTALL_LOG_PATH=""
 
@@ -75,6 +76,7 @@ install_clusterpedia() {
     --create-namespace \
     --set installCRDs=true \
     --set postgresql.enabled=false \
+    --set storage.hostPath="${STORAGE_HOSTPATH}" \
     --set mysql.enabled=true \
     --set mysql.auth.password="${CLUSTERPEDIA_MYSQL_PASSWORD}" \
     --set mysql.auth.database="${CLUSTERPEDIA_MYSQL_DATABASE}" \
