@@ -2,30 +2,43 @@
 
 # You must be prepared as follows before run install.sh:
 #
-# 1. DB_USER MUST be set as environment variable, for an example:
+# 1. MYSQL_PWD MUST be set as environment variable, for an example:
 #
-#        export DB_USER="admin"
+#        export MYSQL_PWD="password"
 #
-# 2. DB_PWD MUST be set as environment variable, for an example:
+# 2. MYSQL_USER_NAME MUST be set as environment variable, for an example:
 #
-#        export DB_PWD="passwords"
+#        export MYSQL_USER_NAME="admin"
 #
-# 3. DB_STORAGECLASS_NAME MUST be set as environment variable, for an example:
+# 3. MYSQL_USER_PWD MUST be set as environment variable, for an example:
 #
-#        export DB_STORAGECLASS_NAME=""
+#        export MYSQL_USER_PWD="password"
 #
-# 4. DB_PVC_SIZE_G MUST be set as environment variable, for an example:
+# 4. MYSQL_STORAGECLASS_NAME MUST be set as environment variable, for an example:
 #
-#        export DB_PVC_SIZE_G="50"
+#        export MYSQL_STORAGECLASS_NAME="openebs-lvmsc-hdd"
 #
-# 5. DB_NODE_NAMES MUST be set as environment variable, for an example:
+# 5. MYSQL_PVC_SIZE_G MUST be set as environment variable, for an example:
 #
-#        export DB_NODE_NAMES="kube-node01"
+#        export MYSQL_PVC_SIZE_G="50"
+#
+# 6. MYSQL_NODE_NAMES MUST be set as environment variable, for an example:
+#
+#        export MYSQL_NODE_NAMES="kube-node01"
+#
+# 7. MYSQL_PORT MUST be set as environment variable, for an example:
+#
+#        export MYSQL_PORT="3306"
+#
 
-readonly NAMESPACE="mysql"
-readonly CHART="mysqlrepo/mysql"
+readonly NAMESPACE="upm-system"
+readonly CHART="bitnami/mysql"
 readonly RELEASE="mysql"
 readonly TIME_OUT_SECOND="600s"
+readonly RESOURCE_LIMITS_CPU="2"
+readonly RESOURCE_LIMITS_MEMORY="4Gi"
+readonly RESOURCE_REQUESTS_CPU="2"
+readonly RESOURCE_REQUESTS_MEMORY="4Gi"
 
 INSTALL_LOG_PATH=""
 
@@ -71,14 +84,24 @@ install_mysql() {
     --debug \
     --namespace ${NAMESPACE} \
     --create-namespace \
-    --set auth.username=''${DB_USER}'' \
-    --set auth.password=''${DB_PWD}'' \
+    --set image.debug=true \
     --set architecture='standalone' \
-    --set persistence.storageClassName="${DB_STORAGECLASS_NAME}" \
-    --set persistence.size=${DB_PVC_SIZE_G}Gi \
-    --set nodeAffinityPreset.type="hard" \
-    --set nodeAffinityPreset.key="mysql\.node" \
-    --set nodeAffinityPreset.values='{enable}' \
+    --set primary.resources.limits.cpu=''${RESOURCE_LIMITS_CPU}'' \
+    --set primary.resources.limits.memory=''${RESOURCE_LIMITS_MEMORY}'' \
+    --set primary.resources.requests.cpu=''${RESOURCE_REQUESTS_CPU}'' \
+    --set primary.resources.requests.memory=''${RESOURCE_REQUESTS_MEMORY}'' \
+    --set auth.rootPassword=''"${MYSQL_PWD}"'' \
+    --set auth.username=''"${MYSQL_USER_NAME}"'' \
+    --set auth.password=''"${MYSQL_USER_PWD}"'' \
+    --set primary.service.ports.mysql=''"${MYSQL_PORT}"'' \
+    --set primary.persistence.storageClass=''"${MYSQL_STORAGECLASS_NAME}"'' \
+    --set primary.persistence.size=''"${MYSQL_PVC_SIZE_G}Gi"'' \
+    --set primary.nodeAffinityPreset.type="hard" \
+    --set primary.nodeAffinityPreset.key="mysql\.standalone\.node" \
+    --set primary.nodeAffinityPreset.values='{enable}' \
+    --set primary.podSecurityContext.fsGroup=0 \
+    --set primary.containerSecurityContext.runAsUser=0 \
+    --set primary.containerSecurityContext.runAsNonRoot=false \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
@@ -88,11 +111,15 @@ install_mysql() {
 }
 
 init_helm_repo() {
-  helm repo add mysqlrepo https://haolowkey.github.io/helm-mysql &>/dev/null
-  info "Start update helm mysql repo"
-  if ! helm repo update mysqlrepo 2>/dev/null; then
-    error "Helm update mysql repo error."
-  fi
+  info "Start add helm bitnami repo"
+  helm repo add bitnami https://charts.bitnami.com/bitnami &>/dev/null || {
+    error "Helm add bitnami repo error."
+  }
+
+  info "Start update helm bitnami repo"
+  helm repo update bitnami 2>/dev/null || {
+    error "Helm update bitnami repo error."
+  }
 }
 
 verify_supported() {
@@ -103,37 +130,45 @@ verify_supported() {
   local HAS_CURL
   HAS_CURL="$(type "curl" &>/dev/null && echo true || echo false)"
 
-  if [[ -z "${DB_USER}" ]]; then
-    error "DB_USER MUST set in environment variable."
+  if [[ -z "${MYSQL_PWD}" ]]; then
+    error "MYSQL_PWD MUST set in environment variable."
   fi
 
-  if [[ -z "${DB_PWD}" ]]; then
-    error "DB_PWD MUST set in environment variable."
+  if [[ -z "${MYSQL_USER_NAME}" ]]; then
+    error "MYSQL_USER_NAME MUST set in environment variable."
   fi
 
-  if [[ -z "${DB_STORAGECLASS_NAME}" ]]; then
-    error "DB_STORAGECLASS_NAME MUST set in environment variable."
+  if [[ -z "${MYSQL_USER_PWD}" ]]; then
+    error "MYSQL_USER_PWD MUST set in environment variable."
   fi
 
-  kubectl get storageclasses "${DB_STORAGECLASS_NAME}" &>/dev/null || {
+  if [[ -z "${MYSQL_STORAGECLASS_NAME}" ]]; then
+    error "MYSQL_STORAGECLASS_NAME MUST set in environment variable."
+  fi
+
+  kubectl get storageclasses "${MYSQL_STORAGECLASS_NAME}" &>/dev/null || {
     error "storageclass resources not all ready, use kubectl to check reason"
   }
 
-  if [[ -z "${DB_PVC_SIZE_G}" ]]; then
+  if [[ -z "${MYSQL_PVC_SIZE_G}" ]]; then
     error "DB_PVC_SIZE_G MUST set in environment variable."
   fi
 
-  if [[ -z "${DB_NODE_NAMES}" ]]; then
+  if [[ -z "${MYSQL_NODE_NAMES}" ]]; then
     error "DB_NODE_NAMES MUST set in environment variable."
   fi
 
   local db_node_array
-  IFS="," read -r -a db_node_array <<<"${DB_NODE_NAMES}"
+  IFS="," read -r -a db_node_array <<<"${MYSQL_NODE_NAMES}"
   for node in "${db_node_array[@]}"; do
-    kubectl label node "${node}" 'mysql.node=enable' --overwrite &>/dev/null || {
-      error "kubectl label node ${node} 'mysql.node=enable' failed, use kubectl to check reason"
+    kubectl label node "${node}" 'mysql.standalone.node=enable' --overwrite &>/dev/null || {
+      error "kubectl label node ${node} 'mysql.standalone.node=enable' failed, use kubectl to check reason"
     }
   done
+
+  if [[ -z "${MYSQL_PORT}" ]]; then
+    error "MYSQL_PORT MUST set in environment variable."
+  fi
 
   if [[ "${HAS_CURL}" != "true" ]]; then
     error "curl is required"
