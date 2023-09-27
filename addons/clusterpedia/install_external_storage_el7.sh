@@ -30,6 +30,7 @@
 readonly CLUSTERPEDIA_NS="clusterpedia-system"
 readonly CLUSTERPEDIA_MYSQL_DATABASE="clusterpedia"
 readonly TIME_OUT_SECOND="600s"
+readonly VERSION="v0.7.0"
 
 INSTALL_LOG_PATH=""
 
@@ -75,6 +76,7 @@ install_clusterpedia() {
   info "Install ${release}, It might take a long time..."
   helm install ${release} clusterpedia/clusterpedia \
     --debug \
+    --version "${VERSION}" \
     --namespace ${CLUSTERPEDIA_NS} \
     --create-namespace \
     --set installCRDs=true \
@@ -82,13 +84,13 @@ install_clusterpedia() {
     --set mysql.enabled=false \
     --set persistenceMatchNode=None \
     --set storageInstallMode="external" \
+    --set externalStorage.createDatabase=true \
     --set externalStorage.type="mysql" \
     --set externalStorage.host="${CLUSTERPEDIA_MYSQL_HOST}" \
     --set externalStorage.port="${CLUSTERPEDIA_MYSQL_PORT}" \
     --set externalStorage.user="${CLUSTERPEDIA_MYSQL_USER}" \
     --set externalStorage.password="${CLUSTERPEDIA_MYSQL_PASSWORD}" \
     --set externalStorage.database="${CLUSTERPEDIA_MYSQL_DATABASE}" \
-    --set externalStorage.createDatabase=true \
     --set controllerManager.replicaCount="${CLUSTERPEDIA_CONTROLLER_NODE_COUNT}" \
     --set controllerManager.nodeSelector."clusterpedia\.io/control-plane"="enable" \
     --set apiserver.replicaCount="${CLUSTERPEDIA_CONTROLLER_NODE_COUNT}" \
@@ -132,6 +134,7 @@ verify_supported() {
     error "CLUSTERPEDIA_CONTROLLER_NODE_NAMES MUST set in environment variable."
   fi
 
+  local node
   local control_node_array
   IFS="," read -r -a control_node_array <<<"${CLUSTERPEDIA_CONTROLLER_NODE_NAMES}"
   CLUSTERPEDIA_CONTROLLER_NODE_COUNT=0

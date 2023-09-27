@@ -29,7 +29,7 @@ CLUSTERPEDIA_MYSQL_PASSWORD：外置数据库登录 MySQL 密码。
 ```console
 export CLUSTERPEDIA_CONTROLLER_NODE_NAMES="clusterpedia-control-plan01"
 export CLUSTERPEDIA_WORKER_NODE_NAMES="clusterpedia-control-plan01"
-export CLUSTERPEDIA_MYSQL_HOST="mysql01-mysql"
+export CLUSTERPEDIA_MYSQL_HOST="mysql"
 export CLUSTERPEDIA_MYSQL_PORT="3306"
 export CLUSTERPEDIA_MYSQL_USER="admin"
 export CLUSTERPEDIA_MYSQL_PASSWORD="password"
