@@ -107,6 +107,8 @@ kubectl get --namespace clusterpedia-system pods -w
 ```console
 # Helm
 helm uninstall clusterpedia --namespace clusterpedia-system
+# clean pvc
+kubectl delete pvc -n clusterpedia-system data-clusterpedia-mysql-0
 ```
 
 这将删除与 Charts 关联的所有 Kubernetes 组件并删除发布。
