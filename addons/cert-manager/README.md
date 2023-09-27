@@ -4,7 +4,15 @@
 
 ## 快速安装指南
 
-### 1. 运行安装脚本
+### 1. 设置必要的环境变量
+
+CERT_MANAGER_NAMESPACE：指定安装命名空间，非必填项，默认值为cert-manager。
+
+```console
+export CERT_MANAGER_NAMESPACE="cert-manager"
+```
+
+### 2. 运行安装脚本
 
 **注意⚠️：如果找不到 Helm3，将自动安装。**
 
@@ -24,7 +32,7 @@ kubectl get --namespace cert-manager pods -w
 
 ```console
 # Helm
-helm uninstall cert-manager --namespace cert-manager
+helm uninstall --namespace cert-manager cert-manager 
 ```
 
 这将删除与 Charts 关联的所有 Kubernetes 组件并删除发布。

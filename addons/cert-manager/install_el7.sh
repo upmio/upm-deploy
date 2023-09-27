@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-readonly NAMESPACE="cert-manager"
 readonly CHART="jetstack/cert-manager"
 readonly RELEASE="cert-manager"
 readonly TIME_OUT_SECOND="600s"
 readonly VERSION="v1.13.0"
 
+NAMESPACE="${CERT_MANAGER_NAMESPACE:-cert-manager}"
 INSTALL_LOG_PATH=""
 
 info() {
@@ -42,14 +42,14 @@ install_helm() {
 
 install_cert_managers() {
   # check if cert-manager already installed
-  if helm status ${RELEASE} -n ${NAMESPACE} &>/dev/null; then
+  if helm status ${RELEASE} -n "${NAMESPACE}" &>/dev/null; then
     error "${RELEASE} already installed. Use helm remove it first"
   fi
   info "Install cert-manager, It might take a long time..."
   helm install ${RELEASE} ${CHART} \
     --debug \
-    --version ${VERSION} \
-    --namespace ${NAMESPACE} \
+    --version "${VERSION}" \
+    --namespace "${NAMESPACE}" \
     --create-namespace \
     --set installCRDs='true' \
     --set 'extraArgs={--enable-certificate-owner-ref=true}' \
