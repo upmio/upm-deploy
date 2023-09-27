@@ -26,6 +26,8 @@ CLUSTERPEDIA_MYSQL_USER：外置数据库登录 MySQL 用户名。
 
 CLUSTERPEDIA_MYSQL_PASSWORD：外置数据库登录 MySQL 密码。
 
+CLUSTERPEDIA_NAMESPACE：指定安装命名空间，非必填项，默认值为clusterpedia-system。
+
 ```console
 export CLUSTERPEDIA_CONTROLLER_NODE_NAMES="clusterpedia-control-plan01"
 export CLUSTERPEDIA_WORKER_NODE_NAMES="clusterpedia-control-plan01"
@@ -72,6 +74,8 @@ CLUSTERPEDIA_WORKER_NODE_NAMES：指定安装 clusterpedia-worker pod的节点�
 CLUSTERPEDIA_MYSQL_PASSWORD：内置数据库登录 MySQL 密码。
 
 CLUSTERPEDIA_MYSQL_NODE：内置数据库所在节点名称。
+
+CLUSTERPEDIA_NAMESPACE：指定安装命名空间，非必填项，默认值为clusterpedia-system。
 
 ```console
 export CLUSTERPEDIA_CONTROLLER_NODE_NAMES="clusterpedia-control-plan01"
