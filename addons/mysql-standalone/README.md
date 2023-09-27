@@ -46,17 +46,17 @@ curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/mysql-s
 等几分钟。 如果所有 mysql pod 都在运行，则 mysql 将成功安装。
 
 ```console
-kubectl get --namespace mysql pods -w
+kubectl get --namespace default pods -w
 ```
 
 ## 使用 Helm 卸载 Charts
 
 ```console
 # Helm
-helm uninstall -n upm-system mysql
+helm uninstall -n default mysql
 
 # clean pvc
-kubectl delete pvc -n upm-system data-mysql-0
+kubectl delete pvc -n default data-mysql-0
 ```
 
 这将删除与 Charts 关联的所有 Kubernetes 组件并删除发布。
