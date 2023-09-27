@@ -76,7 +76,6 @@ install_clusterpedia() {
     --set installCRDs=true \
     --set postgresql.enabled=false \
     --set mysql.enabled=true \
-    --set externalStorage.type="mysql" \
     --set mysql.auth.username="${CLUSTERPEDIA_MYSQL_USER}" \
     --set mysql.auth.password="${CLUSTERPEDIA_MYSQL_PASSWORD}" \
     --set mysql.auth.database="${CLUSTERPEDIA_MYSQL_DATABASE}" \
