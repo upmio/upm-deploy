@@ -99,9 +99,6 @@ install_mysql() {
     --set primary.nodeAffinityPreset.type="hard" \
     --set primary.nodeAffinityPreset.key="mysql\.standalone\.node" \
     --set primary.nodeAffinityPreset.values='{enable}' \
-    --set primary.podSecurityContext.fsGroup=0 \
-    --set primary.containerSecurityContext.runAsUser=0 \
-    --set primary.containerSecurityContext.runAsNonRoot=false \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
