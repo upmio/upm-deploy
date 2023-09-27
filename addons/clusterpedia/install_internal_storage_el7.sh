@@ -86,6 +86,7 @@ install_clusterpedia() {
     --set apiserver.nodeSelector."clusterpedia\.io/control-plane"="enable" \
     --set clustersynchroManager.replicaCount="${CLUSTERPEDIA_WORKER_NODE_COUNT}" \
     --set clustersynchroManager.nodeSelector."clusterpedia\.io/worker"="enable" \
+    --set clustersynchroManager.featureGates."--feature-gates"="AllowSyncAllCustomResources=true,AllowSyncAllResources=true" \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${release}."
