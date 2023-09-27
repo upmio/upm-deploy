@@ -30,7 +30,7 @@
 readonly CLUSTERPEDIA_NS="clusterpedia-system"
 readonly CLUSTERPEDIA_MYSQL_DATABASE="clusterpedia"
 readonly TIME_OUT_SECOND="600s"
-readonly VERSION="v0.7.0"
+readonly VERSION="1.9.1"
 
 INSTALL_LOG_PATH=""
 
