@@ -27,6 +27,8 @@
 #        export CLUSTERPEDIA_MYSQL_PASSWORD="password"
 #
 
+readonly CHART="clusterpedia/clusterpedia"
+readonly RELEASE="clusterpedia"
 readonly CLUSTERPEDIA_MYSQL_DATABASE="clusterpedia"
 readonly TIME_OUT_SECOND="600s"
 readonly VERSION="1.9.1"
@@ -68,13 +70,12 @@ install_helm() {
 
 install_clusterpedia() {
   info "Install clusterpedia..."
-  local release="clusterpedia"
   # check if clusterpedia already installed
-  if helm status ${release} -n "${NAMESPACE}" &>/dev/null; then
-    error "${release} already installed. Use helm remove it first"
+  if helm status "${RELEASE}" -n "${NAMESPACE}" &>/dev/null; then
+    error "${RELEASE} already installed. Use helm remove it first"
   fi
-  info "Install ${release}, It might take a long time..."
-  helm install ${release} clusterpedia/clusterpedia \
+  info "Install ${RELEASE}, It might take a long time..."
+  helm install "${RELEASE}" "${CHART}" \
     --debug \
     --version "${VERSION}" \
     --namespace "${NAMESPACE}" \
@@ -105,12 +106,6 @@ install_clusterpedia() {
   }
 
   #TODO: check more resources after install
-
-  helm status "${release}" -n "${NAMESPACE}" | grep deployed &>/dev/null || {
-    error "${release} installed fail, check log use helm and kubectl."
-  }
-
-  info "${release} Deployment Completed!"
 }
 
 init_helm_repo() {
