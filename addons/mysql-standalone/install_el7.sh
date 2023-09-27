@@ -39,6 +39,7 @@ readonly RESOURCE_LIMITS_CPU="2"
 readonly RESOURCE_LIMITS_MEMORY="4Gi"
 readonly RESOURCE_REQUESTS_CPU="2"
 readonly RESOURCE_REQUESTS_MEMORY="4Gi"
+readonly MYSQL_VERSION="8.0.34"
 
 INSTALL_LOG_PATH=""
 
@@ -85,6 +86,7 @@ install_mysql() {
     --namespace ${NAMESPACE} \
     --create-namespace \
     --set image.debug=true \
+    --set image.tag=''${MYSQL_VERSION}'' \
     --set architecture='standalone' \
     --set primary.resources.limits.cpu=''${RESOURCE_LIMITS_CPU}'' \
     --set primary.resources.limits.memory=''${RESOURCE_LIMITS_MEMORY}'' \
@@ -99,6 +101,7 @@ install_mysql() {
     --set primary.nodeAffinityPreset.type="hard" \
     --set primary.nodeAffinityPreset.key="mysql\.standalone\.node" \
     --set primary.nodeAffinityPreset.values='{enable}' \
+    --set metrics.enabled=true \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
