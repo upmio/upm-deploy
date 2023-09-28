@@ -90,8 +90,6 @@ install_redis() {
     --set master.nodeAffinityPreset.type="hard" \
     --set master.nodeAffinityPreset.key="redis\.standalone\.node" \
     --set master.nodeAffinityPreset.values='{enable}' \
-    --set master.podSecurityContext.fsGroup=0 \
-    --set master.containerSecurityContext.runAsUser=0 \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
