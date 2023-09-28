@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mysql
     app.kubernetes.io/version: ${MYSQL_VERSION}
-    helm.sh/chart: mysql-${VERSION}
+    helm.sh/chart: "mysql-${VERSION}"
   name: mysql
   namespace: ${NAMESPACE}
 spec:
