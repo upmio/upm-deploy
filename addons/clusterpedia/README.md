@@ -115,7 +115,21 @@ kubectl delete pvc -n clusterpedia-system data-clusterpedia-mysql-0
 
 _请参阅 [helm uninstall](https://helm.sh/docs/helm/helm_uninstall/) 获取命令文档。_
 
-## License
+## 导入集群
 
-<!-- Keep full URL links to repo files because this README syncs from main to gh-pages.  -->
-[Apache 2.0 License](https://raw.githubusercontent.com/upmio/upm-deploy/main/LICENSE).
+Clusterpedia 使用自定义资源 PediaCluster 资源来代表接入的集群
+
+用户使用kube config 方式来配置接入的集群。 通过直接配置 base64 编码的 kube config 到 kubeconfig 字段用于集群连接和验证
+
+首先需要将接入集群的 kube config base64 编码。
+```bash
+# mac
+base64 ~/.kube/config
+
+# linux
+base64 -w 0 ~/.kube/config
+```
+
+将 base64 后的内容设置到 PediaCluster 的 spec.kubeconfig 中即可，并且手动额外配置 spec.apiserver 字段，其他验证字段都不需要填写。
+
+[PediaCluster spec 样例文件](https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/clusterpedia/yaml/pediacluster-example.yaml)
