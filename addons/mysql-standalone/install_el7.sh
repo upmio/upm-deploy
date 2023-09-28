@@ -35,6 +35,7 @@ readonly RESOURCE_LIMITS_MEMORY="4Gi"
 readonly RESOURCE_REQUESTS_CPU="2"
 readonly RESOURCE_REQUESTS_MEMORY="4Gi"
 readonly MYSQL_VERSION="8.0.34"
+readonly VERSION="9.12.3"
 
 MYSQL_PORT="${MYSQL_PORT:-3306}"
 NAMESPACE="${MYSQL_NAMESPACE:-default}"
@@ -80,6 +81,7 @@ install_mysql() {
   info "Install mysql, It might take a long time..."
   helm install ${RELEASE} ${CHART} \
     --debug \
+    --version "${VERSION}" \
     --namespace "${NAMESPACE}" \
     --create-namespace \
     --set image.debug=true \
