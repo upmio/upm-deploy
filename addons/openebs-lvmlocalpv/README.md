@@ -29,6 +29,8 @@ OPENEBS_STORAGECLASS_NAME：指定Storageclass名称。
 
 OPENEBS_VG_NAME：指定Storageclass对应的VolumeGroup名称。
 
+OPENEBS_NAMESPACE：指定安装命名空间，非必填项，默认值为openebs。
+
 ```console
 export OPENEBS_CONTROLLER_NODE_NAMES="openebs-control-plan01"
 export OPENEBS_DATA_NODE_NAMES="openebs-control-plan01,kube-node01,kube-node02,kube-node03"

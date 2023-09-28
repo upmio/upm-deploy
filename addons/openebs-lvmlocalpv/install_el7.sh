@@ -19,12 +19,12 @@
 #        export OPENEBS_VG_NAME="local_HDD_VG"
 #
 
-readonly NAMESPACE="openebs"
 readonly CHART="openebs-lvmlocalpv/lvm-localpv"
 readonly RELEASE="openebs-lvmlocalpv"
 readonly TIME_OUT_SECOND="600s"
 readonly VERSION="1.3.0"
 
+NAMESPACE="${OPENEBS_NAMESPACE:-openebs}"
 INSTALL_LOG_PATH=""
 
 info() {
@@ -110,6 +110,7 @@ verify_supported() {
     error "OPENEBS_CONTROLLER_NODE_NAMES MUST set in environment variable."
   fi
 
+  local node
   local control_node_array
   IFS="," read -r -a control_node_array <<<"${OPENEBS_CONTROLLER_NODE_NAMES}"
   for node in "${control_node_array[@]}"; do
