@@ -182,12 +182,23 @@ verify_installed() {
   info "${RELEASE} Deployment Completed!"
 }
 
+create_nodeport_service() {
+  info "create nodeport service..."
+  kubectl delete svc -n "${NAMESPACE}" redis
+  curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/redis-standalone/yaml/master-nodeport-service.yaml | envsubst | kubectl apply -f - || {
+    error "kubectl create nodeport service fail, check log use kubectl."
+  }
+
+  info "create nodeport service successful!"
+}
+
 main() {
   init_log
   verify_supported
   init_helm_repo
   install_redis
   verify_installed
+  create_nodeport_service
 }
 
 main
