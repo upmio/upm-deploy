@@ -20,7 +20,7 @@
 #
 
 readonly CHART="bitnami/redis"
-readonly RELEASE="redis-standalone"
+readonly RELEASE="redis"
 readonly TIME_OUT_SECOND="600s"
 readonly RESOURCE_LIMITS_CPU="2"
 readonly RESOURCE_LIMITS_MEMORY="4Gi"
