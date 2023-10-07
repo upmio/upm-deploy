@@ -208,6 +208,7 @@ verify_installed() {
 create_nodeport_service() {
   info "create nodeport service..."
   kubectl delete svc -n "${NAMESPACE}" mysql
+  export NAMESPACE MYSQL_VERSION VERSION MYSQL_PORT
   curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/mysql-standalone/yaml/primary-nodeport-service.yaml | envsubst | kubectl apply -f - || {
     error "kubectl create nodeport service fail, check log use kubectl."
   }
