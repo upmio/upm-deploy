@@ -126,7 +126,7 @@ verify_supported() {
 
   local db_node_array
   IFS="," read -r -a db_node_array <<<"${PROM_NODE_NAMES}"
-  for node in "${PROM_node_array[@]}"; do
+  for node in "${db_node_array[@]}"; do
     kubectl label node "${node}" 'prometheus.node=enable' --overwrite &>/dev/null || {
       error "kubectl label node ${node} 'prometheus.node=enable' failed, use kubectl to check reason"
     }
