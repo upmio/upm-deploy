@@ -185,6 +185,7 @@ verify_installed() {
 create_nodeport_service() {
   info "create nodeport service..."
   kubectl delete svc -n "${NAMESPACE}" redis
+  export NAMESPACE REDIS_PORT REDIS_VERSION VERSION
   curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/redis-standalone/yaml/master-nodeport-service.yaml | envsubst | kubectl apply -f - || {
     error "kubectl create nodeport service fail, check log use kubectl."
   }
