@@ -61,14 +61,14 @@ install_helm() {
 
 install_lvmlocalpv() {
   # check if openebs-lvmlocalpv already installed
-  if helm status ${RELEASE} -n ${NAMESPACE} &>/dev/null; then
+  if helm status ${RELEASE} -n "${NAMESPACE}" &>/dev/null; then
     error "${RELEASE} already installed. Use helm remove it first"
   fi
   info "Install openebs-lvmlocalpv, It might take a long time..."
   helm install ${RELEASE} ${CHART} \
     --debug \
-    --version ${VERSION} \
-    --namespace ${NAMESPACE} \
+    --version "${VERSION}" \
+    --namespace "${NAMESPACE}" \
     --create-namespace \
     --set lvmController.nodeSelector."openebs\.io/control-plane"="enable" \
     --set lvmNode.nodeSelector."openebs\.io/node"="enable" \

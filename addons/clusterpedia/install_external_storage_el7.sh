@@ -209,7 +209,8 @@ verify_installed() {
 
 create_clustersyncresources() {
   info "create clustersyncresources..."
-  curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/clusterpedia/yaml/clustersyncresources.yaml | envsubst | kubectl apply -f - || {
+  export
+  curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/clusterpedia/yaml/clustersyncresources.yaml | kubectl apply -f - || {
     error "kubectl create clustersyncresources fail, check log use kubectl."
   }
 
