@@ -98,6 +98,14 @@ install_nacos() {
     --set persistence.storageClass=''"${NACOS_STORAGECLASS_NAME}"'' \
     --set persistence.size=''"${NACOS_PVC_SIZE_G}Gi"'' \
     --set ingress.enabled=false \
+    --set extraEnvVars[0].name="PREFER_HOST_MODE" \
+    --set extraEnvVars[0].value='"hostname"' \
+    --set extraEnvVars[1].name="TZ" \
+    --set extraEnvVars[1].value='"Asia/Shanghai"' \
+    --set extraEnvVars[2].name="SPRING_DATASOURCE_PLATFORM" \
+    --set extraEnvVars[2].value='"mysql"' \
+    --set extraEnvVars[3].name="NACOS_AUTH_ENABLE" \
+    --set extraEnvVars[3].value='"true"' \
     --set mysql.architecture="standalone" \
     --set mysql.auth.rootPassword=''"${NACOS_MYSQL_PWD}"'' \
     --set mysql.auth.password=''"${NACOS_MYSQL_PWD}"'' \
