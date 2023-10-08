@@ -31,7 +31,7 @@ if [ $? -ne 0 ]; then
     exit 10
 fi
 
-if [ -f "$SQL_FILES" ]; then
+if [ ! -f "$SQL_FILES" ]; then
     log "$SQL_FILES not found."
     exit 20
 fi
