@@ -33,7 +33,7 @@ info() {
 # ##############################################################################
 UPLOAD_FLAG="${1:-0}"
 PROJECT="dbscale"
-NAME="nacos-server-initDB"
+NAME="nacos-server-initdb"
 VERSION="v2.2.3"
 IMAGE_NAME="${PROJECT}/${NAME}:${VERSION}"
 
