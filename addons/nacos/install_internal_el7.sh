@@ -92,7 +92,7 @@ install_nacos() {
     --set resources.limits.memory=''${NACOS_RESOURCE_LIMITS_MEMORY}'' \
     --set resources.requests.cpu=''${NACOS_RESOURCE_REQUESTS_CPU}'' \
     --set resources.requests.memory=''${NACOS_RESOURCE_REQUESTS_MEMORY}'' \
-    --set persistence.enabled=false \
+    --set persistence.enabled=true \
     --set persistence.storageClass=''"${NACOS_STORAGECLASS_NAME}"'' \
     --set persistence.size=''"${NACOS_PVC_SIZE_G}Gi"'' \
     --set ingress.enabled=false \
