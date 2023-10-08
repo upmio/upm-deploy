@@ -111,7 +111,7 @@ install_nacos() {
     --set primary.nodeAffinityPreset.type="hard" \
     --set primary.nodeAffinityPreset.key="nacos\.io/mysql" \
     --set primary.nodeAffinityPreset.values='{enable}' \
-    --set initDB.image.repository="dbscale/nacos-server-initDB" \
+    --set initDB.image.repository="dbscale/nacos-server-initdb" \
     --set initDB.image.tag=''"${NACOS_VERSION}"'' \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
