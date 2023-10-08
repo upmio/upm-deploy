@@ -101,16 +101,16 @@ install_nacos() {
     --set mysql.architecture="standalone" \
     --set mysql.auth.rootPassword=''"${NACOS_MYSQL_PWD}"'' \
     --set mysql.auth.password=''"${NACOS_MYSQL_PWD}"'' \
-    --set primary.resources.limits.cpu=''${NACOS_MYSQL_RESOURCE_LIMITS_CPU}'' \
-    --set primary.resources.limits.memory=''${NACOS_MYSQL_RESOURCE_LIMITS_MEMORY}'' \
-    --set primary.resources.requests.cpu=''${NACOS_MYSQL_RESOURCE_REQUESTS_CPU}'' \
-    --set primary.resources.requests.memory=''${NACOS_MYSQL_RESOURCE_REQUESTS_MEMORY}'' \
-    --set primary.persistence.enabled=true \
-    --set primary.persistence.storageClass=''"${NACOS_STORAGECLASS_NAME}"'' \
-    --set primary.persistence.size=''"${NACOS_MYSQL_PVC_SIZE_G}Gi"'' \
-    --set primary.nodeAffinityPreset.type="hard" \
-    --set primary.nodeAffinityPreset.key="nacos\.io/mysql" \
-    --set primary.nodeAffinityPreset.values='{enable}' \
+    --set mysql.primary.resources.limits.cpu=''${NACOS_MYSQL_RESOURCE_LIMITS_CPU}'' \
+    --set mysql.primary.resources.limits.memory=''${NACOS_MYSQL_RESOURCE_LIMITS_MEMORY}'' \
+    --set mysql.primary.resources.requests.cpu=''${NACOS_MYSQL_RESOURCE_REQUESTS_CPU}'' \
+    --set mysql.primary.resources.requests.memory=''${NACOS_MYSQL_RESOURCE_REQUESTS_MEMORY}'' \
+    --set mysql.primary.persistence.enabled=true \
+    --set mysql.primary.persistence.storageClass=''"${NACOS_STORAGECLASS_NAME}"'' \
+    --set mysql.primary.persistence.size=''"${NACOS_MYSQL_PVC_SIZE_G}Gi"'' \
+    --set mysql.primary.nodeAffinityPreset.type="hard" \
+    --set mysql.primary.nodeAffinityPreset.key="nacos\.io/mysql" \
+    --set mysql.primary.nodeAffinityPreset.values='{enable}' \
     --set initDB.image.repository="dbscale/nacos-server-initdb" \
     --set initDB.image.tag=''"${NACOS_VERSION}"'' \
     --timeout $TIME_OUT_SECOND \
