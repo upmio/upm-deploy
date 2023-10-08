@@ -26,6 +26,7 @@ readonly NACOS_MYSQL_RESOURCE_LIMITS_CPU="1"
 readonly NACOS_MYSQL_RESOURCE_LIMITS_MEMORY="2Gi"
 readonly NACOS_MYSQL_RESOURCE_REQUESTS_CPU="1"
 readonly NACOS_MYSQL_RESOURCE_REQUESTS_MEMORY="2Gi"
+readonly NACOS_VERSION="v2.2.3"
 readonly VERSION="2.1.4"
 
 NACOS_PVC_SIZE_G="${NACOS_PVC_SIZE_G:-5}"
@@ -81,6 +82,7 @@ install_nacos() {
     --version "${VERSION}" \
     --namespace "${NAMESPACE}" \
     --create-namespace \
+    --set image.tag=''"${NACOS_VERSION}"'' \
     --set nodeAffinityPreset.type="hard" \
     --set nodeAffinityPreset.key="nacos\.io/control-plane" \
     --set nodeAffinityPreset.values='{enable}' \
@@ -109,6 +111,8 @@ install_nacos() {
     --set primary.nodeAffinityPreset.type="hard" \
     --set primary.nodeAffinityPreset.key="nacos\.io/mysql" \
     --set primary.nodeAffinityPreset.values='{enable}' \
+    --set initDB.image.repository="dbscale/nacos-server-initDB" \
+    --set initDB.image.tag=''"${NACOS_VERSION}"'' \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
