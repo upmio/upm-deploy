@@ -6,7 +6,7 @@
 
 nacos helm chart 版本为2.1.4
 
-## 内置数据库-快速安装 clusterpedia
+## 内置数据库-快速安装 nacos
 
 ### 1. 设置必要的环境变量
 
