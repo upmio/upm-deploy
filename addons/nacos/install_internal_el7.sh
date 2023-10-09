@@ -98,14 +98,18 @@ install_nacos() {
     --set persistence.storageClass=''"${NACOS_STORAGECLASS_NAME}"'' \
     --set persistence.size=''"${NACOS_PVC_SIZE_G}Gi"'' \
     --set ingress.enabled=false \
-    --set extraEnvVars[0].name="PREFER_HOST_MODE" \
-    --set extraEnvVars[0].value='"hostname"' \
-    --set extraEnvVars[1].name="TZ" \
-    --set extraEnvVars[1].value='"Asia/Shanghai"' \
-    --set extraEnvVars[2].name="SPRING_DATASOURCE_PLATFORM" \
-    --set extraEnvVars[2].value='"mysql"' \
-    --set extraEnvVars[3].name="NACOS_AUTH_ENABLE" \
-    --set extraEnvVars[3].value='"true"' \
+    --set-string extraEnvVars[0].name="PREFER_HOST_MODE" \
+    --set-string extraEnvVars[0].value="hostname" \
+    --set-string extraEnvVars[1].name="TZ" \
+    --set-string extraEnvVars[1].value="Asia/Shanghai" \
+    --set-string extraEnvVars[2].name="SPRING_DATASOURCE_PLATFORM" \
+    --set-string extraEnvVars[2].value="mysql" \
+    --set-string extraEnvVars[3].name="NACOS_AUTH_ENABLE" \
+    --set-string extraEnvVars[3].value="true" \
+    --set-string extraEnvVars[4].name="NACOS_AUTH_TOKEN" \
+    --set-string extraEnvVars[4].value="SecretKey012345678901234567890123456789012345678901234567890123456789" \
+    --set-string extraEnvVars[4].name="JAVA_OPT" \
+    --set-string extraEnvVars[4].value="-Dnacos.core.auth.server.identity.key=nacos -Dnacos.core.auth.server.identity.value=nacos -Dnacos.core.auth.plugin.nacos.token.secret.key=SecretKey012345678901234567890123456789012345678901234567890123456789" \
     --set mysql.architecture="standalone" \
     --set mysql.auth.rootPassword=''"${NACOS_MYSQL_PWD}"'' \
     --set mysql.auth.password=''"${NACOS_MYSQL_PWD}"'' \
