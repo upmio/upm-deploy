@@ -116,10 +116,10 @@ install_nacos() {
     --set-string extraEnvVars[4].name="JAVA_OPT" \
     --set-string extraEnvVars[4].value="-Dnacos.core.auth.server.identity.key=nacos -Dnacos.core.auth.server.identity.value=nacos -Dnacos.core.auth.plugin.nacos.token.secret.key=SecretKey012345678901234567890123456789012345678901234567890123456789" \
     --set mysql.enabled=false \
-    --se-stringt mysql.external.mysqlMasterHost="${NACOS_MYSQL_HOST}" \
-    --se-stringt mysql.external.mysqlMasterPort="${NACOS_MYSQL_PORT}" \
-    --se-stringt mysql.external.mysqlMasterUser="${NACOS_MYSQL_USER}" \
-    --se-stringt mysql.external.mysqlMasterPassword="${NACOS_MYSQL_PWD}" \
+    --set-string mysql.external.mysqlMasterHost="${NACOS_MYSQL_HOST}" \
+    --set-string mysql.external.mysqlMasterPort="${NACOS_MYSQL_PORT}" \
+    --set-string mysql.external.mysqlMasterUser="${NACOS_MYSQL_USER}" \
+    --set-string mysql.external.mysqlMasterPassword="${NACOS_MYSQL_PWD}" \
     --set-string initDB.image.repository="dbscale/nacos-server-initdb" \
     --set-string initDB.image.tag="${NACOS_VERSION}" \
     --timeout $TIME_OUT_SECOND \
