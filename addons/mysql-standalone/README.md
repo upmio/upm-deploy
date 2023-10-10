@@ -54,6 +54,9 @@ kubectl get --namespace default pods -w
 ```console
 # Helm
 helm uninstall -n default mysql
+
+# clean pvc
+kubectl delete pvc -n default data-mysql-0
 ```
 
 这将删除与 Charts 关联的所有 Kubernetes 组件并删除发布。
