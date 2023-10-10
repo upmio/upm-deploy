@@ -43,8 +43,8 @@ kubectl get --namespace default pods -w
 # Helm
 helm uninstall --namespace default redis
 
-# clean pvc
-kubectl delete pvc -n default redis-data-redis-master-0
+# clean service
+kubectl delete service -n default redis
 ```
 
 这将删除与 Charts 关联的所有 Kubernetes 组件并删除发布。
