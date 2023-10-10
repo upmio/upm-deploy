@@ -15,6 +15,7 @@ readonly CHART="bitnami/redis"
 readonly RELEASE="redis"
 readonly TIME_OUT_SECOND="600s"
 readonly REDIS_VERSION="6.2.13"
+readonly VERSION="18.1.3"
 
 REDIS_PORT="${REDIS_PORT:-6379}"
 NAMESPACE="${REDIS_NAMESPACE:-default}"
@@ -64,6 +65,7 @@ install_redis() {
   info "Install redis, It might take a long time..."
   helm install "${RELEASE}" "${CHART}" \
     --debug \
+    --version "${VERSION}" \
     --namespace "${NAMESPACE}" \
     --create-namespace \
     --set image.debug=true \
