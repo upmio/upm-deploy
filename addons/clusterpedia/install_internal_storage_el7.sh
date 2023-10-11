@@ -27,6 +27,14 @@ readonly TIME_OUT_SECOND="600s"
 readonly VERSION="1.9.1"
 
 NAMESPACE="${CLUSTERPEDIA_NAMESPACE:-clusterpedia-system}"
+CLUSTERPEDIA_APISERVER_RESOURCE_LIMITS_CPU="${CLUSTERPEDIA_APISERVER_RESOURCE_LIMITS_CPU:-1}"
+CLUSTERPEDIA_APISERVER_RESOURCE_LIMITS_MEMORY="${CLUSTERPEDIA_APISERVER_RESOURCE_LIMITS_MEMORY:-2Gi}"
+CLUSTERPEDIA_APISERVER_RESOURCE_REQUESTS_CPU="${CLUSTERPEDIA_APISERVER_RESOURCE_REQUESTS_CPU:-1}"
+CLUSTERPEDIA_APISERVER_RESOURCE_REQUESTS_MEMORY="${CLUSTERPEDIA_APISERVER_RESOURCE_REQUESTS_MEMORY:-2Gi}"
+CLUSTERPEDIA_SYBCHRO_RESOURCE_LIMITS_CPU="${CLUSTERPEDIA_SYBCHRO_RESOURCE_LIMITS_CPU:-1}"
+CLUSTERPEDIA_SYBCHRO_RESOURCE_LIMITS_MEMORY="${CLUSTERPEDIA_SYBCHRO_RESOURCE_LIMITS_MEMORY:-2Gi}"
+CLUSTERPEDIA_SYBCHRO_RESOURCE_REQUESTS_CPU="${CLUSTERPEDIA_SYBCHRO_RESOURCE_REQUESTS_CPU:-1}"
+CLUSTERPEDIA_SYBCHRO_RESOURCE_REQUESTS_MEMORY="${CLUSTERPEDIA_SYBCHRO_RESOURCE_REQUESTS_MEMORY:-2Gi}"
 INSTALL_LOG_PATH=""
 
 info() {
@@ -83,10 +91,18 @@ install_clusterpedia() {
     --set controllerManager.nodeSelector."clusterpedia\.io/control-plane"="enable" \
     --set apiserver.replicaCount="${CLUSTERPEDIA_CONTROLLER_NODE_COUNT}" \
     --set apiserver.nodeSelector."clusterpedia\.io/control-plane"="enable" \
+    --set apiserver.resources.limits.cpu=''${CLUSTERPEDIA_APISERVER_RESOURCE_LIMITS_CPU}'' \
+    --set apiserver.resources.limits.memory=''${CLUSTERPEDIA_APISERVER_RESOURCE_LIMITS_MEMORY}'' \
+    --set apiserver.resources.requests.cpu=''${CLUSTERPEDIA_APISERVER_RESOURCE_REQUESTS_CPU}'' \
+    --set apiserver.resources.requests.memory=''${CLUSTERPEDIA_APISERVER_RESOURCE_REQUESTS_MEMORY}'' \
     --set clustersynchroManager.replicaCount="${CLUSTERPEDIA_WORKER_NODE_COUNT}" \
     --set clustersynchroManager.nodeSelector."clusterpedia\.io/worker"="enable" \
     --set clustersynchroManager.featureGates."AllowSyncAllCustomResources"="true" \
     --set clustersynchroManager.featureGates."AllowSyncAllResources"="true" \
+    --set clustersynchroManager.resources.limits.cpu=''${CLUSTERPEDIA_SYBCHRO_RESOURCE_LIMITS_CPU}'' \
+    --set clustersynchroManager.resources.limits.memory=''${CLUSTERPEDIA_SYBCHRO_RESOURCE_LIMITS_MEMORY}'' \
+    --set clustersynchroManager.resources.requests.cpu=''${CLUSTERPEDIA_SYBCHRO_RESOURCE_REQUESTS_CPU}'' \
+    --set clustersynchroManager.resources.requests.memory=''${CLUSTERPEDIA_SYBCHRO_RESOURCE_REQUESTS_MEMORY}'' \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
