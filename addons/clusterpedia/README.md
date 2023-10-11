@@ -26,7 +26,7 @@ CLUSTERPEDIA_MYSQL_USER：外置数据库登录 MySQL 用户名。
 
 CLUSTERPEDIA_MYSQL_PASSWORD：外置数据库登录 MySQL 密码。
 
-CLUSTERPEDIA_NAMESPACE：指定安装命名空间，非必填项，默认值为clusterpedia-system。
+CLUSTERPEDIA_NAMESPACE：指定安装命名空间，非必填项，默认值为clusterpedia。
 
 ```console
 export CLUSTERPEDIA_CONTROLLER_NODE_NAMES="clusterpedia-control-plan01"
@@ -52,7 +52,7 @@ curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/cluster
 等待几分钟。 如果所有 clusterpedia pod 都在运行，则 clusterpedia 将成功安装。
 
 ```console
-kubectl get --namespace clusterpedia-system pods -w
+kubectl get --namespace clusterpedia pods -w
 ```
 
 ## 内置数据库-快速安装 clusterpedia
@@ -75,7 +75,7 @@ CLUSTERPEDIA_MYSQL_PASSWORD：内置数据库登录 MySQL 密码。
 
 CLUSTERPEDIA_MYSQL_NODE：内置数据库所在节点名称。
 
-CLUSTERPEDIA_NAMESPACE：指定安装命名空间，非必填项，默认值为clusterpedia-system。
+CLUSTERPEDIA_NAMESPACE：指定安装命名空间，非必填项，默认值为clusterpedia。
 
 ```console
 export CLUSTERPEDIA_CONTROLLER_NODE_NAMES="clusterpedia-control-plan01"
@@ -99,16 +99,16 @@ curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/cluster
 等待几分钟。 如果所有 clusterpedia pod 都在运行，则 clusterpedia 将成功安装。
 
 ```console
-kubectl get --namespace clusterpedia-system pods -w
+kubectl get -n clusterpedia pods -w
 ```
 
 ## 使用 Helm 卸载 clusterpedia
 
 ```console
 # Helm
-helm uninstall clusterpedia --namespace clusterpedia-system
+helm uninstall -n clusterpedia clusterpedia
 # clean pvc
-kubectl delete pvc -n clusterpedia-system data-clusterpedia-mysql-0
+kubectl delete pvc -n clusterpedia data-clusterpedia-mysql-0
 ```
 
 这将删除与 Charts 关联的所有 Kubernetes 组件并删除发布。
