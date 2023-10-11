@@ -93,7 +93,7 @@ install_clusterpedia() {
     --set mysql.enabled=false \
     --set persistenceMatchNode=None \
     --set storageInstallMode="external" \
-    --set externalStorage.createDatabase=true \
+    --set externalStorage.createDatabase=false \
     --set externalStorage.type="mysql" \
     --set externalStorage.host="${CLUSTERPEDIA_MYSQL_HOST}" \
     --set externalStorage.port="${CLUSTERPEDIA_MYSQL_PORT}" \
