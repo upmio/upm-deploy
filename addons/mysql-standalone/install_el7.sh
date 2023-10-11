@@ -35,10 +35,11 @@ readonly VERSION="9.12.4"
 
 MYSQL_PORT="${MYSQL_PORT:-3306}"
 NAMESPACE="${MYSQL_NAMESPACE:-default}"
-RESOURCE_LIMITS_CPU="${MYSQL_RESOURCE_LIMITS_CPU:-1}"
-RESOURCE_LIMITS_MEMORY="${MYSQL_RESOURCE_LIMITS_MEMORY:-2Gi}"
-RESOURCE_REQUESTS_CPU="${MYSQL_RESOURCE_REQUESTS_CPU:-1}"
-RESOURCE_REQUESTS_MEMORY="${MYSQL_RESOURCE_REQUESTS_MEMORY:-2Gi}"
+MYSQL_RESOURCE_LIMITS_CPU="${MYSQL_RESOURCE_LIMITS_CPU:-1}"
+MYSQL_RESOURCE_LIMITS_MEMORY="${MYSQL_RESOURCE_LIMITS_MEMORY:-2Gi}"
+MYSQL_RESOURCE_REQUESTS_CPU="${MYSQL_RESOURCE_REQUESTS_CPU:-1}"
+MYSQL_RESOURCE_REQUESTS_MEMORY="${MYSQL_RESOURCE_REQUESTS_MEMORY:-2Gi}"
+MYSQL_INITDB_CONFIGMAP="${MYSQL_INITDB_CONFIGMAP:-}"
 INSTALL_LOG_PATH=""
 
 info() {
@@ -84,22 +85,23 @@ install_mysql() {
     --version "${VERSION}" \
     --namespace "${NAMESPACE}" \
     --create-namespace \
+    --set-string initdbScriptsConfigMap="${MYSQL_INITDB_CONFIGMAP}" \
     --set image.debug=true \
-    --set image.tag=''${MYSQL_VERSION}'' \
-    --set architecture='standalone' \
-    --set primary.resources.limits.cpu=''${RESOURCE_LIMITS_CPU}'' \
-    --set primary.resources.limits.memory=''${RESOURCE_LIMITS_MEMORY}'' \
-    --set primary.resources.requests.cpu=''${RESOURCE_REQUESTS_CPU}'' \
-    --set primary.resources.requests.memory=''${RESOURCE_REQUESTS_MEMORY}'' \
-    --set auth.rootPassword=''"${MYSQL_PWD}"'' \
-    --set auth.username=''"${MYSQL_USER_NAME}"'' \
-    --set auth.password=''"${MYSQL_USER_PWD}"'' \
-    --set primary.service.ports.mysql=''"${MYSQL_PORT}"'' \
-    --set primary.persistence.storageClass=''"${MYSQL_STORAGECLASS_NAME}"'' \
-    --set primary.persistence.size=''"${MYSQL_PVC_SIZE_G}Gi"'' \
-    --set primary.nodeAffinityPreset.type="hard" \
-    --set primary.nodeAffinityPreset.key="mysql\.standalone\.node" \
-    --set primary.nodeAffinityPreset.values='{enable}' \
+    --set-string image.tag="${MYSQL_VERSION}" \
+    --set-string architecture="standalone" \
+    --set primary.resources.limits.cpu="${MYSQL_RESOURCE_LIMITS_CPU}" \
+    --set primary.resources.limits.memory="${MYSQL_RESOURCE_LIMITS_MEMORY}" \
+    --set primary.resources.requests.cpu="${MYSQL_RESOURCE_REQUESTS_CPU}" \
+    --set primary.resources.requests.memory="${MYSQL_RESOURCE_REQUESTS_MEMORY}" \
+    --set-string auth.rootPassword="${MYSQL_PWD}" \
+    --set-string auth.username="${MYSQL_USER_NAME}" \
+    --set-string auth.password="${MYSQL_USER_PWD}" \
+    --set primary.service.ports.mysql="${MYSQL_PORT}" \
+    --set-string primary.persistence.storageClass="${MYSQL_STORAGECLASS_NAME}" \
+    --set-string primary.persistence.size="${MYSQL_PVC_SIZE_G}Gi" \
+    --set-string primary.nodeAffinityPreset.type="hard" \
+    --set-string primary.nodeAffinityPreset.key="mysql\.standalone\.node" \
+    --set-string primary.nodeAffinityPreset.values='{enable}' \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
