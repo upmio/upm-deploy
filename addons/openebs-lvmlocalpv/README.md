@@ -61,6 +61,9 @@ kubectl get --namespace openebs pods -w
 ```console
 # Helm
 helm uninstall openebs-lvmlocalpv --namespace openebs
+
+# clean storageClass
+kubectl delete storageclasses "${OPENEBS_STORAGECLASS_NAME}"
 ```
 
 这将删除与 Charts 关联的所有 Kubernetes 组件并删除发布。
