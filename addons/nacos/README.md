@@ -105,6 +105,9 @@ kubectl get --namespace nacos pods -w
 ```console
 # Helm
 helm uninstall nacos -n nacos
+
+# clean pvc
+kubectl delete pvc -n nacos data-storage-nacos-0
 ```
 
 这将删除与 Charts 关联的所有 Kubernetes 组件并删除发布。
