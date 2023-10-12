@@ -13,6 +13,20 @@ readonly TIME_OUT_SECOND="600s"
 readonly VERSION="v1.13.1"
 
 NAMESPACE="${CERT_MANAGER_NAMESPACE:-cert-manager}"
+CERT_MANAGER_RESOURCE_LIMITS_CPU="${CERT_MANAGER_RESOURCE_LIMITS_CPU:-500m}"
+CERT_MANAGER_RESOURCE_LIMITS_MEMORY="${CERT_MANAGER_RESOURCE_LIMITS_MEMORY:-512Mi}"
+CERT_MANAGER_RESOURCE_REQUESTS_CPU="${CERT_MANAGER_RESOURCE_REQUESTS_CPU:-500m}"
+CERT_MANAGER_RESOURCE_REQUESTS_MEMORY="${CERT_MANAGER_RESOURCE_REQUESTS_MEMORY:-512Mi}"
+
+CERT_MANAGER_WEBHOOK_RESOURCE_LIMITS_CPU="${CERT_MANAGER_WEBHOOK_RESOURCE_LIMITS_CPU:-100m}"
+CERT_MANAGER_WEBHOOK_RESOURCE_LIMITS_MEMORY="${CERT_MANAGER_WEBHOOK_RESOURCE_LIMITS_MEMORY:-128Mi}"
+CERT_MANAGER_WEBHOOK_RESOURCE_REQUESTS_CPU="${CERT_MANAGER_WEBHOOK_RESOURCE_REQUESTS_CPU:-100m}"
+CERT_MANAGER_WEBHOOK_RESOURCE_REQUESTS_MEMORY="${CERT_MANAGER_WEBHOOK_RESOURCE_REQUESTS_MEMORY:-128Mi}"
+
+CERT_MANAGER_CAINJECTOR_RESOURCE_LIMITS_CPU="${CERT_MANAGER_CAINJECTOR_RESOURCE_LIMITS_CPU:-100m}"
+CERT_MANAGER_CAINJECTOR_RESOURCE_LIMITS_MEMORY="${CERT_MANAGER_CAINJECTOR_RESOURCE_LIMITS_MEMORY:-128Mi}"
+CERT_MANAGER_CAINJECTOR_RESOURCE_REQUESTS_CPU="${CERT_MANAGER_CAINJECTOR_RESOURCE_REQUESTS_CPU:-100m}"
+CERT_MANAGER_CAINJECTOR_RESOURCE_REQUESTS_MEMORY="${CERT_MANAGER_CAINJECTOR_RESOURCE_REQUESTS_MEMORY:-128Mi}"
 INSTALL_LOG_PATH=""
 
 info() {
@@ -60,6 +74,20 @@ install_cert_managers() {
     --create-namespace \
     --set installCRDs='true' \
     --set nodeSelector."cert-manager/node"="enable" \
+    --set-string resources.limits.cpu="${CERT_MANAGER_RESOURCE_LIMITS_CPU}" \
+    --set-string resources.limits.memory="${CERT_MANAGER_RESOURCE_LIMITS_MEMORY}" \
+    --set-string resources.requests.cpu="${CERT_MANAGER_RESOURCE_REQUESTS_CPU}" \
+    --set-string resources.requests.memory="${CERT_MANAGER_RESOURCE_REQUESTS_MEMORY}" \
+    --set webhook.nodeSelector."cert-manager/node"="enable" \
+    --set-string webhook.resources.limits.cpu="${CERT_MANAGER_WEBHOOK_RESOURCE_LIMITS_CPU}" \
+    --set-string webhook.resources.limits.memory="${CERT_MANAGER_WEBHOOK_RESOURCE_LIMITS_MEMORY}" \
+    --set-string webhook.resources.requests.cpu="${CERT_MANAGER_WEBHOOK_RESOURCE_REQUESTS_CPU}" \
+    --set-string webhook.resources.requests.memory="${CERT_MANAGER_WEBHOOK_RESOURCE_REQUESTS_MEMORY}" \
+    --set cainjector.nodeSelector."cert-manager/node"="enable" \
+    --set-string cainjector.resources.limits.cpu="${CERT_MANAGER_CAINJECTOR_RESOURCE_LIMITS_CPU}" \
+    --set-string cainjector.resources.limits.memory="${CERT_MANAGER_CAINJECTOR_RESOURCE_LIMITS_MEMORY}" \
+    --set-string cainjector.resources.requests.cpu="${CERT_MANAGER_CAINJECTOR_RESOURCE_REQUESTS_CPU}" \
+    --set-string cainjector.resources.requests.memory="${CERT_MANAGER_CAINJECTOR_RESOURCE_REQUESTS_MEMORY}" \
     --set 'extraArgs={--enable-certificate-owner-ref=true}' \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
