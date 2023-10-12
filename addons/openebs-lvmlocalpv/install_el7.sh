@@ -25,6 +25,14 @@ readonly TIME_OUT_SECOND="600s"
 readonly VERSION="1.3.0"
 
 NAMESPACE="${OPENEBS_NAMESPACE:-openebs}"
+OPENEBS_CONTROLLER_RESOURCE_LIMITS_CPU="${OPENEBS_CONTROLLER_RESOURCE_LIMITS_CPU:-1000m}"
+OPENEBS_CONTROLLER_RESOURCE_LIMITS_MEMORY="${OPENEBS_CONTROLLER_RESOURCE_LIMITS_MEMORY:-1Gi}"
+OPENEBS_CONTROLLER_RESOURCE_REQUESTS_CPU="${OPENEBS_CONTROLLER_RESOURCE_REQUESTS_CPU:-1000m}"
+OPENEBS_CONTROLLER_RESOURCE_REQUESTS_MEMORY="${OPENEBS_CONTROLLER_RESOURCE_REQUESTS_MEMORY:-1Gi}"
+OPENEBS_NODE_RESOURCE_LIMITS_CPU="${OPENEBS_NODE_RESOURCE_LIMITS_CPU:-500m}"
+OPENEBS_NODE_RESOURCE_LIMITS_MEMORY="${OPENEBS_NODE_RESOURCE_LIMITS_MEMORY:-512Mi}"
+OPENEBS_NODE_RESOURCE_REQUESTS_CPU="${OPENEBS_NODE_RESOURCE_REQUESTS_CPU:-500m}"
+OPENEBS_NODE_RESOURCE_REQUESTS_MEMORY="${OPENEBS_NODE_RESOURCE_REQUESTS_MEMORY:-512Mi}"
 INSTALL_LOG_PATH=""
 
 info() {
@@ -71,7 +79,15 @@ install_lvmlocalpv() {
     --namespace "${NAMESPACE}" \
     --create-namespace \
     --set lvmController.nodeSelector."openebs\.io/control-plane"="enable" \
+    --set-string lvmController.resources.limits.cpu="${OPENEBS_CONTROLLER_RESOURCE_LIMITS_CPU}" \
+    --set-string lvmController.resources.limits.memory="${OPENEBS_CONTROLLER_RESOURCE_LIMITS_MEMORY}" \
+    --set-string lvmController.resources.requests.cpu="${OPENEBS_CONTROLLER_RESOURCE_REQUESTS_CPU}" \
+    --set-string lvmController.resources.requests.memory="${OPENEBS_CONTROLLER_RESOURCE_REQUESTS_MEMORY}" \
     --set lvmNode.nodeSelector."openebs\.io/node"="enable" \
+    --set-string lvmNode.resources.limits.cpu="${OPENEBS_NODE_RESOURCE_LIMITS_CPU}" \
+    --set-string lvmNode.resources.limits.memory="${OPENEBS_NODE_RESOURCE_LIMITS_MEMORY}" \
+    --set-string lvmNode.resources.requests.cpu="${OPENEBS_NODE_RESOURCE_REQUESTS_CPU}" \
+    --set-string lvmNode.resources.requests.memory="${OPENEBS_NODE_RESOURCE_REQUESTS_MEMORY}" \
     --set lvmPlugin.allowedTopologies='kubernetes\.io/hostname\,openebs\.io/node' \
     --set analytics.enabled=false \
     --timeout $TIME_OUT_SECOND \
