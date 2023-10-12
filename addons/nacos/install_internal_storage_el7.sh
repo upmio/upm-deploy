@@ -28,13 +28,13 @@ NACOS_RAFT_PORT="$(( NACOS_PORT + 1001 ))"
 NAMESPACE="${NACOS_NAMESPACE:-nacos}"
 NACOS_MYSQL_PVC_SIZE_G="${NACOS_MYSQL_PVC_SIZE_G:-10}"
 NACOS_MYSQL_PWD="${NACOS_MYSQL_PWD:-nacos}"
-NACOS_RESOURCE_LIMITS_CPU="${NACOS_RESOURCE_LIMITS_CPU:-1}"
+NACOS_RESOURCE_LIMITS_CPU="${NACOS_RESOURCE_LIMITS_CPU:-1000m}"
 NACOS_RESOURCE_LIMITS_MEMORY="${NACOS_RESOURCE_LIMITS_MEMORY:-2Gi}"
-NACOS_RESOURCE_REQUESTS_CPU="${NACOS_RESOURCE_REQUESTS_CPU:-1}"
+NACOS_RESOURCE_REQUESTS_CPU="${NACOS_RESOURCE_REQUESTS_CPU:-1000m}"
 NACOS_RESOURCE_REQUESTS_MEMORY="${NACOS_RESOURCE_REQUESTS_MEMORY:-2Gi}"
-NACOS_MYSQL_RESOURCE_LIMITS_CPU="${NACOS_MYSQL_RESOURCE_LIMITS_CPU:-1}"
+NACOS_MYSQL_RESOURCE_LIMITS_CPU="${NACOS_MYSQL_RESOURCE_LIMITS_CPU:-1000m}"
 NACOS_MYSQL_RESOURCE_LIMITS_MEMORY="${NACOS_MYSQL_RESOURCE_LIMITS_MEMORY:-2Gi}"
-NACOS_MYSQL_RESOURCE_REQUESTS_CPU="${NACOS_MYSQL_RESOURCE_REQUESTS_CPU:-1}"
+NACOS_MYSQL_RESOURCE_REQUESTS_CPU="${NACOS_MYSQL_RESOURCE_REQUESTS_CPU:-1000m}"
 NACOS_MYSQL_RESOURCE_REQUESTS_MEMORY="${NACOS_MYSQL_RESOURCE_REQUESTS_MEMORY:-2Gi}"
 INSTALL_LOG_PATH=""
 
@@ -89,10 +89,10 @@ install_nacos() {
     --set service.ports.http.port=''"${NACOS_PORT}"'' \
     --set service.ports."client-rpc".port=''"${NACOS_CLIENT_PORT}"'' \
     --set service.ports."raft-rpc".port=''"${NACOS_RAFT_PORT}"'' \
-    --set resources.limits.cpu=''${NACOS_RESOURCE_LIMITS_CPU}'' \
-    --set resources.limits.memory=''${NACOS_RESOURCE_LIMITS_MEMORY}'' \
-    --set resources.requests.cpu=''${NACOS_RESOURCE_REQUESTS_CPU}'' \
-    --set resources.requests.memory=''${NACOS_RESOURCE_REQUESTS_MEMORY}'' \
+    --set-string resources.limits.cpu="${NACOS_RESOURCE_LIMITS_CPU}" \
+    --set-string resources.limits.memory="${NACOS_RESOURCE_LIMITS_MEMORY}" \
+    --set-string resources.requests.cpu="${NACOS_RESOURCE_REQUESTS_CPU}" \
+    --set-string resources.requests.memory="${NACOS_RESOURCE_REQUESTS_MEMORY}" \
     --set persistence.enabled=true \
     --set persistence.storageClass=''"${NACOS_STORAGECLASS_NAME}"'' \
     --set persistence.size=''"${NACOS_PVC_SIZE_G}Gi"'' \
@@ -107,15 +107,15 @@ install_nacos() {
     --set-string extraEnvVars[3].value="true" \
     --set-string extraEnvVars[4].name="NACOS_AUTH_TOKEN" \
     --set-string extraEnvVars[4].value="SecretKey012345678901234567890123456789012345678901234567890123456789" \
-    --set-string extraEnvVars[4].name="JAVA_OPT" \
-    --set-string extraEnvVars[4].value="-Dnacos.core.auth.server.identity.key=nacos -Dnacos.core.auth.server.identity.value=nacos -Dnacos.core.auth.plugin.nacos.token.secret.key=SecretKey012345678901234567890123456789012345678901234567890123456789" \
+    --set-string extraEnvVars[5].name="JAVA_OPT" \
+    --set-string extraEnvVars[5].value="-Dnacos.core.auth.server.identity.key=nacos -Dnacos.core.auth.server.identity.value=nacos -Dnacos.core.auth.plugin.nacos.token.secret.key=SecretKey012345678901234567890123456789012345678901234567890123456789" \
     --set mysql.architecture="standalone" \
     --set mysql.auth.rootPassword=''"${NACOS_MYSQL_PWD}"'' \
     --set mysql.auth.password=''"${NACOS_MYSQL_PWD}"'' \
-    --set mysql.primary.resources.limits.cpu=''${NACOS_MYSQL_RESOURCE_LIMITS_CPU}'' \
-    --set mysql.primary.resources.limits.memory=''${NACOS_MYSQL_RESOURCE_LIMITS_MEMORY}'' \
-    --set mysql.primary.resources.requests.cpu=''${NACOS_MYSQL_RESOURCE_REQUESTS_CPU}'' \
-    --set mysql.primary.resources.requests.memory=''${NACOS_MYSQL_RESOURCE_REQUESTS_MEMORY}'' \
+    --set-string mysql.primary.resources.limits.cpu="${NACOS_MYSQL_RESOURCE_LIMITS_CPU}" \
+    --set-string mysql.primary.resources.limits.memory="${NACOS_MYSQL_RESOURCE_LIMITS_MEMORY}" \
+    --set-string mysql.primary.resources.requests.cpu="${NACOS_MYSQL_RESOURCE_REQUESTS_CPU}" \
+    --set-string mysql.primary.resources.requests.memory="${NACOS_MYSQL_RESOURCE_REQUESTS_MEMORY}" \
     --set mysql.primary.persistence.enabled=true \
     --set mysql.primary.persistence.storageClass=''"${NACOS_STORAGECLASS_NAME}"'' \
     --set mysql.primary.persistence.size=''"${NACOS_MYSQL_PVC_SIZE_G}Gi"'' \
