@@ -22,6 +22,8 @@ MYSQL_PORT：指定安装 MySQL 端口，非必填项，默认值为3306。
 
 MYSQL_NAMESPACE：指定安装命名空间，非必填项，默认值为default。
 
+MYSQL_INITDB_CONFIGMAP: 指定数据库初始化的sql文件的configmap名称，非必填项，默认值为空。
+
 ```console
 export MYSQL_PWD='password'
 export MYSQL_USER_NAME="admin"
