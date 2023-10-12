@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
 
+# You must be prepared as follows before run install.sh:
+#
+# 1. CERT_MANAGER_NODE_NAMES MUST be set as environment variable, for an example:
+#
+#        export CERT_MANAGER_NODE_NAMES="master01,master02"
+#
+
 readonly CHART="jetstack/cert-manager"
 readonly RELEASE="cert-manager"
 readonly TIME_OUT_SECOND="600s"
-readonly VERSION="v1.13.0"
+readonly VERSION="v1.13.1"
 
 NAMESPACE="${CERT_MANAGER_NAMESPACE:-cert-manager}"
 INSTALL_LOG_PATH=""
@@ -52,6 +59,7 @@ install_cert_managers() {
     --namespace "${NAMESPACE}" \
     --create-namespace \
     --set installCRDs='true' \
+    --set nodeSelector."cert-manager/node"="enable" \
     --set 'extraArgs={--enable-certificate-owner-ref=true}' \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
@@ -76,6 +84,19 @@ verify_supported() {
   HAS_KUBECTL="$(type "kubectl" &>/dev/null && echo true || echo false)"
   local HAS_CURL
   HAS_CURL="$(type "curl" &>/dev/null && echo true || echo false)"
+
+  if [[ -z "${CERT_MANAGER_NODE_NAMES}" ]]; then
+    error "CERT_MANAGER_NODE_NAMES MUST set in environment variable."
+  fi
+
+  local node
+  local node_array
+  IFS="," read -r -a node_array <<<"${CERT_MANAGER_NODE_NAMES}"
+  for node in "${node_array[@]}"; do
+    kubectl label node "${node}" 'cert-manager/node=enable' --overwrite &>/dev/null || {
+      error "kubectl label node ${node} 'cert-manager/node=enable' failed, use kubectl to check reason"
+    }
+  done
 
   if [[ "${HAS_CURL}" != "true" ]]; then
     error "curl is required"
