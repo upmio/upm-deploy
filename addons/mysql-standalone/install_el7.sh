@@ -35,9 +35,9 @@ readonly VERSION="9.12.4"
 
 MYSQL_PORT="${MYSQL_PORT:-3306}"
 NAMESPACE="${MYSQL_NAMESPACE:-default}"
-MYSQL_RESOURCE_LIMITS_CPU="${MYSQL_RESOURCE_LIMITS_CPU:-1}"
+MYSQL_RESOURCE_LIMITS_CPU="${MYSQL_RESOURCE_LIMITS_CPU:-1000m}"
 MYSQL_RESOURCE_LIMITS_MEMORY="${MYSQL_RESOURCE_LIMITS_MEMORY:-2Gi}"
-MYSQL_RESOURCE_REQUESTS_CPU="${MYSQL_RESOURCE_REQUESTS_CPU:-1}"
+MYSQL_RESOURCE_REQUESTS_CPU="${MYSQL_RESOURCE_REQUESTS_CPU:-1000m}"
 MYSQL_RESOURCE_REQUESTS_MEMORY="${MYSQL_RESOURCE_REQUESTS_MEMORY:-2Gi}"
 MYSQL_INITDB_CONFIGMAP="${MYSQL_INITDB_CONFIGMAP:-}"
 INSTALL_LOG_PATH=""
@@ -89,10 +89,10 @@ install_mysql() {
     --set image.debug=true \
     --set-string image.tag="${MYSQL_VERSION}" \
     --set-string architecture="standalone" \
-    --set primary.resources.limits.cpu="${MYSQL_RESOURCE_LIMITS_CPU}" \
-    --set primary.resources.limits.memory="${MYSQL_RESOURCE_LIMITS_MEMORY}" \
-    --set primary.resources.requests.cpu="${MYSQL_RESOURCE_REQUESTS_CPU}" \
-    --set primary.resources.requests.memory="${MYSQL_RESOURCE_REQUESTS_MEMORY}" \
+    --set-string primary.resources.limits.cpu="${MYSQL_RESOURCE_LIMITS_CPU}" \
+    --set-string primary.resources.limits.memory="${MYSQL_RESOURCE_LIMITS_MEMORY}" \
+    --set-string primary.resources.requests.cpu="${MYSQL_RESOURCE_REQUESTS_CPU}" \
+    --set-string primary.resources.requests.memory="${MYSQL_RESOURCE_REQUESTS_MEMORY}" \
     --set-string auth.rootPassword="${MYSQL_PWD}" \
     --set-string auth.username="${MYSQL_USER_NAME}" \
     --set-string auth.password="${MYSQL_USER_PWD}" \

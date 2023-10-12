@@ -19,10 +19,10 @@ readonly VERSION="18.1.3"
 
 REDIS_PORT="${REDIS_PORT:-6379}"
 NAMESPACE="${REDIS_NAMESPACE:-default}"
-RESOURCE_LIMITS_CPU="${REDIS_RESOURCE_LIMITS_CPU:-1}"
-RESOURCE_LIMITS_MEMORY="${REDIS_RESOURCE_LIMITS_MEMORY:-2Gi}"
-RESOURCE_REQUESTS_CPU="${REDIS_RESOURCE_REQUESTS_CPU:-1}"
-RESOURCE_REQUESTS_MEMORY="${REDIS_RESOURCE_REQUESTS_MEMORY:-2Gi}"
+REDIS_RESOURCE_LIMITS_CPU="${REDIS_RESOURCE_LIMITS_CPU:-1000m}"
+REDIS_RESOURCE_LIMITS_MEMORY="${REDIS_RESOURCE_LIMITS_MEMORY:-2Gi}"
+REDIS_RESOURCE_REQUESTS_CPU="${REDIS_RESOURCE_REQUESTS_CPU:-1000m}"
+REDIS_RESOURCE_REQUESTS_MEMORY="${REDIS_RESOURCE_REQUESTS_MEMORY:-2Gi}"
 INSTALL_LOG_PATH=""
 
 info() {
@@ -71,10 +71,10 @@ install_redis() {
     --set image.debug=true \
     --set image.tag=''${REDIS_VERSION}'' \
     --set architecture='standalone' \
-    --set master.resources.limits.cpu=''${RESOURCE_LIMITS_CPU}'' \
-    --set master.resources.limits.memory=''${RESOURCE_LIMITS_MEMORY}'' \
-    --set master.resources.requests.cpu=''${RESOURCE_REQUESTS_CPU}'' \
-    --set master.resources.requests.memory=''${RESOURCE_REQUESTS_MEMORY}'' \
+    --set-string master.resources.limits.cpu="${REDIS_RESOURCE_LIMITS_CPU}" \
+    --set-string master.resources.limits.memory="${REDIS_RESOURCE_LIMITS_MEMORY}" \
+    --set-string master.resources.requests.cpu="${REDIS_RESOURCE_REQUESTS_CPU}" \
+    --set-string master.resources.requests.memory="${REDIS_RESOURCE_REQUESTS_MEMORY}" \
     --set global.redis.password=''"${REDIS_PWD}"'' \
     --set master.count=1 \
     --set master.containerPorts.redis="${REDIS_PORT}" \
