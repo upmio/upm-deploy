@@ -1,0 +1,12 @@
+apiVersion: cluster.clusterpedia.io/v1alpha2
+kind: PediaCluster
+metadata:
+  labels:
+    upm.io/owner: "upm"
+    upm.io/manager: "true"
+  name: manager-cluster-example
+spec:
+  apiserver: ""
+  kubeconfig: ""
+  syncResourcesRefName: "global-base"
+  syncResources: []

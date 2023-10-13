@@ -2,8 +2,9 @@ apiVersion: cluster.clusterpedia.io/v1alpha2
 kind: PediaCluster
 metadata:
   labels:
-    upm.io/owner: upm
-  name: cluster-example
+    upm.io/owner: "upm"
+    upm.io/workload: "true"
+  name: workload-cluster-example
 spec:
   apiserver: ""
   kubeconfig: ""
