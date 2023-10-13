@@ -20,3 +20,6 @@ spec:
     - group: "cluster.clusterpedia.io"
       resources:
         - "*"
+    - group: "gauntlet.bsgchina.com"
+      resources:
+        - "*"
