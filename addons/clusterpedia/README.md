@@ -33,7 +33,7 @@ export CLUSTERPEDIA_CONTROLLER_NODE_NAMES="clusterpedia-control-plan01"
 export CLUSTERPEDIA_WORKER_NODE_NAMES="clusterpedia-control-plan01"
 export CLUSTERPEDIA_MYSQL_HOST="mysql"
 export CLUSTERPEDIA_MYSQL_PORT="3306"
-export CLUSTERPEDIA_MYSQL_USER="admin"
+export CLUSTERPEDIA_MYSQL_USER="clusterpedia"
 export CLUSTERPEDIA_MYSQL_PASSWORD="password"
 ```
 
