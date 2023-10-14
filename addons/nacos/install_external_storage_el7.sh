@@ -239,10 +239,10 @@ create_nacos_namespace() {
     sleep 6
     # get token
     local token
-    token="$( curl -s -X POST -d 'username='"${nacos_username}"'&password='"${nacos_password}"'' --url "http://${kube_node_addr}:${NACOS_NODEPORT}/nacos/v1/auth/login" | jq -r .accessToken )"
+    token="$( curl --noproxy '*' -s -X POST -d 'username='"${nacos_username}"'&password='"${nacos_password}"'' --url "http://${kube_node_addr}:${NACOS_NODEPORT}/nacos/v1/auth/login" | jq -r .accessToken )"
     [[ -n $token ]] || error "get env token failed !"
 
-    curl -X POST -d 'accessToken='"${token}"'' 'http://'"${kube_node_addr}":"${NACOS_NODEPORT}"'/nacos/v1/console/namespaces?customNamespaceId='"${NACOS_NAMESPACE}"'&namespaceName='"${NACOS_NAMESPACE}"'&namespaceDesc='"${NACOS_NAMESPACE}"'' || {
+    curl --noproxy '*' -X POST -d 'accessToken='"${token}"'' 'http://'"${kube_node_addr}":"${NACOS_NODEPORT}"'/nacos/v1/console/namespaces?customNamespaceId='"${NACOS_NAMESPACE}"'&namespaceName='"${NACOS_NAMESPACE}"'&namespaceDesc='"${NACOS_NAMESPACE}"'' || {
       error "create nacos namespace failed !"
     }
 
