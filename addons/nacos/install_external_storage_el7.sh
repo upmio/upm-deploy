@@ -94,9 +94,7 @@ install_nacos() {
     --set nodeAffinityPreset.key="nacos\.io/control-plane" \
     --set nodeAffinityPreset.values='{enable}' \
     --set replicaCount=${NACOS_CONTROLLER_NODE_COUNT} \
-    --set-string service.type="NodePort" \
     --set service.ports.http.port="${NACOS_PORT}" \
-    --set service.ports.http.nodePort="${NACOS_NODEPORT}" \
     --set service.ports.client-rpc.port="${NACOS_CLIENT_PORT}" \
     --set service.ports.raft-rpc.port="${NACOS_RAFT_PORT}" \
     --set-string resources.limits.cpu="${NACOS_RESOURCE_LIMITS_CPU}" \
@@ -226,6 +224,9 @@ verify_installed() {
 
 create_nacos_namespace() {
   [[ -z ${NACOS_NAMESPACE} ]] || {
+    info "patch service type to NodePort..."
+    kubectl patch service -n "${KUBE_NAMESPACE}" "nacos" --type='json' -p '[{"op":"replace","path":"/spec/type","value":"NodePort"},{"op":"replace","path":"/spec/ports/1/nodePort","value":'"${NACOS_NODEPORT}"']'
+    
     info "create nacos namespace..."
     local nacos_username="nacos"
     local nacos_password="nacos"
