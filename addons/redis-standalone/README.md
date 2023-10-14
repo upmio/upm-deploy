@@ -17,6 +17,7 @@ REDIS_NAMESPACE：指定安装命名空间，非必填项，默认值为default�
 ```console
 export REDIS_PWD='password'
 export REDIS_NODE_NAMES="redis-node01"
+export REDIS_NAMESPACE="upm-system"
 ```
 
 ### 3. 运行安装脚本

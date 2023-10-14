@@ -31,6 +31,7 @@ export MYSQL_USER_PWD='password'
 export MYSQL_STORAGECLASS_NAME="openebs-lvmsc-hdd"
 export MYSQL_PVC_SIZE_G="50"
 export MYSQL_NODE_NAMES="db-node01"
+export MYSQL_NAMESPACE="upm-system"
 ```
 
 ### 3. 运行安装脚本
