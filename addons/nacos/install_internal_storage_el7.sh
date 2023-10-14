@@ -218,18 +218,24 @@ verify_installed() {
 create_nacos_namespace() {
   [[ -z ${NACOS_NAMESPACE} ]] || {
     info "patch service type to NodePort..."
-    kubectl patch service -n "${KUBE_NAMESPACE}" "nacos" --type='json' -p '[{"op":"replace","path":"/spec/type","value":"NodePort"},{"op":"replace","path":"/spec/ports/1/nodePort","value":'"${NACOS_NODEPORT}"']'
+    kubectl patch service -n "${KUBE_NAMESPACE}" "nacos" --type='json' -p '[{"op":"replace","path":"/spec/type","value":"NodePort"},{"op":"replace","path":"/spec/ports/1/nodePort","value":'"${NACOS_NODEPORT}"'}]' || {
+      error "kubectl patch service failed !"
+    }
 
     info "create nacos namespace..."
     local nacos_username="nacos"
     local nacos_password="nacos"
     local kube_node_addr
     kube_node_addr=$( kubectl get node -l 'node-role.kubernetes.io/control-plane=' --no-headers -o jsonpath='{.items[0].status.addresses[0].address}' )
+
+    # waiting for service started
+    sleep 6
+    # get token
     local token
     token="$( curl -s -X POST -d 'username='"${nacos_username}"'&password='"${nacos_password}"'' --url "http://${kube_node_addr}:${NACOS_NODEPORT}/nacos/v1/auth/login" | jq -r .accessToken )"
     [[ -n $token ]] || error "get env token failed !"
 
-    curl -X POST 'http://'"${kube_node_addr}":"${NACOS_NODEPORT}"'/nacos/v1/console/namespaces?customNamespaceId='"${NACOS_NAMESPACE}"'&namespaceName='"${NACOS_NAMESPACE}"'&namespaceDesc='"${NACOS_NAMESPACE}"'' || {
+    curl -X POST -d 'accessToken='"${token}"'' 'http://'"${kube_node_addr}":"${NACOS_NODEPORT}"'/nacos/v1/console/namespaces?customNamespaceId='"${NACOS_NAMESPACE}"'&namespaceName='"${NACOS_NAMESPACE}"'&namespaceDesc='"${NACOS_NAMESPACE}"'' || {
       error "create nacos namespace failed !"
     }
 
