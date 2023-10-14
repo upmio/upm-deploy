@@ -25,7 +25,7 @@ NACOS_PVC_SIZE_G="${NACOS_PVC_SIZE_G:-5}"
 NACOS_PORT="${NACOS_PORT:-8848}"
 NACOS_CLIENT_PORT="$(( NACOS_PORT + 1000 ))"
 NACOS_RAFT_PORT="$(( NACOS_PORT + 1001 ))"
-NAMESPACE="${NACOS_NAMESPACE:-nacos}"
+KUBE_NAMESPACE="${NACOS_KUBE_NAMESPACE:-nacos}"
 NACOS_MYSQL_PVC_SIZE_G="${NACOS_MYSQL_PVC_SIZE_G:-10}"
 NACOS_MYSQL_PWD="${NACOS_MYSQL_PWD:-nacos}"
 NACOS_RESOURCE_LIMITS_CPU="${NACOS_RESOURCE_LIMITS_CPU:-1000m}"
@@ -72,30 +72,32 @@ install_helm() {
 
 install_nacos() {
   # check if nacos already installed
-  if helm status ${RELEASE} -n "${NAMESPACE}" &>/dev/null; then
+  if helm status ${RELEASE} -n "${KUBE_NAMESPACE}" &>/dev/null; then
     error "${RELEASE} already installed. Use helm remove it first"
   fi
   info "Install nacos, It might take a long time..."
   helm install ${RELEASE} ${CHART} \
     --debug \
     --version "${VERSION}" \
-    --namespace "${NAMESPACE}" \
+    --namespace "${KUBE_NAMESPACE}" \
     --create-namespace \
-    --set image.tag=''"${NACOS_VERSION}"'' \
+    --set-string image.tag="${NACOS_VERSION}" \
     --set nodeAffinityPreset.type="hard" \
     --set nodeAffinityPreset.key="nacos\.io/control-plane" \
     --set nodeAffinityPreset.values='{enable}' \
     --set replicaCount=${NACOS_CONTROLLER_NODE_COUNT} \
-    --set service.ports.http.port=''"${NACOS_PORT}"'' \
-    --set service.ports."client-rpc".port=''"${NACOS_CLIENT_PORT}"'' \
-    --set service.ports."raft-rpc".port=''"${NACOS_RAFT_PORT}"'' \
+    --set-string service.type="NodePort" \
+    --set service.ports.http.port="${NACOS_PORT}" \
+    --set service.ports.http.nodePort="${NACOS_NODEPORT}" \
+    --set service.ports.client-rpc.port="${NACOS_CLIENT_PORT}" \
+    --set service.ports.raft-rpc.port="${NACOS_RAFT_PORT}" \
     --set-string resources.limits.cpu="${NACOS_RESOURCE_LIMITS_CPU}" \
     --set-string resources.limits.memory="${NACOS_RESOURCE_LIMITS_MEMORY}" \
     --set-string resources.requests.cpu="${NACOS_RESOURCE_REQUESTS_CPU}" \
     --set-string resources.requests.memory="${NACOS_RESOURCE_REQUESTS_MEMORY}" \
     --set persistence.enabled=true \
-    --set persistence.storageClass=''"${NACOS_STORAGECLASS_NAME}"'' \
-    --set persistence.size=''"${NACOS_PVC_SIZE_G}Gi"'' \
+    --set-string persistence.storageClass="${NACOS_STORAGECLASS_NAME}" \
+    --set-string persistence.size="${NACOS_PVC_SIZE_G}Gi" \
     --set ingress.enabled=false \
     --set-string extraEnvVars[0].name="PREFER_HOST_MODE" \
     --set-string extraEnvVars[0].value="hostname" \
@@ -109,21 +111,21 @@ install_nacos() {
     --set-string extraEnvVars[4].value="SecretKey012345678901234567890123456789012345678901234567890123456789" \
     --set-string extraEnvVars[5].name="JAVA_OPT" \
     --set-string extraEnvVars[5].value="-Dnacos.core.auth.server.identity.key=nacos -Dnacos.core.auth.server.identity.value=nacos -Dnacos.core.auth.plugin.nacos.token.secret.key=SecretKey012345678901234567890123456789012345678901234567890123456789" \
-    --set mysql.architecture="standalone" \
-    --set mysql.auth.rootPassword=''"${NACOS_MYSQL_PWD}"'' \
-    --set mysql.auth.password=''"${NACOS_MYSQL_PWD}"'' \
+    --set-string mysql.architecture="standalone" \
+    --set-string mysql.auth.rootPassword="${NACOS_MYSQL_PWD}" \
+    --set-string mysql.auth.password="${NACOS_MYSQL_PWD}" \
     --set-string mysql.primary.resources.limits.cpu="${NACOS_MYSQL_RESOURCE_LIMITS_CPU}" \
     --set-string mysql.primary.resources.limits.memory="${NACOS_MYSQL_RESOURCE_LIMITS_MEMORY}" \
     --set-string mysql.primary.resources.requests.cpu="${NACOS_MYSQL_RESOURCE_REQUESTS_CPU}" \
     --set-string mysql.primary.resources.requests.memory="${NACOS_MYSQL_RESOURCE_REQUESTS_MEMORY}" \
     --set mysql.primary.persistence.enabled=true \
-    --set mysql.primary.persistence.storageClass=''"${NACOS_STORAGECLASS_NAME}"'' \
-    --set mysql.primary.persistence.size=''"${NACOS_MYSQL_PVC_SIZE_G}Gi"'' \
+    --set-string mysql.primary.persistence.storageClass="${NACOS_STORAGECLASS_NAME}" \
+    --set-string mysql.primary.persistence.size="${NACOS_MYSQL_PVC_SIZE_G}Gi" \
     --set mysql.primary.nodeAffinityPreset.type="hard" \
     --set mysql.primary.nodeAffinityPreset.key="nacos\.io/mysql" \
     --set mysql.primary.nodeAffinityPreset.values='{enable}' \
     --set initDB.image.repository="dbscale/nacos-server-initdb" \
-    --set initDB.image.tag=''"${NACOS_VERSION}"'' \
+    --set-string initDB.image.tag="${NACOS_VERSION}" \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
@@ -207,11 +209,30 @@ init_log() {
 #   namespace
 ############################################
 verify_installed() {
-  helm status "${RELEASE}" -n "${NAMESPACE}" | grep deployed &>/dev/null || {
+  helm status "${RELEASE}" -n "${KUBE_NAMESPACE}" | grep deployed &>/dev/null || {
     error "${RELEASE} installed fail, check log use helm and kubectl."
   }
 
   info "${RELEASE} Deployment Completed!"
+}
+
+create_nacos_namespace() {
+  [[ -z ${NACOS_NAMESPACE} ]] || {
+    info "create nacos namespace..."
+    local nacos_username="nacos"
+    local nacos_password="nacos"
+    local kube_node_addr
+    kube_node_addr=$( kubectl get node -l 'node-role.kubernetes.io/control-plane=' --no-headers -o jsonpath='{.items[0].status.addresses[0].address}' )
+    local token
+    token="$( curl -s -X POST -d 'username='"${nacos_username}"'&password='"${nacos_password}"'' --url "http://${kube_node_addr}:${NACOS_NODEPORT}/nacos/v1/auth/login" | jq -r .accessToken )"
+    [[ -n $token ]] || error "get env token failed !"
+
+    curl -X POST 'http://'"${kube_node_addr}":"${NACOS_NODEPORT}"'/nacos/v1/console/namespaces?customNamespaceId='"${NACOS_NAMESPACE}"'&namespaceName='"${NACOS_NAMESPACE}"'&namespaceDesc='"${NACOS_NAMESPACE}"'' || {
+      error "create nacos namespace failed !"
+    }
+
+    info "create nacos namespace successful!"
+  }
 }
 
 main() {
@@ -220,6 +241,7 @@ main() {
   init_helm_repo
   install_nacos
   verify_installed
+  create_nacos_namespace
 }
 
 main
