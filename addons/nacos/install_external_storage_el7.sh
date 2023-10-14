@@ -35,7 +35,7 @@ readonly VERSION="2.1.4"
 
 NACOS_PVC_SIZE_G="${NACOS_PVC_SIZE_G:-5}"
 NACOS_PORT="${NACOS_PORT:-8848}"
-NACOS_NODEPORT="${NACOS_NODEPORT:-32848}"
+NACOS_NODEPORT="${NACOS_NODEPORT:-32008}"
 NACOS_CLIENT_PORT="$(( NACOS_PORT + 1000 ))"
 NACOS_RAFT_PORT="$(( NACOS_PORT + 1001 ))"
 KUBE_NAMESPACE="${NACOS_KUBE_NAMESPACE:-nacos}"
@@ -226,7 +226,7 @@ create_nacos_namespace() {
   [[ -z ${NACOS_NAMESPACE} ]] || {
     info "patch service type to NodePort..."
     kubectl patch service -n "${KUBE_NAMESPACE}" "nacos" --type='json' -p '[{"op":"replace","path":"/spec/type","value":"NodePort"},{"op":"replace","path":"/spec/ports/1/nodePort","value":'"${NACOS_NODEPORT}"']'
-    
+
     info "create nacos namespace..."
     local nacos_username="nacos"
     local nacos_password="nacos"
