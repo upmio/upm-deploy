@@ -3,7 +3,7 @@ kind: Service
 metadata:
   annotations:
     meta.helm.sh/release-name: redis
-    meta.helm.sh/release-namespace: "${NAMESPACE}"
+    meta.helm.sh/release-namespace: "${REDIS_KUBE_NAMESPACE}"
   labels:
     app.kubernetes.io/component: master
     app.kubernetes.io/instance: redis
@@ -12,7 +12,7 @@ metadata:
     app.kubernetes.io/version: "${REDIS_VERSION}"
     helm.sh/chart: "redis-${VERSION}"
   name: redis
-  namespace: "${NAMESPACE}"
+  namespace: "${REDIS_KUBE_NAMESPACE}"
 spec:
   internalTrafficPolicy: Cluster
   ipFamilies:

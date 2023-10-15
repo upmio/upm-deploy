@@ -15,10 +15,12 @@ readonly CHART="bitnami/redis"
 readonly RELEASE="redis"
 readonly TIME_OUT_SECOND="600s"
 readonly REDIS_VERSION="6.2.13"
-readonly VERSION="18.1.3"
+readonly VERSION="18.1.5"
 
+
+REDIS_IMAGE_REGISTRY="${REDIS_IMAGE_REGISTRY:-}"
 REDIS_PORT="${REDIS_PORT:-6379}"
-NAMESPACE="${REDIS_NAMESPACE:-default}"
+REDIS_KUBE_NAMESPACE="${REDIS_KUBE_NAMESPACE:-default}"
 REDIS_RESOURCE_LIMITS_CPU="${REDIS_RESOURCE_LIMITS_CPU:-1000m}"
 REDIS_RESOURCE_LIMITS_MEMORY="${REDIS_RESOURCE_LIMITS_MEMORY:-2Gi}"
 REDIS_RESOURCE_REQUESTS_CPU="${REDIS_RESOURCE_REQUESTS_CPU:-1000m}"
@@ -59,23 +61,24 @@ install_helm() {
 
 install_redis() {
   # check if redis already installed
-  if helm status "${RELEASE}" -n "${NAMESPACE}" &>/dev/null; then
+  if helm status "${RELEASE}" -n "${REDIS_KUBE_NAMESPACE}" &>/dev/null; then
     error "${RELEASE} already installed. Use helm remove it first"
   fi
   info "Install redis, It might take a long time..."
   helm install "${RELEASE}" "${CHART}" \
     --debug \
     --version "${VERSION}" \
-    --namespace "${NAMESPACE}" \
+    --namespace "${REDIS_KUBE_NAMESPACE}" \
     --create-namespace \
+    --set-string global.imageRegistry="${REDIS_IMAGE_REGISTRY}" \
+    --set-string global.redis.password="${REDIS_PWD}" \
     --set image.debug=true \
-    --set image.tag=''${REDIS_VERSION}'' \
-    --set architecture='standalone' \
+    --set-string image.tag="${REDIS_VERSION}" \
+    --set-string architecture="standalone" \
     --set-string master.resources.limits.cpu="${REDIS_RESOURCE_LIMITS_CPU}" \
     --set-string master.resources.limits.memory="${REDIS_RESOURCE_LIMITS_MEMORY}" \
     --set-string master.resources.requests.cpu="${REDIS_RESOURCE_REQUESTS_CPU}" \
     --set-string master.resources.requests.memory="${REDIS_RESOURCE_REQUESTS_MEMORY}" \
-    --set global.redis.password=''"${REDIS_PWD}"'' \
     --set master.count=1 \
     --set master.containerPorts.redis="${REDIS_PORT}" \
     --set master.service.ports.redis="${REDIS_PORT}" \
@@ -156,7 +159,7 @@ init_log() {
 #   namespace
 ############################################
 verify_installed() {
-  helm status "${RELEASE}" -n "${NAMESPACE}" | grep deployed &>/dev/null || {
+  helm status "${RELEASE}" -n "${REDIS_KUBE_NAMESPACE}" | grep deployed &>/dev/null || {
     error "${RELEASE} installed fail, check log use helm and kubectl."
   }
 
@@ -165,8 +168,8 @@ verify_installed() {
 
 create_nodeport_service() {
   info "create nodeport service..."
-  kubectl delete svc -n "${NAMESPACE}" redis
-  export NAMESPACE REDIS_PORT REDIS_VERSION VERSION
+  kubectl delete svc -n "${REDIS_KUBE_NAMESPACE}" redis
+  export REDIS_KUBE_NAMESPACE REDIS_PORT REDIS_VERSION VERSION
   curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/redis-standalone/yaml/master-nodeport-service.yaml | envsubst | kubectl apply -f - || {
     error "kubectl create nodeport service fail, check log use kubectl."
   }
