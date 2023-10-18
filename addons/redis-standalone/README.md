@@ -1,6 +1,6 @@
 # 部署 Redis 单机版
 
-本文档目标是指导安装 Redis 单机版，redis版本为6.2.13。
+本文档目标是指导安装 Redis 单机版，redis版本为7.2.1。
 
 ## 快速安装指南
 
@@ -12,7 +12,9 @@ REDIS_NODE_NAMES：指定安装 Redis pod的节点名称，节点名称可以使
 
 REDIS_PORT：指定安装 redis 端口，非必填项，默认值为6379。
 
-REDIS_KUBE_NAMESPACE：指定安装命名空间，非必填项，默认值为default。
+REDIS_KUBE_NAMESPACE：指定安装命名空间，非必填项，默认值为`default`。
+
+REDIS_SERVICE_TYPE：指定服务入口类型，支持 `ClusterIP` 、`NodePort` ，非必填项，默认值为`ClusterIP`。
 
 ```console
 export REDIS_PWD='password'
@@ -43,9 +45,6 @@ kubectl get --namespace default pods -w
 ```console
 # Helm
 helm uninstall --namespace default redis
-
-# clean service
-kubectl delete service -n default redis
 ```
 
 这将删除与 Charts 关联的所有 Kubernetes 组件并删除发布。
