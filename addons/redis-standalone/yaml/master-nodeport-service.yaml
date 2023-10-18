@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/instance: redis
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: redis
-    app.kubernetes.io/version: "${REDIS_VERSION}"
+    app.kubernetes.io/version: "${APP_VERSION}"
     helm.sh/chart: "redis-${VERSION}"
   name: redis
   namespace: "${REDIS_KUBE_NAMESPACE}"

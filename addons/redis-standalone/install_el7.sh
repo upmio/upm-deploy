@@ -14,7 +14,7 @@
 readonly CHART="bitnami/redis"
 readonly RELEASE="redis"
 readonly TIME_OUT_SECOND="600s"
-readonly REDIS_VERSION="6.2.13"
+readonly APP_VERSION="7.2.1"
 readonly VERSION="18.1.5"
 
 
@@ -73,7 +73,6 @@ install_redis() {
     --set-string global.imageRegistry="${REDIS_IMAGE_REGISTRY}" \
     --set-string global.redis.password="${REDIS_PWD}" \
     --set image.debug=true \
-    --set-string image.tag="${REDIS_VERSION}" \
     --set-string architecture="standalone" \
     --set-string master.resources.limits.cpu="${REDIS_RESOURCE_LIMITS_CPU}" \
     --set-string master.resources.limits.memory="${REDIS_RESOURCE_LIMITS_MEMORY}" \
@@ -169,7 +168,7 @@ verify_installed() {
 create_nodeport_service() {
   info "create nodeport service..."
   kubectl delete svc -n "${REDIS_KUBE_NAMESPACE}" redis
-  export REDIS_KUBE_NAMESPACE REDIS_PORT REDIS_VERSION VERSION
+  export REDIS_KUBE_NAMESPACE REDIS_PORT APP_VERSION VERSION
   curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/redis-standalone/yaml/master-nodeport-service.yaml | envsubst | kubectl apply -f - || {
     error "kubectl create nodeport service fail, check log use kubectl."
   }
