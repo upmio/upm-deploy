@@ -7,22 +7,20 @@
 #        export CERT_MANAGER_NODE_NAMES="master01,master02"
 #
 
-readonly CHART="jetstack/cert-manager"
+readonly CHART="bitnami/cert-manager"
 readonly RELEASE="cert-manager"
 readonly TIME_OUT_SECOND="600s"
-readonly VERSION="v1.13.1"
+readonly VERSION="0.12.11"
 
-NAMESPACE="${CERT_MANAGER_NAMESPACE:-cert-manager}"
+CERT_MANAGER_KUBE_NAMESPACE="${CERT_MANAGER_KUBE_NAMESPACE:-cert-manager}"
 CERT_MANAGER_RESOURCE_LIMITS_CPU="${CERT_MANAGER_RESOURCE_LIMITS_CPU:-500m}"
 CERT_MANAGER_RESOURCE_LIMITS_MEMORY="${CERT_MANAGER_RESOURCE_LIMITS_MEMORY:-512Mi}"
 CERT_MANAGER_RESOURCE_REQUESTS_CPU="${CERT_MANAGER_RESOURCE_REQUESTS_CPU:-500m}"
 CERT_MANAGER_RESOURCE_REQUESTS_MEMORY="${CERT_MANAGER_RESOURCE_REQUESTS_MEMORY:-512Mi}"
-
 CERT_MANAGER_WEBHOOK_RESOURCE_LIMITS_CPU="${CERT_MANAGER_WEBHOOK_RESOURCE_LIMITS_CPU:-100m}"
 CERT_MANAGER_WEBHOOK_RESOURCE_LIMITS_MEMORY="${CERT_MANAGER_WEBHOOK_RESOURCE_LIMITS_MEMORY:-128Mi}"
 CERT_MANAGER_WEBHOOK_RESOURCE_REQUESTS_CPU="${CERT_MANAGER_WEBHOOK_RESOURCE_REQUESTS_CPU:-100m}"
 CERT_MANAGER_WEBHOOK_RESOURCE_REQUESTS_MEMORY="${CERT_MANAGER_WEBHOOK_RESOURCE_REQUESTS_MEMORY:-128Mi}"
-
 CERT_MANAGER_CAINJECTOR_RESOURCE_LIMITS_CPU="${CERT_MANAGER_CAINJECTOR_RESOURCE_LIMITS_CPU:-100m}"
 CERT_MANAGER_CAINJECTOR_RESOURCE_LIMITS_MEMORY="${CERT_MANAGER_CAINJECTOR_RESOURCE_LIMITS_MEMORY:-128Mi}"
 CERT_MANAGER_CAINJECTOR_RESOURCE_REQUESTS_CPU="${CERT_MANAGER_CAINJECTOR_RESOURCE_REQUESTS_CPU:-100m}"
@@ -63,21 +61,22 @@ install_helm() {
 
 install_cert_managers() {
   # check if cert-manager already installed
-  if helm status ${RELEASE} -n "${NAMESPACE}" &>/dev/null; then
+  if helm status ${RELEASE} -n "${CERT_MANAGER_KUBE_NAMESPACE}" &>/dev/null; then
     error "${RELEASE} already installed. Use helm remove it first"
   fi
   info "Install cert-manager, It might take a long time..."
   helm install ${RELEASE} ${CHART} \
     --debug \
     --version "${VERSION}" \
-    --namespace "${NAMESPACE}" \
+    --namespace "${CERT_MANAGER_KUBE_NAMESPACE}" \
     --create-namespace \
-    --set installCRDs='true' \
-    --set nodeSelector."cert-manager/node"="enable" \
-    --set-string resources.limits.cpu="${CERT_MANAGER_RESOURCE_LIMITS_CPU}" \
-    --set-string resources.limits.memory="${CERT_MANAGER_RESOURCE_LIMITS_MEMORY}" \
-    --set-string resources.requests.cpu="${CERT_MANAGER_RESOURCE_REQUESTS_CPU}" \
-    --set-string resources.requests.memory="${CERT_MANAGER_RESOURCE_REQUESTS_MEMORY}" \
+    --set installCRDs=true \
+    --set controller.nodeSelector."cert-manager/node"="enable" \
+    --set-string controller.resources.limits.cpu="${CERT_MANAGER_RESOURCE_LIMITS_CPU}" \
+    --set-string controller.resources.limits.memory="${CERT_MANAGER_RESOURCE_LIMITS_MEMORY}" \
+    --set-string controller.resources.requests.cpu="${CERT_MANAGER_RESOURCE_REQUESTS_CPU}" \
+    --set-string controller.resources.requests.memory="${CERT_MANAGER_RESOURCE_REQUESTS_MEMORY}" \
+    --set 'controller.extraArgs={--enable-certificate-owner-ref=true}' \
     --set webhook.nodeSelector."cert-manager/node"="enable" \
     --set-string webhook.resources.limits.cpu="${CERT_MANAGER_WEBHOOK_RESOURCE_LIMITS_CPU}" \
     --set-string webhook.resources.limits.memory="${CERT_MANAGER_WEBHOOK_RESOURCE_LIMITS_MEMORY}" \
@@ -88,7 +87,6 @@ install_cert_managers() {
     --set-string cainjector.resources.limits.memory="${CERT_MANAGER_CAINJECTOR_RESOURCE_LIMITS_MEMORY}" \
     --set-string cainjector.resources.requests.cpu="${CERT_MANAGER_CAINJECTOR_RESOURCE_REQUESTS_CPU}" \
     --set-string cainjector.resources.requests.memory="${CERT_MANAGER_CAINJECTOR_RESOURCE_REQUESTS_MEMORY}" \
-    --set 'extraArgs={--enable-certificate-owner-ref=true}' \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
@@ -98,11 +96,15 @@ install_cert_managers() {
 }
 
 init_helm_repo() {
-  helm repo add jetstack https://charts.jetstack.io &>/dev/null
-  info "Start update helm cert-manager repo"
-  if ! helm repo update jetstack 2>/dev/null; then
-    error "Helm update cert-manager repo error."
-  fi
+  info "Start add helm bitnami repo"
+  helm repo add bitnami https://charts.bitnami.com/bitnami &>/dev/null || {
+    error "Helm add bitnami repo error."
+  }
+
+  info "Start update helm bitnami repo"
+  helm repo update bitnami 2>/dev/null || {
+    error "Helm update bitnami repo error."
+  }
 }
 
 verify_supported() {
@@ -154,7 +156,7 @@ init_log() {
 #   namespace
 ############################################
 verify_installed() {
-  helm status "${RELEASE}" -n "${NAMESPACE}" | grep deployed &>/dev/null || {
+  helm status "${RELEASE}" -n "${CERT_MANAGER_KUBE_NAMESPACE}" | grep deployed &>/dev/null || {
     error "${RELEASE} installed fail, check log use helm and kubectl."
   }
 
