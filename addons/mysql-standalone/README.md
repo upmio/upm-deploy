@@ -1,6 +1,6 @@
 # 部署 MySQL 单机版
 
-本文档目标是指导安装 MySQL 单机版, MySQL版本为8.0.34。
+本文档目标是指导安装 MySQL 单机版, MySQL版本为`8.0.34`。
 
 ## 快速安装指南
 
@@ -14,13 +14,15 @@ MYSQL_USER_PWD：登录 MySQL 用户密码。
 
 MYSQL_STORAGECLASS_NAME：指定Storageclass名称, 使用 ```kubectl get storageclasses ```获取可用的 Storageclass 名称。
 
-MYSQL_PVC_SIZE_G：指定持久化卷的大小，单位为Gi。
+MYSQL_PVC_SIZE_G：指定持久化卷的大小，单位为`Gi`。
 
 MYSQL_NODE_NAMES：指定安装 MySQL pod 的节点名称，节点名称可以使用","作为分隔符，表示多个节点名称，安装程序会对节点进行label固定安装节点。
 
-MYSQL_PORT：指定安装 MySQL 端口，非必填项，默认值为3306。
+MYSQL_PORT：指定安装 MySQL 端口，非必填项，默认值为`3306`。
 
-MYSQL_KUBE_NAMESPACE：指定安装命名空间，非必填项，默认值为default。
+MYSQL_SERVICE_TYPE：指定服务入口类型，支持 `ClusterIP` 、`NodePort` ，非必填项，默认值为`ClusterIP`。
+
+MYSQL_KUBE_NAMESPACE：指定安装命名空间，非必填项，默认值为`default`。
 
 MYSQL_INITDB_CONFIGMAP: 指定数据库初始化的sql文件的configmap名称，非必填项，默认值为空。
 

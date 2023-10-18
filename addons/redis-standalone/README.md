@@ -10,7 +10,7 @@ REDIS_PWD：登录 Redis 登录密码。
 
 REDIS_NODE_NAMES：指定安装 Redis pod的节点名称，节点名称可以使用","作为分隔符，表示多个节点名称，安装程序会对节点进行label固定安装节点。
 
-REDIS_PORT：指定安装 redis 端口，非必填项，默认值为6379。
+REDIS_PORT：指定安装 redis 端口，非必填项，默认值为`6379`。
 
 REDIS_KUBE_NAMESPACE：指定安装命名空间，非必填项，默认值为`default`。
 
