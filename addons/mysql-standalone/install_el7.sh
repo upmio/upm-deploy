@@ -30,7 +30,7 @@
 readonly CHART="bitnami/mysql"
 readonly RELEASE="mysql"
 readonly TIME_OUT_SECOND="600s"
-readonly MYSQL_VERSION="8.0.34"
+readonly APP_VERSION="8.0.34"
 readonly VERSION="9.12.5"
 
 MYSQL_PORT="${MYSQL_PORT:-3306}"
@@ -87,7 +87,6 @@ install_mysql() {
     --create-namespace \
     --set-string initdbScriptsConfigMap="${MYSQL_INITDB_CONFIGMAP}" \
     --set image.debug=true \
-    --set-string image.tag="${MYSQL_VERSION}" \
     --set-string architecture="standalone" \
     --set-string primary.resources.limits.cpu="${MYSQL_RESOURCE_LIMITS_CPU}" \
     --set-string primary.resources.limits.memory="${MYSQL_RESOURCE_LIMITS_MEMORY}" \
@@ -209,7 +208,7 @@ verify_installed() {
 create_nodeport_service() {
   info "create nodeport service..."
   kubectl delete svc -n "${NAMESPACE}" mysql
-  export NAMESPACE MYSQL_VERSION VERSION MYSQL_PORT
+  export NAMESPACE APP_VERSION VERSION MYSQL_PORT
   curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/mysql-standalone/yaml/primary-nodeport-service.yaml | envsubst | kubectl apply -f - || {
     error "kubectl create nodeport service fail, check log use kubectl."
   }
