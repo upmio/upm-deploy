@@ -20,7 +20,7 @@ MYSQL_NODE_NAMES：指定安装 MySQL pod 的节点名称，节点名称可以�
 
 MYSQL_PORT：指定安装 MySQL 端口，非必填项，默认值为3306。
 
-MYSQL_NAMESPACE：指定安装命名空间，非必填项，默认值为default。
+MYSQL_KUBE_NAMESPACE：指定安装命名空间，非必填项，默认值为default。
 
 MYSQL_INITDB_CONFIGMAP: 指定数据库初始化的sql文件的configmap名称，非必填项，默认值为空。
 
@@ -31,7 +31,7 @@ export MYSQL_USER_PWD='password'
 export MYSQL_STORAGECLASS_NAME="openebs-lvmsc-hdd"
 export MYSQL_PVC_SIZE_G="50"
 export MYSQL_NODE_NAMES="db-node01"
-export MYSQL_NAMESPACE="upm-system"
+export MYSQL_KUBE_NAMESPACE="upm-system"
 ```
 
 ### 3. 运行安装脚本

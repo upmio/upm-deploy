@@ -34,7 +34,7 @@ readonly APP_VERSION="8.0.34"
 readonly VERSION="9.12.5"
 
 MYSQL_PORT="${MYSQL_PORT:-3306}"
-NAMESPACE="${MYSQL_NAMESPACE:-default}"
+MYSQL_KUBE_NAMESPACE="${MYSQL_KUBE_NAMESPACE:-default}"
 MYSQL_RESOURCE_LIMITS_CPU="${MYSQL_RESOURCE_LIMITS_CPU:-1000m}"
 MYSQL_RESOURCE_LIMITS_MEMORY="${MYSQL_RESOURCE_LIMITS_MEMORY:-2Gi}"
 MYSQL_RESOURCE_REQUESTS_CPU="${MYSQL_RESOURCE_REQUESTS_CPU:-1000m}"
@@ -76,14 +76,14 @@ install_helm() {
 
 install_mysql() {
   # check if mysql already installed
-  if helm status ${RELEASE} -n "${NAMESPACE}" &>/dev/null; then
+  if helm status ${RELEASE} -n "${MYSQL_KUBE_NAMESPACE}" &>/dev/null; then
     error "${RELEASE} already installed. Use helm remove it first"
   fi
   info "Install mysql, It might take a long time..."
   helm install ${RELEASE} ${CHART} \
     --debug \
     --version "${VERSION}" \
-    --namespace "${NAMESPACE}" \
+    --namespace "${MYSQL_KUBE_NAMESPACE}" \
     --create-namespace \
     --set-string initdbScriptsConfigMap="${MYSQL_INITDB_CONFIGMAP}" \
     --set image.debug=true \
@@ -198,7 +198,7 @@ init_log() {
 #   namespace
 ############################################
 verify_installed() {
-  helm status "${RELEASE}" -n "${NAMESPACE}" | grep deployed &>/dev/null || {
+  helm status "${RELEASE}" -n "${MYSQL_KUBE_NAMESPACE}" | grep deployed &>/dev/null || {
     error "${RELEASE} installed fail, check log use helm and kubectl."
   }
 
@@ -207,8 +207,8 @@ verify_installed() {
 
 create_nodeport_service() {
   info "create nodeport service..."
-  kubectl delete svc -n "${NAMESPACE}" mysql
-  export NAMESPACE APP_VERSION VERSION MYSQL_PORT
+  kubectl delete svc -n "${MYSQL_KUBE_NAMESPACE}" mysql
+  export MYSQL_KUBE_NAMESPACE APP_VERSION VERSION MYSQL_PORT
   curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/mysql-standalone/yaml/primary-nodeport-service.yaml | envsubst | kubectl apply -f - || {
     error "kubectl create nodeport service fail, check log use kubectl."
   }

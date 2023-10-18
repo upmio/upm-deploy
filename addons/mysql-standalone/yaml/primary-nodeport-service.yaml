@@ -3,7 +3,7 @@ kind: Service
 metadata:
   annotations:
     meta.helm.sh/release-name: mysql
-    meta.helm.sh/release-namespace: "${NAMESPACE}"
+    meta.helm.sh/release-namespace: "${MYSQL_KUBE_NAMESPACE}"
   labels:
     app.kubernetes.io/component: primary
     app.kubernetes.io/instance: mysql
@@ -12,7 +12,7 @@ metadata:
     app.kubernetes.io/version: "${APP_VERSION}"
     helm.sh/chart: "mysql-${VERSION}"
   name: mysql
-  namespace: "${NAMESPACE}"
+  namespace: "${MYSQL_KUBE_NAMESPACE}"
 spec:
   externalTrafficPolicy: Cluster
   internalTrafficPolicy: Cluster
