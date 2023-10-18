@@ -8,7 +8,7 @@
 
 CERT_MANAGER_NODE_NAMES：指定安装cert-manager pod的节点名称，节点名称可以使用","作为分隔符，表示多个节点名称，安装程序会对节点进行label固定安装节点。
 
-CERT_MANAGER_KUBE_NAMESPACE：指定安装命名空间，非必填项，默认值为cert-manager。
+CERT_MANAGER_KUBE_NAMESPACE：指定安装命名空间，非必填项，默认值为`cert-manager`。
 
 ```console
 export CERT_MANAGER_NODE_NAMES="master01,master02"

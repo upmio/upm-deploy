@@ -4,7 +4,7 @@
 
 ## 快速安装指南
 
-openebs-lvmlocalpv helm chart版本为1.3.0
+openebs-lvmlocalpv helm chart版本为`1.3.0`
 
 ### 1. 创建VolumeGroup
 
@@ -29,7 +29,7 @@ OPENEBS_STORAGECLASS_NAME：指定Storageclass名称。
 
 OPENEBS_VG_NAME：指定Storageclass对应的VolumeGroup名称。
 
-OPENEBS_KUBE_NAMESPACE：指定安装命名空间，非必填项，默认值为openebs。
+OPENEBS_KUBE_NAMESPACE：指定安装命名空间，非必填项，默认值为`openebs`。
 
 ```console
 export OPENEBS_CONTROLLER_NODE_NAMES="openebs-control-plan01"
