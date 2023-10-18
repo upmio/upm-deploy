@@ -31,7 +31,7 @@ readonly CHART="bitnami/mysql"
 readonly RELEASE="mysql"
 readonly TIME_OUT_SECOND="600s"
 readonly MYSQL_VERSION="8.0.34"
-readonly VERSION="9.12.4"
+readonly VERSION="9.12.5"
 
 MYSQL_PORT="${MYSQL_PORT:-3306}"
 NAMESPACE="${MYSQL_NAMESPACE:-default}"
