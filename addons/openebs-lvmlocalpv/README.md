@@ -29,7 +29,7 @@ OPENEBS_STORAGECLASS_NAME：指定Storageclass名称。
 
 OPENEBS_VG_NAME：指定Storageclass对应的VolumeGroup名称。
 
-OPENEBS_NAMESPACE：指定安装命名空间，非必填项，默认值为openebs。
+OPENEBS_KUBE_NAMESPACE：指定安装命名空间，非必填项，默认值为openebs。
 
 ```console
 export OPENEBS_CONTROLLER_NODE_NAMES="openebs-control-plan01"
@@ -53,14 +53,14 @@ curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/openebs
 等几分钟。 如果所有 openebs-lvmlocalpv  pod 都在运行，则 openebs-lvmlocalpv 将成功安装。
 
 ```console
-kubectl get --namespace openebs pods -w
+kubectl get pods -n openebs -w
 ```
 
 ## 使用 Helm 卸载 Charts
 
 ```console
 # Helm
-helm uninstall openebs-lvmlocalpv --namespace openebs
+helm uninstall openebs-lvmlocalpv -n openebs
 
 # clean storageClass
 kubectl delete storageclasses "${OPENEBS_STORAGECLASS_NAME}"

@@ -24,7 +24,7 @@ readonly RELEASE="openebs-lvmlocalpv"
 readonly TIME_OUT_SECOND="600s"
 readonly VERSION="1.3.0"
 
-NAMESPACE="${OPENEBS_NAMESPACE:-openebs}"
+OPENEBS_KUBE_NAMESPACE="${OPENEBS_KUBE_NAMESPACE:-openebs}"
 OPENEBS_CONTROLLER_RESOURCE_LIMITS_CPU="${OPENEBS_CONTROLLER_RESOURCE_LIMITS_CPU:-500m}"
 OPENEBS_CONTROLLER_RESOURCE_LIMITS_MEMORY="${OPENEBS_CONTROLLER_RESOURCE_LIMITS_MEMORY:-512Mi}"
 OPENEBS_CONTROLLER_RESOURCE_REQUESTS_CPU="${OPENEBS_CONTROLLER_RESOURCE_REQUESTS_CPU:-500m}"
@@ -69,14 +69,14 @@ install_helm() {
 
 install_lvmlocalpv() {
   # check if openebs-lvmlocalpv already installed
-  if helm status ${RELEASE} -n "${NAMESPACE}" &>/dev/null; then
+  if helm status ${RELEASE} -n "${OPENEBS_KUBE_NAMESPACE}" &>/dev/null; then
     error "${RELEASE} already installed. Use helm remove it first"
   fi
   info "Install openebs-lvmlocalpv, It might take a long time..."
   helm install ${RELEASE} ${CHART} \
     --debug \
     --version "${VERSION}" \
-    --namespace "${NAMESPACE}" \
+    --namespace "${OPENEBS_KUBE_NAMESPACE}" \
     --create-namespace \
     --set lvmController.nodeSelector."openebs\.io/control-plane"="enable" \
     --set-string lvmController.resources.limits.cpu="${OPENEBS_CONTROLLER_RESOURCE_LIMITS_CPU}" \
@@ -175,7 +175,7 @@ init_log() {
 #   namespace
 ############################################
 verify_installed() {
-  helm status "${RELEASE}" -n "${NAMESPACE}" | grep deployed &>/dev/null || {
+  helm status "${RELEASE}" -n "${OPENEBS_KUBE_NAMESPACE}" | grep deployed &>/dev/null || {
     error "${RELEASE} installed fail, check log use helm and kubectl."
   }
 
