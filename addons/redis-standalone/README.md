@@ -12,12 +12,12 @@ REDIS_NODE_NAMES：指定安装 Redis pod的节点名称，节点名称可以使
 
 REDIS_PORT：指定安装 redis 端口，非必填项，默认值为6379。
 
-REDIS_NAMESPACE：指定安装命名空间，非必填项，默认值为default。
+REDIS_KUBE_NAMESPACE：指定安装命名空间，非必填项，默认值为default。
 
 ```console
 export REDIS_PWD='password'
 export REDIS_NODE_NAMES="redis-node01"
-export REDIS_NAMESPACE="upm-system"
+export REDIS_KUBE_NAMESPACE="upm-system"
 ```
 
 ### 3. 运行安装脚本
