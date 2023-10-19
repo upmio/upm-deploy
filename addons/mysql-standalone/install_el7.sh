@@ -88,15 +88,16 @@ install_mysql() {
     --set-string initdbScriptsConfigMap="${MYSQL_INITDB_CONFIGMAP}" \
     --set image.debug=true \
     --set-string architecture="standalone" \
-    --set-string primary.resources.limits.cpu="${MYSQL_RESOURCE_LIMITS_CPU}" \
-    --set-string primary.resources.limits.memory="${MYSQL_RESOURCE_LIMITS_MEMORY}" \
-    --set-string primary.resources.requests.cpu="${MYSQL_RESOURCE_REQUESTS_CPU}" \
-    --set-string primary.resources.requests.memory="${MYSQL_RESOURCE_REQUESTS_MEMORY}" \
     --set-string auth.rootPassword="${MYSQL_PWD}" \
     --set-string auth.username="${MYSQL_USER_NAME}" \
     --set-string auth.password="${MYSQL_USER_PWD}" \
     --set primary.service.type="${MYSQL_SERVICE_TYPE}" \
     --set primary.service.ports.mysql="${MYSQL_PORT}" \
+    --set-string primary.customStartupProbe.extraFlags="--max-connect-errors=1000 --max_connections=10000" \
+    --set-string primary.resources.limits.cpu="${MYSQL_RESOURCE_LIMITS_CPU}" \
+    --set-string primary.resources.limits.memory="${MYSQL_RESOURCE_LIMITS_MEMORY}" \
+    --set-string primary.resources.requests.cpu="${MYSQL_RESOURCE_REQUESTS_CPU}" \
+    --set-string primary.resources.requests.memory="${MYSQL_RESOURCE_REQUESTS_MEMORY}" \
     --set-string primary.persistence.storageClass="${MYSQL_STORAGECLASS_NAME}" \
     --set-string primary.persistence.size="${MYSQL_PVC_SIZE_G}Gi" \
     --set-string primary.nodeAffinityPreset.type="hard" \
