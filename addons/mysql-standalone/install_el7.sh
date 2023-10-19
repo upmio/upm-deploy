@@ -93,7 +93,7 @@ install_mysql() {
     --set-string auth.password="${MYSQL_USER_PWD}" \
     --set primary.service.type="${MYSQL_SERVICE_TYPE}" \
     --set primary.service.ports.mysql="${MYSQL_PORT}" \
-    --set-string primary.customStartupProbe.extraFlags="--max-connect-errors=1000 --max_connections=10000" \
+    --set-string primary.extraFlags="--max-connect-errors=1000 --max_connections=10000" \
     --set-string primary.resources.limits.cpu="${MYSQL_RESOURCE_LIMITS_CPU}" \
     --set-string primary.resources.limits.memory="${MYSQL_RESOURCE_LIMITS_MEMORY}" \
     --set-string primary.resources.requests.cpu="${MYSQL_RESOURCE_REQUESTS_CPU}" \
