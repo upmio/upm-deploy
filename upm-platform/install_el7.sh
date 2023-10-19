@@ -120,7 +120,15 @@ install_cert_managers() {
     --set nacos.port="${PLATFORM_NACOS_PORT}" \
     --set-string nacos.username="${PLATFORM_NACOS_USER}" \
     --set-string nacos.password="${PLATFORM_NACOS_PWD}" \
-    --set-string service.type="${PLATFORM_SERVICE_TYPE}" \
+    --set-string nginx.service.type="${PLATFORM_SERVICE_TYPE}" \
+    --set nginx.replicaCount="${PLATFORM_NODE_COUNT}" \
+    --set-string nginx.nodeAffinityPreset.type="hard" \
+    --set-string nginx.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string nginx.nodeAffinityPreset.values='{enable}' \
+    --set-string nginx.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
+    --set-string nginx.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
+    --set-string nginx.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
+    --set-string nginx.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
     --set-string ui.image.tag="${UI_VERSION}" \
     --set ui.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set-string ui.nodeAffinityPreset.type="hard" \
