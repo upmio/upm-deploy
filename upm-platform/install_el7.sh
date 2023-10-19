@@ -112,12 +112,12 @@ create_kubeconf_configmap() {
   info "create kubeconf configmap successful!"
 }
 
-install_cert_managers() {
-  # check if cert-manager already installed
+install_upm_platform() {
+  # check if upm-platform already installed
   if helm status ${RELEASE} -n "${PLATFORM_KUBE_NAMESPACE}" &>/dev/null; then
     error "${RELEASE} already installed. Use helm remove it first"
   fi
-  info "Install cert-manager, It might take a long time..."
+  info "Install upm-platform, It might take a long time..."
   helm install ${RELEASE} ${CHART} \
     --debug \
     --version "${VERSION}" \
