@@ -15,7 +15,7 @@ function log() {
 
 # check mysql connection
 function check_conn() {
-  mysql -h"${MYSQL_HOST}" -u"${MYSQL_USER}" -p"${MYSQL_PASSWD}" -P"${MYSQL_PORT}" "${MYSQL_DB}" -e "select 1;" >/dev/null
+  mysql -h"${MYSQL_HOST}" -u"${MYSQL_USER}" -p"${MYSQL_PASSWD}" -P"${MYSQL_PORT}" -e "select 1;" >/dev/null
   return $?
 }
 
