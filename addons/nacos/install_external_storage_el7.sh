@@ -122,6 +122,7 @@ install_nacos() {
     --set-string mysql.external.mysqlMasterPort="${NACOS_MYSQL_PORT}" \
     --set-string mysql.external.mysqlMasterUser="${NACOS_MYSQL_USER}" \
     --set-string mysql.external.mysqlMasterPassword="${NACOS_MYSQL_PWD}" \
+    --set-string mysql.external.mysqlDatabase="nacos" \
     --set-string initDB.image.repository="dbscale/nacos-server-initdb" \
     --set-string initDB.image.tag="${NACOS_VERSION}" \
     --timeout $TIME_OUT_SECOND \

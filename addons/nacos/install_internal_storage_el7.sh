@@ -111,6 +111,7 @@ install_nacos() {
     --set-string extraEnvVars[5].name="JAVA_OPT" \
     --set-string extraEnvVars[5].value="-Dnacos.core.auth.server.identity.key=nacos -Dnacos.core.auth.server.identity.value=nacos -Dnacos.core.auth.plugin.nacos.token.secret.key=SecretKey012345678901234567890123456789012345678901234567890123456789" \
     --set-string mysql.architecture="standalone" \
+    --set-string mysql.auth.database="nacos" \
     --set-string mysql.auth.rootPassword="${NACOS_MYSQL_PWD}" \
     --set-string mysql.auth.password="${NACOS_MYSQL_PWD}" \
     --set-string mysql.primary.resources.limits.cpu="${NACOS_MYSQL_RESOURCE_LIMITS_CPU}" \

@@ -56,20 +56,6 @@ kubectl get -n nacos pods -w
 
 **注意⚠️：安装完成后nacos页面登陆用户名为 `nacos` 登陆密码为 `nacos`。**
 
-## 使用 Helm 卸载 Charts
-
-```console
-# Helm
-helm uninstall nacos -n nacos
-
-# clean pvc
-kubectl delete pvc -n nacos data-storage-nacos-0
-```
-
-这将删除与 Charts 关联的所有 Kubernetes 组件并删除发布。
-
-_请参阅 [helm uninstall](https://helm.sh/docs/helm/helm_uninstall/) 获取命令文档。_
-
 ## 内置数据库-快速安装 nacos
 
 ### 1. 设置必要的环境变量
