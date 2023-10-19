@@ -14,13 +14,13 @@ NACOS_CONTROLLER_NODE_NAMES：指定安装controller pod的节点名称，节点
 
 NACOS_STORAGECLASS_NAME：指定Storageclass名称。
 
-NACOS_MYSQL_HOST：指定MySQL服务链接地址。
+NACOS_MYSQL_HOST：外置MySQL数据库主机地址。
 
-NACOS_MYSQL_PORT：指定MySQL服务端口。
+NACOS_MYSQL_PORT：外置MySQL数据库端口。
 
-NACOS_MYSQL_USER：指定MySQL服务用户。
+NACOS_MYSQL_USER：外置MySQL数据库登录用户名。
 
-NACOS_MYSQL_PWD：指定MySQL服务用户密码。
+NACOS_MYSQL_PWD：外置MySQL数据库登录密码。
 
 NACOS_KUBE_NAMESPACE：指定安装kubernetes的命名空间，非必填项，默认值为`nacos`。
 
