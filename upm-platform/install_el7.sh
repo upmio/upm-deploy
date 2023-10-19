@@ -38,17 +38,21 @@
 #
 #        export PLATFORM_NACOS_PWD="nacos"
 #
-# 9. PLATFORM_REDIS_HOST MUST be set as environment variable, for an example:
+# 10. PLATFORM_REDIS_HOST MUST be set as environment variable, for an example:
 #
 #        export PLATFORM_REDIS_HOST="redis-master"
 #
-# 9. PLATFORM_REDIS_PORT MUST be set as environment variable, for an example:
+# 11. PLATFORM_REDIS_PORT MUST be set as environment variable, for an example:
 #
 #        export PLATFORM_REDIS_PORT="6379"
 #
-# 9. PLATFORM_REDIS_PWD MUST be set as environment variable, for an example:
+# 12. PLATFORM_REDIS_PWD MUST be set as environment variable, for an example:
 #
 #        export PLATFORM_REDIS_PWD="password"
+#
+# 13. PLATFORM_CLUSTERPEDIA_KUBECONF_PATH MUST be set as environment variable, for an example:
+#
+#        export PLATFORM_CLUSTERPEDIA_KUBECONF_PATH="/tmp/kubeconfig"
 #
 
 readonly CHART="upm-charts/upm-platform"
@@ -96,6 +100,16 @@ install_helm() {
     error "Fail to get helm when running get_helm.sh"
   fi
   info "Helm install completed"
+}
+
+create_kubeconf_configmap() {
+  info "create kubeconf configmap..."
+
+  kubectl create configmap upm-kubernetes -n "${PLATFORM_KUBE_NAMESPACE}" --from-file=config="${PLATFORM_CLUSTERPEDIA_KUBECONF_PATH}" || {
+    echo "kubectl create configmap failed !"
+  }
+
+  info "create kubeconf configmap successful!"
 }
 
 install_cert_managers() {
@@ -269,18 +283,6 @@ verify_supported() {
     error "PLATFORM_MYSQL_USER MUST set in environment variable."
   fi
 
-  if [[ -z "${PLATFORM_REDIS_HOST}" ]]; then
-    error "PLATFORM_REDIS_HOST MUST set in environment variable."
-  fi
-
-  if [[ -z "${PLATFORM_REDIS_PORT}" ]]; then
-    error "PLATFORM_REDIS_PORT MUST set in environment variable."
-  fi
-
-  if [[ -z "${PLATFORM_REDIS_PWD}" ]]; then
-    error "PLATFORM_REDIS_USER MUST set in environment variable."
-  fi
-
   if [[ -z "${PLATFORM_NACOS_HOST}" ]]; then
     error "PLATFORM_NACOS_HOST MUST set in environment variable."
   fi
@@ -295,6 +297,22 @@ verify_supported() {
 
   if [[ -z "${PLATFORM_NACOS_PWD}" ]]; then
     error "PLATFORM_NACOS_USER MUST set in environment variable."
+  fi
+
+  if [[ -z "${PLATFORM_REDIS_HOST}" ]]; then
+    error "PLATFORM_REDIS_HOST MUST set in environment variable."
+  fi
+
+  if [[ -z "${PLATFORM_REDIS_PORT}" ]]; then
+    error "PLATFORM_REDIS_PORT MUST set in environment variable."
+  fi
+
+  if [[ -z "${PLATFORM_REDIS_PWD}" ]]; then
+    error "PLATFORM_REDIS_USER MUST set in environment variable."
+  fi
+
+  if [[ -z "${PLATFORM_CLUSTERPEDIA_KUBECONF_PATH}" ]]; then
+    error "PLATFORM_CLUSTERPEDIA_KUBECONF_PATH MUST set in environment variable."
   fi
 
   if [[ "${HAS_CURL}" != "true" ]]; then
@@ -336,6 +354,7 @@ main() {
   init_log
   verify_supported
   init_helm_repo
+  create_kubeconf_configmap
   install_upm_platform
   verify_installed
 }
