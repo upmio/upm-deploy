@@ -6,7 +6,7 @@
 
 ### 1. 确定登录kubernetes 
 
-使用 kubectl 确定目前连接的集群是 Parent Cluster。
+使用 kubectl 确定目前连接的集群信息。
 
 ```console
 kubectl cluster-info
@@ -26,7 +26,7 @@ CLUSTERPEDIA_MYSQL_USER：外置数据库登录 MySQL 用户名。
 
 CLUSTERPEDIA_MYSQL_PASSWORD：外置数据库登录 MySQL 密码。
 
-CLUSTERPEDIA_NAMESPACE：指定安装命名空间，非必填项，默认值为clusterpedia。
+CLUSTERPEDIA_KUBE_NAMESPACE：指定安装命名空间，非必填项，默认值为`clusterpedia`。
 
 ```console
 export CLUSTERPEDIA_CONTROLLER_NODE_NAMES="clusterpedia-control-plan01"
@@ -52,14 +52,14 @@ curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/cluster
 等待几分钟。 如果所有 clusterpedia pod 都在运行，则 clusterpedia 将成功安装。
 
 ```console
-kubectl get --namespace clusterpedia pods -w
+kubectl get pods -n clusterpedia  -w
 ```
 
 ## 内置数据库-快速安装 clusterpedia
 
 ### 1. 确定登录kubernetes
 
-使用 kubectl 确定目前连接的集群是 Child Cluster。
+使用 kubectl 确定目前连接的集群信息。
 
 ```console
 kubectl cluster-info
@@ -75,7 +75,7 @@ CLUSTERPEDIA_MYSQL_PASSWORD：内置数据库登录 MySQL 密码。
 
 CLUSTERPEDIA_MYSQL_NODE：内置数据库所在节点名称。
 
-CLUSTERPEDIA_NAMESPACE：指定安装命名空间，非必填项，默认值为clusterpedia。
+CLUSTERPEDIA_KUBE_NAMESPACE：指定安装命名空间，非必填项，默认值为`clusterpedia`。
 
 ```console
 export CLUSTERPEDIA_CONTROLLER_NODE_NAMES="clusterpedia-control-plan01"
@@ -106,7 +106,7 @@ kubectl get -n clusterpedia pods -w
 
 ```console
 # Helm
-helm uninstall -n clusterpedia clusterpedia
+helm uninstall clusterpedia -n clusterpedia
 # clean pvc
 kubectl delete pvc -n clusterpedia data-clusterpedia-mysql-0
 ```
@@ -119,9 +119,9 @@ _请参阅 [helm uninstall](https://helm.sh/docs/helm/helm_uninstall/) 获取命
 
 Clusterpedia 使用自定义资源 PediaCluster 资源来代表接入的集群
 
-用户使用kube config 方式来配置接入的集群。 通过直接配置 base64 编码的 kube config 到 kubeconfig 字段用于集群连接和验证
+用户使用 kubeconfig 方式来配置接入的集群。 通过直接配置 base64 编码的 kubeconfig 到 `kubeconfig` 字段用于集群连接和验证
 
-首先需要将接入集群的 kube config base64 编码。
+首先需要将接入集群的 kubeconfig base64 编码。
 ```bash
 # mac
 base64 ~/.kube/config
@@ -132,4 +132,5 @@ base64 -w 0 ~/.kube/config
 
 将 base64 后的内容设置到 PediaCluster 的 spec.kubeconfig 中即可，并且手动额外配置 spec.apiserver 字段，其他验证字段都不需要填写。
 
-[PediaCluster spec 样例文件](https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/clusterpedia/yaml/pediacluster-example.yaml)
+[管理集群 spec 样例文件](https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/clusterpedia/yaml/example/manager-cluster.yaml)
+[工作负载集群 spec 样例文件](https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/clusterpedia/yaml/example/workload-cluster.yaml)

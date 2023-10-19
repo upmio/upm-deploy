@@ -4,7 +4,7 @@ metadata:
   labels:
     upm.io/owner: "upm"
     upm.io/manager: "true"
-  name: manager-cluster-example
+  name: manager-cluster
 spec:
   apiserver: ""
   kubeconfig: ""

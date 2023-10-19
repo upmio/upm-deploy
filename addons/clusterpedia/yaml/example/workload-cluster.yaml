@@ -4,7 +4,7 @@ metadata:
   labels:
     upm.io/owner: "upm"
     upm.io/workload: "true"
-  name: workload-cluster-example
+  name: workload-cluster
 spec:
   apiserver: ""
   kubeconfig: ""

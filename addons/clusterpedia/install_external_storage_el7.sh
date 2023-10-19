@@ -32,7 +32,7 @@ readonly RELEASE="clusterpedia"
 readonly TIME_OUT_SECOND="600s"
 readonly VERSION="1.9.1"
 
-NAMESPACE="${CLUSTERPEDIA_NAMESPACE:-clusterpedia}"
+CLUSTERPEDIA_KUBE_NAMESPACE="${CLUSTERPEDIA_KUBE_NAMESPACE:-clusterpedia}"
 CLUSTERPEDIA_MYSQL_DATABASE="${CLUSTERPEDIA_MYSQL_DATABASE:-clusterpedia}"
 CLUSTERPEDIA_APISERVER_RESOURCE_LIMITS_CPU="${CLUSTERPEDIA_APISERVER_RESOURCE_LIMITS_CPU:-1000m}"
 CLUSTERPEDIA_APISERVER_RESOURCE_LIMITS_MEMORY="${CLUSTERPEDIA_APISERVER_RESOURCE_LIMITS_MEMORY:-2Gi}"
@@ -79,14 +79,14 @@ install_helm() {
 install_clusterpedia() {
   info "Install clusterpedia..."
   # check if clusterpedia already installed
-  if helm status "${RELEASE}" -n "${NAMESPACE}" &>/dev/null; then
+  if helm status "${RELEASE}" -n "${CLUSTERPEDIA_KUBE_NAMESPACE}" &>/dev/null; then
     error "${RELEASE} already installed. Use helm remove it first"
   fi
   info "Install ${RELEASE}, It might take a long time..."
   helm install "${RELEASE}" "${CHART}" \
     --debug \
     --version "${VERSION}" \
-    --namespace "${NAMESPACE}" \
+    --namespace "${CLUSTERPEDIA_KUBE_NAMESPACE}" \
     --create-namespace \
     --set installCRDs=true \
     --set postgresql.enabled=false \
@@ -216,7 +216,7 @@ init_log() {
 #   namespace
 ############################################
 verify_installed() {
-  helm status "${RELEASE}" -n "${NAMESPACE}" | grep deployed &>/dev/null || {
+  helm status "${RELEASE}" -n "${CLUSTERPEDIA_KUBE_NAMESPACE}" | grep deployed &>/dev/null || {
     error "${RELEASE} installed fail, check log use helm and kubectl."
   }
 
