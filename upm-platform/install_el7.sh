@@ -64,6 +64,10 @@ readonly API_VERSION="dev-c62a23df"
 
 PLATFORM_KUBE_NAMESPACE="${PLATFORM_KUBE_NAMESPACE:-upm-system}"
 PLATFORM_SERVICE_TYPE="${PLATFORM_SERVICE_TYPE:-ClusterIP}"
+PLATFORM_NGINX_RESOURCE_LIMITS_CPU="${REDIS_RESOURCE_LIMITS_CPU:-1000m}"
+PLATFORM_NGINX_RESOURCE_LIMITS_MEMORY="${REDIS_RESOURCE_LIMITS_MEMORY:-2Gi}"
+PLATFORM_NGINX_RESOURCE_REQUESTS_CPU="${REDIS_RESOURCE_REQUESTS_CPU:-1000m}"
+PLATFORM_NGINX_RESOURCE_REQUESTS_MEMORY="${REDIS_RESOURCE_REQUESTS_MEMORY:-2Gi}"
 PLATFORM_RESOURCE_LIMITS_CPU="${REDIS_RESOURCE_LIMITS_CPU:-500m}"
 PLATFORM_RESOURCE_LIMITS_MEMORY="${REDIS_RESOURCE_LIMITS_MEMORY:-2Gi}"
 PLATFORM_RESOURCE_REQUESTS_CPU="${REDIS_RESOURCE_REQUESTS_CPU:-500m}"
@@ -139,10 +143,10 @@ install_upm_platform() {
     --set-string nginx.nodeAffinityPreset.type="hard" \
     --set-string nginx.nodeAffinityPreset.key="upm\.platform\.node" \
     --set-string nginx.nodeAffinityPreset.values='{enable}' \
-    --set-string nginx.resources.limits.cpu="1000m" \
-    --set-string nginx.resources.limits.memory="2Gi" \
-    --set-string nginx.resources.requests.cpu="1000m" \
-    --set-string nginx.resources.requests.memory="2Gi" \
+    --set-string nginx.resources.limits.cpu="${PLATFORM_NGINX_RESOURCE_LIMITS_CPU}" \
+    --set-string nginx.resources.limits.memory="${PLATFORM_NGINX_RESOURCE_LIMITS_MEMORY}" \
+    --set-string nginx.resources.requests.cpu="${PLATFORM_NGINX_RESOURCE_REQUESTS_CPU}" \
+    --set-string nginx.resources.requests.memory="${PLATFORM_NGINX_RESOURCE_REQUESTS_MEMORY}" \
     --set-string ui.image.tag="${UI_VERSION}" \
     --set ui.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set-string ui.nodeAffinityPreset.type="hard" \
