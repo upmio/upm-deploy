@@ -1,0 +1,13 @@
+apiVersion: v1
+data:
+  initdb.sql: |-
+    CREATE USER IF NOT EXISTS 'nacos'@'%' IDENTIFIED BY 'password';
+    GRANT ALL ON nacos.* TO 'nacos'@'%';
+    CREATE USER IF NOT EXISTS 'clusterpedia'@'%' IDENTIFIED BY 'password';
+    GRANT ALL ON clusterpedia.* TO 'clusterpedia'@'%';
+    CREATE USER IF NOT EXISTS 'upm'@'%' IDENTIFIED BY 'password';
+    GRANT ALL ON `upm_%`.* TO 'upm'@'%';
+kind: ConfigMap
+metadata:
+  name: mysql-initdb-sql
+  namespace: upm-system
