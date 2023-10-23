@@ -12,6 +12,7 @@ readonly RELEASE="upm-engine"
 readonly TIME_OUT_SECOND="600s"
 readonly VERSION="1.1.0"
 readonly TESSERACT_VERSION="dev-ce4f7db5"
+readonly TESSERACT_AGENT_VERSION="dev-93796329"
 readonly SCEPTER_VERSION="dev-8e75ea5a"
 readonly GAUNTLET_VERSION="dev-25c22709"
 readonly TEMPLATE_VERSION="dev-d97237bb"
@@ -69,6 +70,7 @@ install_upm_engine() {
     --set tesseract.crds.enabled=true \
     --set-string configmaps.image.tag="${TEMPLATE_VERSION}" \
     --set-string tesseract.image.tag="${TESSERACT_VERSION}" \
+    --set-string tesseract.agent.image.tag="${TESSERACT_AGENT_VERSION}" \
     --set tesseract.replicaCount="${ENGINE_NODE_COUNT}" \
     --set-string tesseract.nodeAffinityPreset.type="hard" \
     --set-string tesseract.nodeAffinityPreset.key="upm\.engine\.node" \
