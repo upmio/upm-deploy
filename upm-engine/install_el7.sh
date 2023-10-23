@@ -66,6 +66,7 @@ install_upm_engine() {
     --version "${VERSION}" \
     --namespace "${ENGINE_KUBE_NAMESPACE}" \
     --create-namespace \
+    --set tesseract.crds.enabled=true \
     --set-string configmaps.image.tag="${TEMPLATE_VERSION}" \
     --set-string tesseract.image.tag="${TESSERACT_VERSION}" \
     --set tesseract.replicaCount="${ENGINE_NODE_COUNT}" \
@@ -76,6 +77,7 @@ install_upm_engine() {
     --set-string tesseract.resources.limits.memory="${ENGINE_RESOURCE_LIMITS_MEMORY}" \
     --set-string tesseract.resources.requests.cpu="${ENGINE_RESOURCE_REQUESTS_CPU}" \
     --set-string tesseract.resources.requests.memory="${ENGINE_RESOURCE_REQUESTS_MEMORY}" \
+    --set scepter.crds.enabled=true \
     --set-string scepter.image.tag="${SCEPTER_VERSION}" \
     --set scepter.replicaCount="${ENGINE_NODE_COUNT}" \
     --set-string scepter.nodeAffinityPreset.type="hard" \
@@ -85,6 +87,7 @@ install_upm_engine() {
     --set-string scepter.resources.limits.memory="${ENGINE_RESOURCE_LIMITS_MEMORY}" \
     --set-string scepter.resources.requests.cpu="${ENGINE_RESOURCE_REQUESTS_CPU}" \
     --set-string scepter.resources.requests.memory="${ENGINE_RESOURCE_REQUESTS_MEMORY}" \
+    --set gauntlet.crds.enabled=true \
     --set-string gauntlet.image.tag="${GAUNTLET_VERSION}" \
     --set gauntlet.replicaCount="${ENGINE_NODE_COUNT}" \
     --set-string gauntlet.nodeAffinityPreset.type="hard" \
