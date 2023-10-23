@@ -84,9 +84,11 @@ install_clusterpedia() {
     --set installCRDs=true \
     --set postgresql.enabled=false \
     --set mysql.enabled=true \
-    --set mysql.auth.password="${CLUSTERPEDIA_MYSQL_PASSWORD}" \
-    --set mysql.auth.database="${CLUSTERPEDIA_MYSQL_DATABASE}" \
-    --set persistenceMatchNode="${CLUSTERPEDIA_MYSQL_NODE}" \
+    --set-string mysql.image.repository="bitnami/mysql" \
+    --set-string mysql.image.tag="8.0.34-debian-11-r75" \
+    --set-string mysql.auth.password="${CLUSTERPEDIA_MYSQL_PASSWORD}" \
+    --set-string mysql.auth.database="${CLUSTERPEDIA_MYSQL_DATABASE}" \
+    --set-string persistenceMatchNode="${CLUSTERPEDIA_MYSQL_NODE}" \
     --set controllerManager.replicaCount="${CLUSTERPEDIA_CONTROLLER_NODE_COUNT}" \
     --set controllerManager.nodeSelector."clusterpedia\.io/control-plane"="enable" \
     --set apiserver.replicaCount="${CLUSTERPEDIA_CONTROLLER_NODE_COUNT}" \
