@@ -6,20 +6,19 @@
 
 ### 1. 设置必要的环境变量
 
-REDIS_PWD：登录 Redis 登录密码。
+* REDIS_PWD：**必填项**，登录 Redis 登录密码。
+* REDIS_NODE_NAMES：**必填项**，指定安装 Redis pod的节点名称，节点名称可以使用","作为分隔符，表示多个节点名称，会对节点进行label设置`redis.standalone.node=true`。
+* REDIS_PORT：**非必填项**，指定安装 redis 端口，非必填项，默认值为`6379`。
+* REDIS_KUBE_NAMESPACE：**非必填项**，指定安装命名空间，非必填项，默认值为`default`。
+* REDIS_SERVICE_TYPE：**非必填项**，指定服务入口类型，支持 `ClusterIP` 、`NodePort` ，默认值为`ClusterIP`。
+* REDIS_RESOURCE_LIMITS: **非必填项**，指定服务的CPU和内存限制，值范围：0-64,`0`表示不限制，大于`0`表示对应内存的大小（单位Gi），CPU数量自动计算， **非必填项**，默认值为`1`。
 
-REDIS_NODE_NAMES：指定安装 Redis pod的节点名称，节点名称可以使用","作为分隔符，表示多个节点名称，安装程序会对节点进行label固定安装节点。
-
-REDIS_PORT：指定安装 redis 端口，非必填项，默认值为`6379`。
-
-REDIS_KUBE_NAMESPACE：指定安装命名空间，非必填项，默认值为`default`。
-
-REDIS_SERVICE_TYPE：指定服务入口类型，支持 `ClusterIP` 、`NodePort` ，非必填项，默认值为`ClusterIP`。
-
+#### 设置环境命令样例如下：
 ```console
 export REDIS_PWD='password'
 export REDIS_NODE_NAMES="redis-node01"
 export REDIS_KUBE_NAMESPACE="upm-system"
+export REDIS_RESOURCE_LIMITS=0
 ```
 
 ### 3. 运行安装脚本
