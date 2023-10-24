@@ -14,8 +14,10 @@
 readonly CHART="bitnami/redis"
 readonly RELEASE="redis"
 readonly TIME_OUT_SECOND="600s"
-readonly VERSION="18.1.5"
+readonly CHART_VERSION="18.1.5"
 
+OFFLINE_INSTALL="${INSTALL_MODE:-false}"
+REDIS_CHART_DIR="${REDIS_CHART_DIR:-./redis}"
 REDIS_SERVICE_TYPE="${REDIS_SERVICE_TYPE:-ClusterIP}"
 REDIS_PORT="${REDIS_PORT:-6379}"
 REDIS_KUBE_NAMESPACE="${REDIS_KUBE_NAMESPACE:-default}"
@@ -34,42 +36,29 @@ error() {
   exit 1
 }
 
-install_kubectl() {
-  info "Install kubectl..."
-  if ! curl -LOs "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"; then
-    error "Fail to get kubectl, please confirm whether the connection to dl.k8s.io is ok?"
-  fi
-  if ! sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl; then
-    error "Install kubectl fail"
-  fi
-  info "Kubectl install completed"
-}
+online_install_redis() {
+  info "Start add helm bitnami repo"
+  helm repo add bitnami https://charts.bitnami.com/bitnami &>/dev/null || {
+    error "Helm add bitnami repo error."
+  }
 
-install_helm() {
-  info "Install helm..."
-  if ! curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3; then
-    error "Fail to get helm installed script, please confirm whether the connection to raw.githubusercontent.com is ok?"
-  fi
-  chmod 700 get_helm.sh
-  if ! ./get_helm.sh; then
-    error "Fail to get helm when running get_helm.sh"
-  fi
-  info "Helm install completed"
-}
+  info "Start update helm bitnami repo"
+  helm repo update bitnami 2>/dev/null || {
+    error "Helm update bitnami repo error."
+  }
 
-install_redis() {
   # check if redis already installed
   if helm status "${RELEASE}" -n "${REDIS_KUBE_NAMESPACE}" &>/dev/null; then
     error "${RELEASE} already installed. Use helm remove it first"
   fi
+
   info "Install redis, It might take a long time..."
   helm install "${RELEASE}" "${CHART}" \
     --debug \
-    --version "${VERSION}" \
+    --version "${CHART_VERSION}" \
     --namespace "${REDIS_KUBE_NAMESPACE}" \
     --create-namespace \
     --set-string global.redis.password="${REDIS_PWD}" \
-    --set image.debug=true \
     --set-string architecture="standalone" \
     --set-string master.resources.limits.cpu="${REDIS_RESOURCE_LIMITS_CPU}" \
     --set-string master.resources.limits.memory="${REDIS_RESOURCE_LIMITS_MEMORY}" \
@@ -91,16 +80,41 @@ install_redis() {
   #TODO: check more resources after install
 }
 
-init_helm_repo() {
-  info "Start add helm bitnami repo"
-  helm repo add bitnami https://charts.bitnami.com/bitnami &>/dev/null || {
-    error "Helm add bitnami repo error."
+offline_install_redis() {
+  [[ -d $REDIS_CHART_DIR ]] || {
+    error "Not found redis chart dir"
   }
 
-  info "Start update helm bitnami repo"
-  helm repo update bitnami 2>/dev/null || {
-    error "Helm update bitnami repo error."
+  # check if redis already installed
+  if helm status "${RELEASE}" -n "${REDIS_KUBE_NAMESPACE}" &>/dev/null; then
+    error "${RELEASE} already installed. Use helm remove it first"
+  fi
+
+  info "Install redis, It might take a long time..."
+  helm install "${RELEASE}" "${REDIS_CHART_DIR}" \
+    --debug \
+    --namespace "${REDIS_KUBE_NAMESPACE}" \
+    --create-namespace \
+    --set-string global.redis.password="${REDIS_PWD}" \
+    --set-string architecture="standalone" \
+    --set-string master.resources.limits.cpu="${REDIS_RESOURCE_LIMITS_CPU}" \
+    --set-string master.resources.limits.memory="${REDIS_RESOURCE_LIMITS_MEMORY}" \
+    --set-string master.resources.requests.cpu="${REDIS_RESOURCE_REQUESTS_CPU}" \
+    --set-string master.resources.requests.memory="${REDIS_RESOURCE_REQUESTS_MEMORY}" \
+    --set master.count=1 \
+    --set master.containerPorts.redis="${REDIS_PORT}" \
+    --set master.service.type="${REDIS_SERVICE_TYPE}" \
+    --set master.service.ports.redis="${REDIS_PORT}" \
+    --set master.persistence.enabled=false \
+    --set master.nodeAffinityPreset.type="hard" \
+    --set master.nodeAffinityPreset.key="redis\.standalone\.node" \
+    --set master.nodeAffinityPreset.values='{enable}' \
+    --timeout $TIME_OUT_SECOND \
+    --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
+    error "Fail to install ${RELEASE}."
   }
+
+  #TODO: check more resources after install
 }
 
 verify_supported() {
@@ -110,6 +124,19 @@ verify_supported() {
   HAS_KUBECTL="$(type "kubectl" &>/dev/null && echo true || echo false)"
   local HAS_CURL
   HAS_CURL="$(type "curl" &>/dev/null && echo true || echo false)"
+
+  if [[ "${HAS_CURL}" != "true" ]]; then
+    error "curl is required"
+  fi
+
+  if [[ "${HAS_HELM}" != "true" ]]; then
+    error "helm is required"
+
+  fi
+
+  if [[ "${HAS_KUBECTL}" != "true" ]]; then
+    error "kubectl is required"
+  fi
 
   if [[ -z "${REDIS_PWD}" ]]; then
     error "REDIS_PWD MUST set in environment variable."
@@ -127,18 +154,6 @@ verify_supported() {
       error "kubectl label node ${node} 'redis.standalone.node=enable' failed, use kubectl to check reason"
     }
   done
-
-  if [[ "${HAS_CURL}" != "true" ]]; then
-    error "curl is required"
-  fi
-
-  if [[ "${HAS_HELM}" != "true" ]]; then
-    install_helm
-  fi
-
-  if [[ "${HAS_KUBECTL}" != "true" ]]; then
-    install_kubectl
-  fi
 }
 
 init_log() {
@@ -166,8 +181,11 @@ verify_installed() {
 main() {
   init_log
   verify_supported
-  init_helm_repo
-  install_redis
+  if [[ ${OFFLINE_INSTALL} == "false" ]]; then
+    online_install_redis
+  elif [[ ${OFFLINE_INSTALL} == "true" ]]; then
+    offline_install_redis
+  fi
   verify_installed
 }
 
