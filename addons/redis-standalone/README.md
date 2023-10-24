@@ -7,7 +7,7 @@
 ### 1. 设置环境变量
 
 * REDIS_PWD：**必填项**，登录 Redis 登录密码。
-* REDIS_NODE_NAMES：**必填项**，指定安装 Redis pod 的节点名称，节点名称可以使用 `,` 作为分隔符，表示多个节点名称，会对节点进行 label 设置`redis.standalone.node=true`。
+* REDIS_NODE_NAMES：**必填项**，指定安装 Redis 的 kubernetes 节点名称，多个节点名称可以使用 `,` 作为分隔符，会对指定的节点进行 label 设置添加`redis.standalone.node=true`标签。
 * REDIS_PORT：**非必填项**，指定安装 Redis 端口，默认值为`6379`。
 * REDIS_KUBE_NAMESPACE：**非必填项**，指定安装命名空间，默认值为`default`。
 * REDIS_SERVICE_TYPE：**非必填项**，指定服务入口类型，支持 `ClusterIP` 、`NodePort` ，默认值为`ClusterIP`。
