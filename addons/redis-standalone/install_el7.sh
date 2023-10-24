@@ -85,6 +85,10 @@ offline_install_redis() {
     error "Not found redis chart dir"
   }
 
+  [[ -n "${IMAGE_REGISTRY}" ]] || {
+    error "IMAGE_REGISTRY MUST set in environment variable."
+  }
+
   # check if redis already installed
   if helm status "${RELEASE}" -n "${REDIS_KUBE_NAMESPACE}" &>/dev/null; then
     error "${RELEASE} already installed. Use helm remove it first"
@@ -95,6 +99,7 @@ offline_install_redis() {
     --debug \
     --namespace "${REDIS_KUBE_NAMESPACE}" \
     --create-namespace \
+    --set-string global.imageRegistry="${IMAGE_REGISTRY}" \
     --set-string global.redis.password="${REDIS_PWD}" \
     --set-string architecture="standalone" \
     --set-string master.resources.limits.cpu="${REDIS_RESOURCE_LIMITS_CPU}" \
