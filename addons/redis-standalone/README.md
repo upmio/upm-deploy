@@ -4,7 +4,7 @@
 
 ## 快速安装指南
 
-### 1. 设置必要的环境变量
+### 1. 设置环境变量
 
 * REDIS_PWD：**必填项**，登录 Redis 登录密码。
 * REDIS_NODE_NAMES：**必填项**，指定安装 Redis pod的节点名称，节点名称可以使用","作为分隔符，表示多个节点名称，会对节点进行label设置`redis.standalone.node=true`。
@@ -21,7 +21,7 @@ export REDIS_KUBE_NAMESPACE="upm-system"
 export REDIS_RESOURCE_LIMITS=0
 ```
 
-### 3. 运行安装脚本
+### 3. 执行安装脚本
 
 **注意⚠️：如果找不到 Helm3，将自动安装。**
 
@@ -39,7 +39,7 @@ curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/redis-s
 kubectl get --namespace default pods -w
 ```
 
-## 使用 Helm 卸载 Charts
+## 使用 Helm 卸载
 
 ```console
 # Helm
