@@ -33,17 +33,19 @@ export REDIS_RESOURCE_LIMITS=0
 curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/redis-standalone/install_el7.sh | sh -
 ```
 
-等几分钟。 如果所有 mysql pod 都在运行，则 mysql 将成功安装。
+等几分钟。 如果所有 redis pod 都在运行，则 mysql 将成功安装。
 
 ```console
-kubectl get --namespace default pods -w
+export REDIS_KUBE_NAMESPACE="upm-system"
+kubectl get --namespace ${REDIS_KUBE_NAMESPACE} pods -w
 ```
 
 ## 使用 Helm 卸载
 
 ```console
 # Helm
-helm uninstall --namespace default redis
+export REDIS_KUBE_NAMESPACE="upm-system"
+helm uninstall --namespace ${REDIS_KUBE_NAMESPACE} redis
 ```
 
 这将删除与 Charts 关联的所有 Kubernetes 组件并删除发布。
