@@ -17,11 +17,11 @@ readonly TIME_OUT_SECOND="600s"
 readonly CHART_VERSION="18.1.5"
 
 OFFLINE_INSTALL="${INSTALL_MODE:-false}"
-REDIS_CHART_DIR="${REDIS_CHART_DIR:-./redis}"
 REDIS_SERVICE_TYPE="${REDIS_SERVICE_TYPE:-ClusterIP}"
 REDIS_PORT="${REDIS_PORT:-6379}"
 REDIS_KUBE_NAMESPACE="${REDIS_KUBE_NAMESPACE:-default}"
 REDIS_RESOURCE_LIMITS="${REDIS_RESOURCE_LIMITS:-1}"
+INSTALL_LOG_PATH=/tmp/redis_install-$(date +'%Y-%m-%d_%H-%M-%S').log
 
 if [[ ${REDIS_RESOURCE_LIMITS} -eq 0 ]]; then
   REDIS_RESOURCE_LIMITS_CPU="0"
@@ -94,9 +94,7 @@ online_install_redis() {
 }
 
 offline_install_redis() {
-  [[ -d $REDIS_CHART_DIR ]] || {
-    error "Not found redis chart dir"
-  }
+  local chart_dir="${REDIS_CHART_DIR:-./redis}"
 
   [[ -n "${IMAGE_REGISTRY}" ]] || {
     error "IMAGE_REGISTRY MUST set in environment variable."
@@ -108,7 +106,7 @@ offline_install_redis() {
   fi
 
   info "Install redis, It might take a long time..."
-  helm install "${RELEASE}" "${REDIS_CHART_DIR}" \
+  helm install "${RELEASE}" "${chart_dir}" \
     --debug \
     --namespace "${REDIS_KUBE_NAMESPACE}" \
     --create-namespace \
@@ -175,7 +173,6 @@ verify_supported() {
 }
 
 init_log() {
-  INSTALL_LOG_PATH=/tmp/redis_install-$(date +'%Y-%m-%d_%H-%M-%S').log
   if ! touch "${INSTALL_LOG_PATH}"; then
     error "Create log file ${INSTALL_LOG_PATH} error"
   fi

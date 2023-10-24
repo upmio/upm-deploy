@@ -7,7 +7,7 @@
 ### 1. 设置环境变量
 
 * REDIS_PWD：**必填项**，登录 Redis 登录密码。
-* REDIS_NODE_NAMES：**必填项**，指定安装 Redis pod 的节点名称，节点名称可以使用 “,” 作为分隔符，表示多个节点名称，会对节点进行 label 设置`redis.standalone.node=true`。
+* REDIS_NODE_NAMES：**必填项**，指定安装 Redis pod 的节点名称，节点名称可以使用 `,` 作为分隔符，表示多个节点名称，会对节点进行 label 设置`redis.standalone.node=true`。
 * REDIS_PORT：**非必填项**，指定安装 Redis 端口，默认值为`6379`。
 * REDIS_KUBE_NAMESPACE：**非必填项**，指定安装命名空间，默认值为`default`。
 * REDIS_SERVICE_TYPE：**非必填项**，指定服务入口类型，支持 `ClusterIP` 、`NodePort` ，默认值为`ClusterIP`。
@@ -25,7 +25,7 @@ export REDIS_RESOURCE_LIMITS=0
 
 **注意⚠️：如果找不到 Helm3，将自动安装。**
 
-**注意⚠️：安装脚本会对指定节点进行添加 label 的操作。**
+**注意⚠️：安装脚本会对 `REDIS_NODE_NAMES` 节点进行设置 `label` 的操作。**
 
 运行安装脚本：
 ```console
