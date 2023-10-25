@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -o nounset
 # You must be prepared as follows before run install.sh:
 #
 # 1. REDIS_PWD MUST be set as environment variable, for an example:
@@ -21,7 +22,7 @@ REDIS_SERVICE_TYPE="${REDIS_SERVICE_TYPE:-ClusterIP}"
 REDIS_PORT="${REDIS_PORT:-6379}"
 REDIS_KUBE_NAMESPACE="${REDIS_KUBE_NAMESPACE:-default}"
 REDIS_RESOURCE_LIMITS="${REDIS_RESOURCE_LIMITS:-1}"
-INSTALL_LOG_PATH=/tmp/redis_install-$(date +'%Y-%m-%d_%H-%M-%S').log
+INSTALL_LOG_PATH=/tmp/redis-install-$(date +'%Y-%m-%d_%H-%M-%S').log
 
 if [[ ${REDIS_RESOURCE_LIMITS} -eq 0 ]]; then
   REDIS_RESOURCE_LIMITS_CPU="0"
@@ -133,21 +134,25 @@ offline_install_redis() {
   #TODO: check more resources after install
 }
 
+ensure_kubernetes_cluster() {
+  # output kubernetes cluster info
+  kubectl config view --minify
+
+  local response
+  read -r -p "Are you sure to install ${RELEASE} on this kubernetes cluster? [y/N] " response
+  if [[ ! "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+    exit 1
+  fi
+}
+
 verify_supported() {
   local HAS_HELM
   HAS_HELM="$(type "helm" &>/dev/null && echo true || echo false)"
   local HAS_KUBECTL
   HAS_KUBECTL="$(type "kubectl" &>/dev/null && echo true || echo false)"
-  local HAS_CURL
-  HAS_CURL="$(type "curl" &>/dev/null && echo true || echo false)"
-
-  if [[ "${HAS_CURL}" != "true" ]]; then
-    error "curl is required"
-  fi
 
   if [[ "${HAS_HELM}" != "true" ]]; then
     error "helm is required"
-
   fi
 
   if [[ "${HAS_KUBECTL}" != "true" ]]; then
@@ -196,6 +201,7 @@ verify_installed() {
 main() {
   init_log
   verify_supported
+  ensure_kubernetes_cluster
   if [[ ${OFFLINE_INSTALL} == "false" ]]; then
     online_install_redis
   elif [[ ${OFFLINE_INSTALL} == "true" ]]; then
