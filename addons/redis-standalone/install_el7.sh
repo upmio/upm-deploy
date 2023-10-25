@@ -134,27 +134,6 @@ offline_install_redis() {
   #TODO: check more resources after install
 }
 
-ensure_kubernetes_cluster() {
-  # output kubernetes cluster info
-  kubectl config view --minify
-
-  local response
-  while true; do
-    read -r -p "Are you sure to install ${RELEASE} on this kubernetes cluster? [Y/n] " response
-    case "$response" in
-    [yY][eE][sS] | [yY])
-      break
-      ;;
-    [nN][oO] | [nN])
-      error "User cancel install."
-      ;;
-    *)
-      error "Please input yes or no."
-      ;;
-    esac
-  done
-}
-
 verify_supported() {
   local HAS_HELM
   HAS_HELM="$(type "helm" &>/dev/null && echo true || echo false)"
@@ -211,7 +190,6 @@ verify_installed() {
 main() {
   init_log
   verify_supported
-  ensure_kubernetes_cluster
   if [[ ${OFFLINE_INSTALL} == "false" ]]; then
     online_install_redis
   elif [[ ${OFFLINE_INSTALL} == "true" ]]; then
