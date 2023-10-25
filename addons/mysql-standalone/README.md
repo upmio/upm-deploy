@@ -8,10 +8,6 @@
 
 MYSQL_PWD：指定 MySQL 管理员用户密码。
 
-MYSQL_USER_NAME：登录 MySQL 用户名。
-
-MYSQL_USER_PWD：登录 MySQL 用户密码。
-
 MYSQL_STORAGECLASS_NAME：指定Storageclass名称, 使用 ```kubectl get storageclasses ```获取可用的 Storageclass 名称。
 
 MYSQL_PVC_SIZE_G：指定持久化卷的大小，单位为`Gi`。
@@ -28,8 +24,6 @@ MYSQL_INITDB_CONFIGMAP: 指定数据库初始化的sql文件的configmap名称�
 
 ```console
 export MYSQL_PWD='password'
-export MYSQL_USER_NAME="admin"
-export MYSQL_USER_PWD='password'
 export MYSQL_STORAGECLASS_NAME="openebs-lvmsc-hdd"
 export MYSQL_PVC_SIZE_G="50"
 export MYSQL_NODE_NAMES="db-node01"
