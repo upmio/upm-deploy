@@ -14,8 +14,6 @@ MYSQL_PVC_SIZE_G：指定持久化卷的大小，单位为`Gi`。
 
 MYSQL_NODE_NAMES：指定安装 MySQL pod 的节点名称，节点名称可以使用","作为分隔符，表示多个节点名称，安装程序会对节点进行label固定安装节点。
 
-MYSQL_PORT：指定安装 MySQL 端口，非必填项，默认值为`3306`。
-
 MYSQL_SERVICE_TYPE：指定服务入口类型，支持 `ClusterIP` 、`NodePort` ，非必填项，默认值为`ClusterIP`。
 
 MYSQL_KUBE_NAMESPACE：指定安装命名空间，非必填项，默认值为`default`。

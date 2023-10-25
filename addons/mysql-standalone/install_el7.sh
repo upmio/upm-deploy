@@ -27,10 +27,10 @@ readonly CHART_VERSION="9.12.5"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
 MYSQL_SERVICE_TYPE="${MYSQL_SERVICE_TYPE:-ClusterIP}"
-MYSQL_PORT="${MYSQL_PORT:-3306}"
 MYSQL_KUBE_NAMESPACE="${MYSQL_KUBE_NAMESPACE:-default}"
 MYSQL_INITDB_CONFIGMAP="${MYSQL_INITDB_CONFIGMAP:-}"
 MYSQL_RESOURCE_LIMITS="${MYSQL_RESOURCE_LIMITS:-1}"
+MYSQL_CHART_DIR="${MYSQL_CHART_DIR:-./mysql}"
 INSTALL_LOG_PATH=/tmp/mysql-install-$(date +'%Y-%m-%d_%H-%M-%S').log
 
 if [[ ${MYSQL_RESOURCE_LIMITS} -eq 0 ]]; then
@@ -65,6 +65,11 @@ error() {
 }
 
 online_install_mysql() {
+  # check if mysql already installed
+  if helm status ${RELEASE} -n "${MYSQL_KUBE_NAMESPACE}" &>/dev/null; then
+    error "${RELEASE} already installed. Use helm remove it first"
+  fi
+
   info "Start add helm bitnami repo"
   helm repo add bitnami https://charts.bitnami.com/bitnami &>/dev/null || {
     error "Helm add bitnami repo error."
@@ -75,10 +80,18 @@ online_install_mysql() {
     error "Helm update bitnami repo error."
   }
 
-  # check if mysql already installed
-  if helm status ${RELEASE} -n "${MYSQL_KUBE_NAMESPACE}" &>/dev/null; then
-    error "${RELEASE} already installed. Use helm remove it first"
+  if [[ -z ${MYSQL_CONFIG_FILE} ]]; then
+    local mysql_conf="/tmp/bitnami-mysql.cnf"
+    curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/mysql-standalone/config/my.cnf -o "${mysql_conf}" || {
+      error "get mysql config failed"
+    }
+  else
+    [[ -f ${MYSQL_CONFIG_FILE} ]] || {
+      error "MYSQL_CONFIG_FILE not exist."
+    }
+    local mysql_conf="${MYSQL_CONFIG_FILE}"
   fi
+
   info "Install mysql, It might take a long time..."
   helm install ${RELEASE} ${CHART} \
     --debug \
@@ -89,8 +102,7 @@ online_install_mysql() {
     --set-string architecture="standalone" \
     --set-string auth.rootPassword="${MYSQL_PWD}" \
     --set primary.service.type="${MYSQL_SERVICE_TYPE}" \
-    --set primary.service.ports.mysql="${MYSQL_PORT}" \
-    --set-string primary.extraFlags="--max-connect-errors=1000 --max_connections=10000 --default-time-zone=Asia/Shanghai" \
+    --set-file primary.configuration="${mysql_conf}" \
     --set-string primary.resources.limits.cpu="${MYSQL_RESOURCE_LIMITS_CPU}" \
     --set-string primary.resources.limits.memory="${MYSQL_RESOURCE_LIMITS_MEMORY}" \
     --set-string primary.resources.requests.cpu="${MYSQL_RESOURCE_REQUESTS_CPU}" \
@@ -109,18 +121,26 @@ online_install_mysql() {
 }
 
 offline_install_mysql() {
-  local chart_dir="${MYSQL_CHART_DIR:-./mysql}"
+  # check if mysql already installed
+  if helm status ${RELEASE} -n "${MYSQL_KUBE_NAMESPACE}" &>/dev/null; then
+    error "${RELEASE} already installed. Use helm remove it first"
+  fi
+
+  [[ -d "${MYSQL_CHART_DIR}" ]] || {
+    error "MYSQL_CHART_DIR not exist."
+  }
 
   [[ -n "${IMAGE_REGISTRY}" ]] || {
     error "IMAGE_REGISTRY MUST set in environment variable."
   }
 
-  # check if mysql already installed
-  if helm status ${RELEASE} -n "${MYSQL_KUBE_NAMESPACE}" &>/dev/null; then
-    error "${RELEASE} already installed. Use helm remove it first"
-  fi
+  MYSQL_CONFIG_FILE="${MYSQL_CONFIG_FILE:-./my.cnf}"
+  [[ -f ${MYSQL_CONFIG_FILE} ]] || {
+    error "MYSQL_CONFIG_FILE not exist."
+  }
+
   info "Install mysql, It might take a long time..."
-  helm install "${RELEASE}" "${chart_dir}" \
+  helm install "${RELEASE}" "${MYSQL_CHART_DIR}" \
     --debug \
     --namespace "${MYSQL_KUBE_NAMESPACE}" \
     --create-namespace \
@@ -128,8 +148,7 @@ offline_install_mysql() {
     --set-string architecture="standalone" \
     --set-string auth.rootPassword="${MYSQL_PWD}" \
     --set primary.service.type="${MYSQL_SERVICE_TYPE}" \
-    --set primary.service.ports.mysql="${MYSQL_PORT}" \
-    --set-string primary.extraFlags="--max-connect-errors=1000 --max_connections=10000 --default-time-zone=Asia/Shanghai" \
+    --set-file primary.configuration="${MYSQL_CONFIG_FILE}" \
     --set-string primary.resources.limits.cpu="${MYSQL_RESOURCE_LIMITS_CPU}" \
     --set-string primary.resources.limits.memory="${MYSQL_RESOURCE_LIMITS_MEMORY}" \
     --set-string primary.resources.requests.cpu="${MYSQL_RESOURCE_REQUESTS_CPU}" \
@@ -181,6 +200,7 @@ verify_supported() {
     error "MYSQL_NODE_NAMES MUST set in environment variable."
   fi
 
+  local node
   local db_node_array
   IFS="," read -r -a db_node_array <<<"${MYSQL_NODE_NAMES}"
   for node in "${db_node_array[@]}"; do
