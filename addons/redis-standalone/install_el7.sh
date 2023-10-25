@@ -139,10 +139,20 @@ ensure_kubernetes_cluster() {
   kubectl config view --minify
 
   local response
-  read -r -p "Are you sure to install ${RELEASE} on this kubernetes cluster? [y/N] " response
-  if [[ ! "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-    exit 1
-  fi
+  while true; do
+    read -r -p "Are you sure to install ${RELEASE} on this kubernetes cluster? [Y/n] " response
+    case "$response" in
+    [yY][eE][sS] | [yY] | "")
+      break
+      ;;
+    [nN][oO] | [nN])
+      error "User cancel install."
+      ;;
+    *)
+      error "Please input yes or no."
+      ;;
+    esac
+  done
 }
 
 verify_supported() {
