@@ -142,7 +142,7 @@ ensure_kubernetes_cluster() {
   while true; do
     read -r -p "Are you sure to install ${RELEASE} on this kubernetes cluster? [Y/n] " response
     case "$response" in
-    [yY][eE][sS] | [yY] | "")
+    [yY][eE][sS] | [yY])
       break
       ;;
     [nN][oO] | [nN])
