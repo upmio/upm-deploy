@@ -101,6 +101,7 @@ online_install_mysql() {
     --set-string initdbScriptsConfigMap="${MYSQL_INITDB_CONFIGMAP}" \
     --set-string architecture="standalone" \
     --set-string auth.rootPassword="${MYSQL_PWD}" \
+    --set auth.createDatabase="false" \
     --set primary.service.type="${MYSQL_SERVICE_TYPE}" \
     --set-file primary.configuration="${mysql_conf}" \
     --set-string primary.resources.limits.cpu="${MYSQL_RESOURCE_LIMITS_CPU}" \
@@ -134,7 +135,6 @@ offline_install_mysql() {
     error "IMAGE_REGISTRY MUST set in environment variable."
   }
 
-  MYSQL_CONFIG_FILE="${MYSQL_CONFIG_FILE:-./my.cnf}"
   [[ -f ${MYSQL_CONFIG_FILE} ]] || {
     error "MYSQL_CONFIG_FILE not exist."
   }
@@ -147,6 +147,7 @@ offline_install_mysql() {
     --set-string initdbScriptsConfigMap="${MYSQL_INITDB_CONFIGMAP}" \
     --set-string architecture="standalone" \
     --set-string auth.rootPassword="${MYSQL_PWD}" \
+    --set auth.createDatabase="false" \
     --set primary.service.type="${MYSQL_SERVICE_TYPE}" \
     --set-file primary.configuration="${MYSQL_CONFIG_FILE}" \
     --set-string primary.resources.limits.cpu="${MYSQL_RESOURCE_LIMITS_CPU}" \
