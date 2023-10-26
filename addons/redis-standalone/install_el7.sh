@@ -59,6 +59,11 @@ error() {
 }
 
 online_install_redis() {
+  # check if redis already installed
+  if helm status "${RELEASE}" -n "${REDIS_KUBE_NAMESPACE}" &>/dev/null; then
+    error "${RELEASE} already installed. Use helm remove it first"
+  fi
+
   info "Start add helm bitnami repo"
   helm repo add bitnami https://charts.bitnami.com/bitnami &>/dev/null || {
     error "Helm add bitnami repo error."
@@ -68,11 +73,6 @@ online_install_redis() {
   helm repo update bitnami 2>/dev/null || {
     error "Helm update bitnami repo error."
   }
-
-  # check if redis already installed
-  if helm status "${RELEASE}" -n "${REDIS_KUBE_NAMESPACE}" &>/dev/null; then
-    error "${RELEASE} already installed. Use helm remove it first"
-  fi
 
   info "Install redis, It might take a long time..."
   helm install "${RELEASE}" "${CHART}" \
@@ -104,19 +104,21 @@ online_install_redis() {
 }
 
 offline_install_redis() {
-  local chart_dir="${REDIS_CHART_DIR:-./redis}"
-
-  [[ -n "${IMAGE_REGISTRY}" ]] || {
-    error "IMAGE_REGISTRY MUST set in environment variable."
-  }
-
   # check if redis already installed
   if helm status "${RELEASE}" -n "${REDIS_KUBE_NAMESPACE}" &>/dev/null; then
     error "${RELEASE} already installed. Use helm remove it first"
   fi
 
+  [[ -d "${REDIS_CHART_DIR}" ]] || {
+    error "REDIS_CHART_DIR not exist."
+  }
+
+  [[ -n "${IMAGE_REGISTRY}" ]] || {
+    error "IMAGE_REGISTRY MUST set in environment variable."
+  }
+
   info "Install redis, It might take a long time..."
-  helm install "${RELEASE}" "${chart_dir}" \
+  helm install "${RELEASE}" "${REDIS_CHART_DIR}" \
     --debug \
     --namespace "${REDIS_KUBE_NAMESPACE}" \
     --create-namespace \
