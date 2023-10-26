@@ -33,6 +33,14 @@ MYSQL_RESOURCE_LIMITS="${MYSQL_RESOURCE_LIMITS:-1}"
 MYSQL_CHART_DIR="${MYSQL_CHART_DIR:-./mysql}"
 INSTALL_LOG_PATH=/tmp/mysql-install-$(date +'%Y-%m-%d_%H-%M-%S').log
 
+if [[ ${MYSQL_SERVICE_TYPE} == "NodePort" ]]; then
+  MYSQL_NODEPORT="${MYSQL_NODEPORT:-32006}"
+elif [[ ${MYSQL_SERVICE_TYPE} == "ClusterIP" ]]; then
+  MYSQL_NODEPORT=null
+else
+  error "MYSQL_SERVICE_TYPE must be NodePort or ClusterIP"
+fi
+
 if [[ ${MYSQL_RESOURCE_LIMITS} -eq 0 ]]; then
   MYSQL_RESOURCE_LIMITS_CPU="0"
   MYSQL_RESOURCE_LIMITS_MEMORY="0"
@@ -101,8 +109,9 @@ online_install_mysql() {
     --set-string initdbScriptsConfigMap="${MYSQL_INITDB_CONFIGMAP}" \
     --set-string architecture="standalone" \
     --set-string auth.rootPassword="${MYSQL_PWD}" \
-    --set auth.createDatabase="false" \
-    --set primary.service.type="${MYSQL_SERVICE_TYPE}" \
+    --set auth.createDatabase=false \
+    --set-string primary.service.type="${MYSQL_SERVICE_TYPE}" \
+    --set primary.service.nodePorts.mysql=${MYSQL_NODEPORT} \
     --set-file primary.configuration="${mysql_conf}" \
     --set-string primary.resources.limits.cpu="${MYSQL_RESOURCE_LIMITS_CPU}" \
     --set-string primary.resources.limits.memory="${MYSQL_RESOURCE_LIMITS_MEMORY}" \
@@ -147,8 +156,9 @@ offline_install_mysql() {
     --set-string initdbScriptsConfigMap="${MYSQL_INITDB_CONFIGMAP}" \
     --set-string architecture="standalone" \
     --set-string auth.rootPassword="${MYSQL_PWD}" \
-    --set auth.createDatabase="false" \
-    --set primary.service.type="${MYSQL_SERVICE_TYPE}" \
+    --set auth.createDatabase=false \
+    --set-string primary.service.type="${MYSQL_SERVICE_TYPE}" \
+    --set primary.service.nodePorts.mysql=${MYSQL_NODEPORT} \
     --set-file primary.configuration="${MYSQL_CONFIG_FILE}" \
     --set-string primary.resources.limits.cpu="${MYSQL_RESOURCE_LIMITS_CPU}" \
     --set-string primary.resources.limits.memory="${MYSQL_RESOURCE_LIMITS_MEMORY}" \
