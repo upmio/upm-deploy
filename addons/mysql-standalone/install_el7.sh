@@ -147,6 +147,7 @@ offline_install_mysql() {
   [[ -f ${MYSQL_CONFIG_FILE} ]] || {
     error "MYSQL_CONFIG_FILE not exist."
   }
+  local mysql_conf="${MYSQL_CONFIG_FILE}"
 
   info "Install mysql, It might take a long time..."
   helm install "${RELEASE}" "${MYSQL_CHART_DIR}" \
@@ -159,7 +160,7 @@ offline_install_mysql() {
     --set auth.createDatabase=false \
     --set-string primary.service.type="${MYSQL_SERVICE_TYPE}" \
     --set primary.service.nodePorts.mysql=${MYSQL_NODEPORT} \
-    --set-file primary.configuration="${MYSQL_CONFIG_FILE}" \
+    --set-file primary.configuration="${mysql_conf}" \
     --set-string primary.resources.limits.cpu="${MYSQL_RESOURCE_LIMITS_CPU}" \
     --set-string primary.resources.limits.memory="${MYSQL_RESOURCE_LIMITS_MEMORY}" \
     --set-string primary.resources.requests.cpu="${MYSQL_RESOURCE_REQUESTS_CPU}" \
