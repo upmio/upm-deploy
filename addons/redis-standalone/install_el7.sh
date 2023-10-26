@@ -26,8 +26,10 @@ INSTALL_LOG_PATH=/tmp/redis-install-$(date +'%Y-%m-%d_%H-%M-%S').log
 
 if [[ ${REDIS_SERVICE_TYPE} == "NodePort" ]]; then
   REDIS_NODEPORT="${REDIS_NODEPORT:-32007}"
-else
+elif [[ ${REDIS_SERVICE_TYPE} == "ClusterIP" ]]; then
   REDIS_NODEPORT=null
+else
+  error "REDIS_SERVICE_TYPE must be NodePort or ClusterIP"
 fi
 
 if [[ ${REDIS_RESOURCE_LIMITS} -eq 0 ]]; then
