@@ -24,6 +24,12 @@ REDIS_KUBE_NAMESPACE="${REDIS_KUBE_NAMESPACE:-default}"
 REDIS_RESOURCE_LIMITS="${REDIS_RESOURCE_LIMITS:-1}"
 INSTALL_LOG_PATH=/tmp/redis-install-$(date +'%Y-%m-%d_%H-%M-%S').log
 
+if [[ ${REDIS_SERVICE_TYPE} == "NodePort" ]]; then
+  REDIS_NODEPORT="${REDIS_NODEPORT:-32007}"
+else
+  REDIS_NODEPORT=null
+fi
+
 if [[ ${REDIS_RESOURCE_LIMITS} -eq 0 ]]; then
   REDIS_RESOURCE_LIMITS_CPU="0"
   REDIS_RESOURCE_LIMITS_MEMORY="0"
@@ -79,9 +85,10 @@ online_install_redis() {
     --set-string master.resources.requests.cpu="${REDIS_RESOURCE_REQUESTS_CPU}" \
     --set-string master.resources.requests.memory="${REDIS_RESOURCE_REQUESTS_MEMORY}" \
     --set master.count=1 \
-    --set master.containerPorts.redis="${REDIS_PORT}" \
     --set master.service.type="${REDIS_SERVICE_TYPE}" \
+    --set master.service.nodePorts.redis=${REDIS_NODEPORT} \
     --set master.service.ports.redis="${REDIS_PORT}" \
+    --set master.containerPorts.redis="${REDIS_PORT}" \
     --set master.persistence.enabled=false \
     --set master.nodeAffinityPreset.type="hard" \
     --set master.nodeAffinityPreset.key="redis\.standalone\.node" \
@@ -119,9 +126,10 @@ offline_install_redis() {
     --set-string master.resources.requests.cpu="${REDIS_RESOURCE_REQUESTS_CPU}" \
     --set-string master.resources.requests.memory="${REDIS_RESOURCE_REQUESTS_MEMORY}" \
     --set master.count=1 \
-    --set master.containerPorts.redis="${REDIS_PORT}" \
     --set master.service.type="${REDIS_SERVICE_TYPE}" \
+    --set master.service.nodePorts.redis=${REDIS_NODEPORT} \
     --set master.service.ports.redis="${REDIS_PORT}" \
+    --set master.containerPorts.redis="${REDIS_PORT}" \
     --set master.persistence.enabled=false \
     --set master.nodeAffinityPreset.type="hard" \
     --set master.nodeAffinityPreset.key="redis\.standalone\.node" \
