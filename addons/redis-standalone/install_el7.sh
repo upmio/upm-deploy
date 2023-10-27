@@ -58,6 +58,10 @@ error() {
   exit 1
 }
 
+installed() {
+    command -v "$1" >/dev/null 2>&1
+}
+
 online_install_redis() {
   # check if redis already installed
   if helm status "${RELEASE}" -n "${REDIS_KUBE_NAMESPACE}" &>/dev/null; then
@@ -147,26 +151,11 @@ offline_install_redis() {
 }
 
 verify_supported() {
-  local HAS_HELM
-  HAS_HELM="$(type "helm" &>/dev/null && echo true || echo false)"
-  local HAS_KUBECTL
-  HAS_KUBECTL="$(type "kubectl" &>/dev/null && echo true || echo false)"
+  installed helm || error "helm is required"
+  installed kubectl || error "kubectl is required"
 
-  if [[ "${HAS_HELM}" != "true" ]]; then
-    error "helm is required"
-  fi
-
-  if [[ "${HAS_KUBECTL}" != "true" ]]; then
-    error "kubectl is required"
-  fi
-
-  if [[ -z "${REDIS_PWD}" ]]; then
-    error "REDIS_PWD MUST set in environment variable."
-  fi
-
-  if [[ -z "${REDIS_NODE_NAMES}" ]]; then
-    error "REDIS_NODE_NAMES MUST set in environment variable."
-  fi
+  [[ -n "${REDIS_PWD}" ]]|| error "REDIS_PWD MUST set in environment variable."
+  [[ -n "${REDIS_NODE_NAMES}" ]] || error "REDIS_NODE_NAMES MUST set in environment variable."
 
   local node
   local redis_node_array
@@ -192,8 +181,10 @@ init_log() {
 #   namespace
 ############################################
 verify_installed() {
-  helm status "${RELEASE}" -n "${REDIS_KUBE_NAMESPACE}" | grep deployed &>/dev/null || {
-    error "${RELEASE} installed fail, check log use helm and kubectl."
+  local status
+  status=$(helm status "${RELEASE}" -n "${REDIS_KUBE_NAMESPACE}" -o yaml | yq -r '.info.status')
+  [[ "${status}" != "deployed" ]] || {
+    error "Helm release ${RELEASE} status is not deployed, use helm to check reason"
   }
 
   info "${RELEASE} Deployment Completed!"
