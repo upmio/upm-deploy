@@ -180,7 +180,7 @@ verify_supported() {
 
   [[ -n "${MYSQL_PWD}" ]] || error "MYSQL_PWD MUST set in environment variable."
   [[ -n "${MYSQL_PVC_SIZE_G}" ]] || error "MYSQL_PVC_SIZE_G MUST set in environment variable."
-  [[ -z "${MYSQL_NODE_NAMES}" ]] || error "MYSQL_NODE_NAMES MUST set in environment variable."
+  [[ -n "${MYSQL_NODE_NAMES}" ]] || error "MYSQL_NODE_NAMES MUST set in environment variable."
 
   if [[ -z "${MYSQL_STORAGECLASS_NAME}" ]]; then
     error "MYSQL_STORAGECLASS_NAME MUST set in environment variable."
