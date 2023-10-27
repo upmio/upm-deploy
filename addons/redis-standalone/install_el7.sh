@@ -69,9 +69,7 @@ online_install_redis() {
   fi
 
   info "Start add helm bitnami repo"
-  helm repo add bitnami https://charts.bitnami.com/bitnami &>/dev/null || {
-    error "Helm add bitnami repo error."
-  }
+  helm repo add bitnami https://charts.bitnami.com/bitnami &>/dev/null || error "Helm add bitnami repo error."
 
   info "Start update helm bitnami repo"
   helm repo update bitnami 2>/dev/null || error "Helm update bitnami repo error."
@@ -161,9 +159,7 @@ verify_supported() {
 }
 
 init_log() {
-  touch "${INSTALL_LOG_PATH}" || {
-    error "Create log file ${INSTALL_LOG_PATH} error"
-  }
+  touch "${INSTALL_LOG_PATH}" || error "Create log file ${INSTALL_LOG_PATH} error"
   info "Log file create in path ${INSTALL_LOG_PATH}"
 }
 
@@ -176,9 +172,7 @@ init_log() {
 verify_installed() {
   local status
   status=$(helm status "${RELEASE}" -n "${REDIS_KUBE_NAMESPACE}" -o yaml | yq -r '.info.status')
-  [[ "${status}" == "deployed" ]] || {
-    error "Helm release ${RELEASE} status is not deployed, use helm to check reason"
-  }
+  [[ "${status}" == "deployed" ]] || error "Helm release ${RELEASE} status is not deployed, use helm to check reason"
 
   info "${RELEASE} Deployment Completed!"
 }

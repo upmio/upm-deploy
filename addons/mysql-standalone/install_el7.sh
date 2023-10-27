@@ -72,6 +72,10 @@ error() {
   exit 1
 }
 
+installed() {
+  command -v "$1" >/dev/null 2>&1
+}
+
 online_install_mysql() {
   # check if mysql already installed
   if helm status ${RELEASE} -n "${MYSQL_KUBE_NAMESPACE}" &>/dev/null; then
@@ -79,24 +83,17 @@ online_install_mysql() {
   fi
 
   info "Start add helm bitnami repo"
-  helm repo add bitnami https://charts.bitnami.com/bitnami &>/dev/null || {
-    error "Helm add bitnami repo error."
-  }
+  helm repo add bitnami https://charts.bitnami.com/bitnami &>/dev/null || error "Helm add bitnami repo error."
 
   info "Start update helm bitnami repo"
-  helm repo update bitnami 2>/dev/null || {
-    error "Helm update bitnami repo error."
-  }
+  helm repo update bitnami 2>/dev/null || error "Helm update bitnami repo error."
 
   if [[ -z ${MYSQL_CONFIG_FILE} ]]; then
     local mysql_conf="/tmp/bitnami-mysql.cnf"
-    curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/mysql-standalone/config/my.cnf -o "${mysql_conf}" || {
-      error "get mysql config failed"
-    }
+    local download_url="https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/mysql-standalone/config/my.cnf"
+    curl -sSL ${download_url} -o "${mysql_conf}" || error "get mysql config failed"
   else
-    [[ -f ${MYSQL_CONFIG_FILE} ]] || {
-      error "MYSQL_CONFIG_FILE not exist."
-    }
+    [[ -f ${MYSQL_CONFIG_FILE} ]] || error "MYSQL_CONFIG_FILE not exist."
     local mysql_conf="${MYSQL_CONFIG_FILE}"
   fi
 
@@ -151,7 +148,6 @@ offline_install_mysql() {
 
   info "Install mysql, It might take a long time..."
   helm install "${RELEASE}" "${MYSQL_CHART_DIR}" \
-    --debug \
     --namespace "${MYSQL_KUBE_NAMESPACE}" \
     --create-namespace \
     --set-string initdbScriptsConfigMap="${MYSQL_INITDB_CONFIGMAP}" \
@@ -171,7 +167,7 @@ offline_install_mysql() {
     --set-string primary.nodeAffinityPreset.key="mysql\.standalone\.node" \
     --set-string primary.nodeAffinityPreset.values='{enable}' \
     --timeout $TIME_OUT_SECOND \
-    --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
+    --wait 2>&1 | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
   }
 
@@ -179,22 +175,12 @@ offline_install_mysql() {
 }
 
 verify_supported() {
-  local HAS_HELM
-  HAS_HELM="$(type "helm" &>/dev/null && echo true || echo false)"
-  local HAS_KUBECTL
-  HAS_KUBECTL="$(type "kubectl" &>/dev/null && echo true || echo false)"
+  installed helm || error "helm is required"
+  installed kubectl || error "kubectl is required"
 
-  if [[ "${HAS_HELM}" != "true" ]]; then
-    error "helm is required"
-  fi
-
-  if [[ "${HAS_KUBECTL}" != "true" ]]; then
-    error "kubectl is required"
-  fi
-
-  if [[ -z "${MYSQL_PWD}" ]]; then
-    error "MYSQL_PWD MUST set in environment variable."
-  fi
+  [[ -n "${MYSQL_PWD}" ]] || error "MYSQL_PWD MUST set in environment variable."
+  [[ -n "${MYSQL_PVC_SIZE_G}" ]] || error "MYSQL_PVC_SIZE_G MUST set in environment variable."
+  [[ -z "${MYSQL_NODE_NAMES}" ]] || error "MYSQL_NODE_NAMES MUST set in environment variable."
 
   if [[ -z "${MYSQL_STORAGECLASS_NAME}" ]]; then
     error "MYSQL_STORAGECLASS_NAME MUST set in environment variable."
@@ -202,14 +188,6 @@ verify_supported() {
     kubectl get storageclasses "${MYSQL_STORAGECLASS_NAME}" &>/dev/null || {
       error "storageclass resources not all ready, use kubectl to check reason"
     }
-  fi
-
-  if [[ -z "${MYSQL_PVC_SIZE_G}" ]]; then
-    error "MYSQL_PVC_SIZE_G MUST set in environment variable."
-  fi
-
-  if [[ -z "${MYSQL_NODE_NAMES}" ]]; then
-    error "MYSQL_NODE_NAMES MUST set in environment variable."
   fi
 
   local node
@@ -223,9 +201,7 @@ verify_supported() {
 }
 
 init_log() {
-  if ! touch "${INSTALL_LOG_PATH}"; then
-    error "Create log file ${INSTALL_LOG_PATH} error"
-  fi
+  touch "${INSTALL_LOG_PATH}" || error "Create log file ${INSTALL_LOG_PATH} error"
   info "Log file create in path ${INSTALL_LOG_PATH}"
 }
 
@@ -236,8 +212,10 @@ init_log() {
 #   namespace
 ############################################
 verify_installed() {
-  helm status "${RELEASE}" -n "${MYSQL_KUBE_NAMESPACE}" | grep deployed &>/dev/null || {
-    error "${RELEASE} installed fail, check log use helm and kubectl."
+  local status
+  status=$(helm status "${RELEASE}" -n "${MYSQL_KUBE_NAMESPACE}" -o yaml | yq -r '.info.status')
+  [[ "${status}" == "deployed" ]] || {
+    error "Helm release ${RELEASE} status is not deployed, use helm to check reason"
   }
 
   info "${RELEASE} Deployment Completed!"
