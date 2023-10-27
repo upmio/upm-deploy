@@ -59,7 +59,7 @@ error() {
 }
 
 installed() {
-    command -v "$1" >/dev/null 2>&1
+  command -v "$1" >/dev/null 2>&1
 }
 
 online_install_redis() {
@@ -74,9 +74,7 @@ online_install_redis() {
   }
 
   info "Start update helm bitnami repo"
-  helm repo update bitnami 2>/dev/null || {
-    error "Helm update bitnami repo error."
-  }
+  helm repo update bitnami 2>/dev/null || error "Helm update bitnami repo error."
 
   info "Install redis, It might take a long time..."
   helm install "${RELEASE}" "${CHART}" \
@@ -113,13 +111,8 @@ offline_install_redis() {
     error "${RELEASE} already installed. Use helm remove it first"
   fi
 
-  [[ -d "${REDIS_CHART_DIR}" ]] || {
-    error "REDIS_CHART_DIR not exist."
-  }
-
-  [[ -n "${IMAGE_REGISTRY}" ]] || {
-    error "IMAGE_REGISTRY MUST set in environment variable."
-  }
+  [[ -d "${REDIS_CHART_DIR}" ]] || error "REDIS_CHART_DIR not exist."
+  [[ -n "${IMAGE_REGISTRY}" ]] || error "IMAGE_REGISTRY MUST set in environment variable."
 
   info "Install redis, It might take a long time..."
   helm install "${RELEASE}" "${REDIS_CHART_DIR}" \
@@ -154,7 +147,7 @@ verify_supported() {
   installed helm || error "helm is required"
   installed kubectl || error "kubectl is required"
 
-  [[ -n "${REDIS_PWD}" ]]|| error "REDIS_PWD MUST set in environment variable."
+  [[ -n "${REDIS_PWD}" ]] || error "REDIS_PWD MUST set in environment variable."
   [[ -n "${REDIS_NODE_NAMES}" ]] || error "REDIS_NODE_NAMES MUST set in environment variable."
 
   local node
@@ -168,9 +161,9 @@ verify_supported() {
 }
 
 init_log() {
-  if ! touch "${INSTALL_LOG_PATH}"; then
+  touch "${INSTALL_LOG_PATH}" || {
     error "Create log file ${INSTALL_LOG_PATH} error"
-  fi
+  }
   info "Log file create in path ${INSTALL_LOG_PATH}"
 }
 
@@ -183,7 +176,7 @@ init_log() {
 verify_installed() {
   local status
   status=$(helm status "${RELEASE}" -n "${REDIS_KUBE_NAMESPACE}" -o yaml | yq -r '.info.status')
-  [[ "${status}" != "deployed" ]] || {
+  [[ "${status}" == "deployed" ]] || {
     error "Helm release ${RELEASE} status is not deployed, use helm to check reason"
   }
 
