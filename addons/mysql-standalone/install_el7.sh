@@ -11,11 +11,7 @@
 #
 #        export MYSQL_STORAGECLASS_NAME="openebs-lvmsc-hdd"
 #
-# 3. MYSQL_PVC_SIZE_G MUST be set as environment variable, for an example:
-#
-#        export MYSQL_PVC_SIZE_G="50"
-#
-# 4. MYSQL_NODE_NAMES MUST be set as environment variable, for an example:
+# 3. MYSQL_NODE_NAMES MUST be set as environment variable, for an example:
 #
 #        export MYSQL_NODE_NAMES="kube-node01"
 #
@@ -26,6 +22,7 @@ readonly TIME_OUT_SECOND="600s"
 readonly CHART_VERSION="9.12.5"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
+MYSQL_PVC_SIZE_G="${NACOS_PVC_SIZE_G:-20}"
 MYSQL_SERVICE_TYPE="${MYSQL_SERVICE_TYPE:-ClusterIP}"
 MYSQL_KUBE_NAMESPACE="${MYSQL_KUBE_NAMESPACE:-default}"
 MYSQL_INITDB_CONFIGMAP="${MYSQL_INITDB_CONFIGMAP:-}"
