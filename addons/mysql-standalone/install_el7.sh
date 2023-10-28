@@ -30,7 +30,6 @@ MYSQL_SERVICE_TYPE="${MYSQL_SERVICE_TYPE:-ClusterIP}"
 MYSQL_KUBE_NAMESPACE="${MYSQL_KUBE_NAMESPACE:-default}"
 MYSQL_INITDB_CONFIGMAP="${MYSQL_INITDB_CONFIGMAP:-}"
 MYSQL_RESOURCE_LIMITS="${MYSQL_RESOURCE_LIMITS:-1}"
-MYSQL_CHART_DIR="${MYSQL_CHART_DIR:-./mysql}"
 INSTALL_LOG_PATH=/tmp/mysql-install-$(date +'%Y-%m-%d_%H-%M-%S').log
 
 if [[ ${MYSQL_SERVICE_TYPE} == "NodePort" ]]; then
@@ -133,17 +132,9 @@ offline_install_mysql() {
     error "${RELEASE} already installed. Use helm remove it first"
   fi
 
-  [[ -d "${MYSQL_CHART_DIR}" ]] || {
-    error "MYSQL_CHART_DIR not exist."
-  }
-
-  [[ -n "${IMAGE_REGISTRY}" ]] || {
-    error "IMAGE_REGISTRY MUST set in environment variable."
-  }
-
-  [[ -f ${MYSQL_CONFIG_FILE} ]] || {
-    error "MYSQL_CONFIG_FILE not exist."
-  }
+  [[ -d "${MYSQL_CHART_DIR}" ]] || error "MYSQL_CHART_DIR not exist."
+  [[ -n "${IMAGE_REGISTRY}" ]] || error "IMAGE_REGISTRY MUST set in environment variable."
+  [[ -f ${MYSQL_CONFIG_FILE} ]] || error "MYSQL_CONFIG_FILE not exist."
   local mysql_conf="${MYSQL_CONFIG_FILE}"
 
   info "Install mysql, It might take a long time..."
