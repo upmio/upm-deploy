@@ -196,6 +196,9 @@ offline_install_nacos() {
 verify_supported() {
   installed helm || error "helm is required"
   installed kubectl || error "kubectl is required"
+  installed curl || error "curl is required"
+  installed yq || error "yq is required"
+  installed jq || error "jq is required"
 
   [[ -n "${NACOS_MYSQL_HOST}" ]] || error "NACOS_MYSQL_HOST MUST set in environment variable."
   [[ -n "${NACOS_MYSQL_PORT}" ]] || error "NACOS_MYSQL_PORT MUST set in environment variable."
