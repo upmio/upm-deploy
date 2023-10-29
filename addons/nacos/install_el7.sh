@@ -146,7 +146,6 @@ offline_install_nacos() {
 
   info "Install nacos, It might take a long time..."
   helm install ${RELEASE} "${NACOS_CHART_DIR}" \
-    --debug \
     --namespace "${NACOS_KUBE_NAMESPACE}" \
     --create-namespace \
     --set-string image.tag="${NACOS_VERSION}" \
@@ -186,7 +185,7 @@ offline_install_nacos() {
     --set-string initDB.image.repository="dbscale/nacos-server-initdb" \
     --set-string initDB.image.tag="${NACOS_VERSION}" \
     --timeout $TIME_OUT_SECOND \
-    --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
+    --wait 2>&1 | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
   }
 
