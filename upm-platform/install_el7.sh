@@ -254,7 +254,6 @@ offline_install_upm_platform() {
   fi
 
   [[ -d "${PLATFORM_CHART_DIR}" ]] || error "PLATFORM_CHART_DIR not exist."
-  [[ -n "${IMAGE_REGISTRY}" ]] || error "IMAGE_REGISTRY MUST set in environment variable."
 
   info "Install upm-platform, It might take a long time..."
   helm install ${RELEASE} "${PLATFORM_CHART_DIR}" \

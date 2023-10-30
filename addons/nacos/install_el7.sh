@@ -142,7 +142,6 @@ offline_install_nacos() {
   fi
 
   [[ -d "${NACOS_CHART_DIR}" ]] || error "NACOS_CHART_DIR not exist."
-  [[ -n "${IMAGE_REGISTRY}" ]] || error "IMAGE_REGISTRY MUST set in environment variable."
 
   info "Install nacos, It might take a long time..."
   helm install ${RELEASE} "${NACOS_CHART_DIR}" \

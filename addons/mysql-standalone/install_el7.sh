@@ -130,7 +130,6 @@ offline_install_mysql() {
   fi
 
   [[ -d "${MYSQL_CHART_DIR}" ]] || error "MYSQL_CHART_DIR not exist."
-  [[ -n "${IMAGE_REGISTRY}" ]] || error "IMAGE_REGISTRY MUST set in environment variable."
   [[ -f ${MYSQL_CONFIG_FILE} ]] || error "MYSQL_CONFIG_FILE not exist."
   local mysql_conf="${MYSQL_CONFIG_FILE}"
 

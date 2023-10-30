@@ -110,7 +110,6 @@ offline_install_redis() {
   fi
 
   [[ -d "${REDIS_CHART_DIR}" ]] || error "REDIS_CHART_DIR not exist."
-  [[ -n "${IMAGE_REGISTRY}" ]] || error "IMAGE_REGISTRY MUST set in environment variable."
 
   info "Install redis, It might take a long time..."
   helm install "${RELEASE}" "${REDIS_CHART_DIR}" \

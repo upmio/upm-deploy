@@ -149,7 +149,6 @@ offline_install_clusterpedia() {
   fi
 
   [[ -d "${CLUSTERPEDIA_CHART_DIR}" ]] || error "CLUSTERPEDIA_CHART_DIR not exist."
-  [[ -n "${IMAGE_REGISTRY}" ]] || error "IMAGE_REGISTRY MUST set in environment variable."
 
   info "Install ${RELEASE}, It might take a long time..."
   helm install "${RELEASE}" "${CLUSTERPEDIA_CHART_DIR}" \
