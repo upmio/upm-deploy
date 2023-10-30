@@ -133,7 +133,6 @@ online_install_upm_platform() {
 
   info "Install upm-platform, It might take a long time..."
   helm install ${RELEASE} ${CHART} \
-    --debug \
     --version "${CHART_VERSION}" \
     --namespace "${PLATFORM_KUBE_NAMESPACE}" \
     --create-namespace \
@@ -240,7 +239,7 @@ online_install_upm_platform() {
     --set-string user.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string user.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
     --timeout $TIME_OUT_SECOND \
-    --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
+    --wait 2>&1 | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
   }
 
@@ -257,7 +256,6 @@ offline_install_upm_platform() {
 
   info "Install upm-platform, It might take a long time..."
   helm install ${RELEASE} "${PLATFORM_CHART_DIR}" \
-    --debug \
     --namespace "${PLATFORM_KUBE_NAMESPACE}" \
     --create-namespace \
     --set-string global.imageRegistry="${IMAGE_REGISTRY}" \
@@ -364,7 +362,7 @@ offline_install_upm_platform() {
     --set-string user.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string user.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
     --timeout $TIME_OUT_SECOND \
-    --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
+    --wait 2>&1 | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
   }
 
