@@ -148,6 +148,7 @@ offline_install_nacos() {
   helm install ${RELEASE} "${NACOS_CHART_DIR}" \
     --namespace "${NACOS_KUBE_NAMESPACE}" \
     --create-namespace \
+    --set-string global.imageRegistry="${IMAGE_REGISTRY}" \
     --set-string image.tag="${NACOS_VERSION}" \
     --set nodeAffinityPreset.type="hard" \
     --set nodeAffinityPreset.key="nacos\.io/control-plane" \
