@@ -4,9 +4,9 @@ metadata:
   labels:
     upm.io/owner: "upm"
     upm.io/workload: "true"
-  name: workload-cluster
+  name: upm-workload-cluster
 spec:
-  apiserver: ""
-  kubeconfig: ""
+  apiserver: "${workload_apiserver}"
+  kubeconfig: "${workload_kubeconfig_encode}"
   syncResourcesRefName: "global-base"
   syncResources: []

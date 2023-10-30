@@ -36,6 +36,8 @@ OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
 CLUSTERPEDIA_KUBE_NAMESPACE="${CLUSTERPEDIA_KUBE_NAMESPACE:-clusterpedia}"
 CLUSTERPEDIA_MYSQL_DATABASE="${CLUSTERPEDIA_MYSQL_DATABASE:-clusterpedia}"
 CLUSTERPEDIA_RESOURCE_LIMITS="${CLUSTERPEDIA_RESOURCE_LIMITS:-1}"
+CLUSTERPEDIA_CREATE_SYNCRESOURCES="${CLUSTERPEDIA_CREATE_SYNCRESOURCES:-false}"
+CLUSTERPEDIA_CREATE_PEDIACLUSTERS="${CLUSTERPEDIA_CREATE_PEDIACLUSTERS:-false}"
 INSTALL_LOG_PATH=/tmp/clusterpedia_install-$(date +'%Y-%m-%d_%H-%M-%S').log
 
 if [[ ${CLUSTERPEDIA_RESOURCE_LIMITS} -eq 0 ]]; then
@@ -247,12 +249,38 @@ verify_installed() {
 }
 
 create_clustersyncresources() {
-  info "create clustersyncresources..."
-  curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/clusterpedia/yaml/clustersyncresources.yaml | kubectl apply -f - || {
-    error "kubectl create clustersyncresources fail, check log use kubectl."
+  if [[ ${CLUSTERPEDIA_CREATE_SYNCRESOURCES} == "false" ]]; then
+    info "CLUSTERPEDIA_CREATE_SYNCRESOURCES is false, skip create clustersyncresources."
+    return
+  fi
+
+  [[ -f ${CLUSTERPEDIA_SYNCRESOURCES_YAML} ]] || {
+    local download_url="https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/clusterpedia/yaml/clustersyncresources.yaml"
+    curl -sSL "${download_url}" -o "${CLUSTERPEDIA_SYNCRESOURCES_YAML}" || {
+      error "curl get clustersyncresources.yaml failed"
+    }
+  }
+  kubectl apply -f "${CLUSTERPEDIA_SYNCRESOURCES_YAML}" || {
+    error "kubectl create clustersyncresources failed, check log use kubectl."
   }
 
   info "create clustersyncresources successful!"
+}
+
+create_pediaclusters() {
+  if [[ ${CLUSTERPEDIA_CREATE_PEDIACLUSTERS} == "false" ]]; then
+    info "CLUSTERPEDIA_CREATE_PEDIACLUSTERS is false, skip create pediaclusters."
+    return
+  fi
+
+  [[ -f ${CLUSTERPEDIA_PEDIACLUSTERS_YAML} ]] || {
+    error "curl get pediaclusters.yaml failed"
+  }
+  kubectl apply -f "${CLUSTERPEDIA_PEDIACLUSTERS_YAML}" || {
+    error "kubectl create pediaclusters failed, check log use kubectl."
+  }
+
+  info "create pediaclusters successful!"
 }
 
 main() {
@@ -265,6 +293,7 @@ main() {
   fi
   verify_installed
   create_clustersyncresources
+  create_pediaclusters
 }
 
 main

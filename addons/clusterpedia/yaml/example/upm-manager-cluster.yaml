@@ -4,9 +4,9 @@ metadata:
   labels:
     upm.io/owner: "upm"
     upm.io/manager: "true"
-  name: manager-cluster
+  name: upm-manager-cluster
 spec:
-  apiserver: ""
-  kubeconfig: ""
+  apiserver: "${manager_apiserver}"
+  kubeconfig: "${manager_kubeconfig_encode}"
   syncResourcesRefName: "global-base"
   syncResources: []
