@@ -155,6 +155,7 @@ offline_install_clusterpedia() {
   helm install "${RELEASE}" "${CLUSTERPEDIA_CHART_DIR}" \
     --namespace "${CLUSTERPEDIA_KUBE_NAMESPACE}" \
     --create-namespace \
+    --set-string global.imageRegistry="${IMAGE_REGISTRY}" \
     --set installCRDs=true \
     --set postgresql.enabled=false \
     --set mysql.enabled=false \
