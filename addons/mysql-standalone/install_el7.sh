@@ -138,6 +138,7 @@ offline_install_mysql() {
   helm install "${RELEASE}" "${MYSQL_CHART_DIR}" \
     --namespace "${MYSQL_KUBE_NAMESPACE}" \
     --create-namespace \
+    --set-string global.imageRegistry="${IMAGE_REGISTRY}" \
     --set-string initdbScriptsConfigMap="${MYSQL_INITDB_CONFIGMAP}" \
     --set-string architecture="standalone" \
     --set-string auth.rootPassword="${MYSQL_PWD}" \
