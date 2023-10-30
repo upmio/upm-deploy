@@ -22,9 +22,9 @@
 #
 #        export CLUSTERPEDIA_MYSQL_USER="clusterpedia"
 #
-# 6. CLUSTERPEDIA_MYSQL_PASSWORD MUST be set as environment variable, for an example:
+# 6. CLUSTERPEDIA_MYSQL_PWD MUST be set as environment variable, for an example:
 #
-#        export CLUSTERPEDIA_MYSQL_PASSWORD="password"
+#        export CLUSTERPEDIA_MYSQL_PWD="password"
 #
 
 readonly CHART="clusterpedia/clusterpedia"
@@ -115,7 +115,7 @@ online_install_clusterpedia() {
     --set externalStorage.host="${CLUSTERPEDIA_MYSQL_HOST}" \
     --set externalStorage.port="${CLUSTERPEDIA_MYSQL_PORT}" \
     --set externalStorage.user="${CLUSTERPEDIA_MYSQL_USER}" \
-    --set externalStorage.password="${CLUSTERPEDIA_MYSQL_PASSWORD}" \
+    --set externalStorage.password="${CLUSTERPEDIA_MYSQL_PWD}" \
     --set externalStorage.database="${CLUSTERPEDIA_MYSQL_DATABASE}" \
     --set controllerManager.replicaCount="${CLUSTERPEDIA_CONTROLLER_NODE_COUNT}" \
     --set controllerManager.nodeSelector."clusterpedia\.io/control-plane"="enable" \
@@ -167,7 +167,7 @@ offline_install_clusterpedia() {
     --set externalStorage.host="${CLUSTERPEDIA_MYSQL_HOST}" \
     --set externalStorage.port="${CLUSTERPEDIA_MYSQL_PORT}" \
     --set externalStorage.user="${CLUSTERPEDIA_MYSQL_USER}" \
-    --set externalStorage.password="${CLUSTERPEDIA_MYSQL_PASSWORD}" \
+    --set externalStorage.password="${CLUSTERPEDIA_MYSQL_PWD}" \
     --set externalStorage.database="${CLUSTERPEDIA_MYSQL_DATABASE}" \
     --set controllerManager.replicaCount="${CLUSTERPEDIA_CONTROLLER_NODE_COUNT}" \
     --set controllerManager.nodeSelector."clusterpedia\.io/control-plane"="enable" \
@@ -201,7 +201,7 @@ verify_supported() {
   [[ -n "${CLUSTERPEDIA_MYSQL_HOST}" ]] || error "CLUSTERPEDIA_MYSQL_HOST MUST set in environment variable."
   [[ -n "${CLUSTERPEDIA_MYSQL_PORT}" ]] || error "CLUSTERPEDIA_MYSQL_PORT MUST set in environment variable."
   [[ -n "${CLUSTERPEDIA_MYSQL_USER}" ]] || error "CLUSTERPEDIA_MYSQL_USER MUST set in environment variable."
-  [[ -n "${CLUSTERPEDIA_MYSQL_PASSWORD}" ]] || error "CLUSTERPEDIA_MYSQL_PASSWORD MUST set in environment variable."
+  [[ -n "${CLUSTERPEDIA_MYSQL_PWD}" ]] || error "CLUSTERPEDIA_MYSQL_PWD MUST set in environment variable."
 
   [[ -n "${CLUSTERPEDIA_CONTROLLER_NODE_NAMES}" ]] || error "CLUSTERPEDIA_CONTROLLER_NODE_NAMES MUST set in environment variable."
   [[ -n "${CLUSTERPEDIA_WORKER_NODE_NAMES}" ]] || error "CLUSTERPEDIA_WORKER_NODE_NAMES MUST set in environment variable."

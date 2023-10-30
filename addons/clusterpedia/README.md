@@ -24,7 +24,7 @@ CLUSTERPEDIA_MYSQL_PORT：外置MySQL数据库端口。
 
 CLUSTERPEDIA_MYSQL_USER：外置MySQL数据库登录用户名。
 
-CLUSTERPEDIA_MYSQL_PASSWORD：外置MySQL数据库登录密码。
+CLUSTERPEDIA_MYSQL_PWD：外置MySQL数据库登录密码。
 
 CLUSTERPEDIA_KUBE_NAMESPACE：指定安装命名空间，非必填项，默认值为`clusterpedia`。
 
@@ -34,7 +34,7 @@ export CLUSTERPEDIA_WORKER_NODE_NAMES="clusterpedia-control-plan01"
 export CLUSTERPEDIA_MYSQL_HOST="mysql"
 export CLUSTERPEDIA_MYSQL_PORT="3306"
 export CLUSTERPEDIA_MYSQL_USER="clusterpedia"
-export CLUSTERPEDIA_MYSQL_PASSWORD="password"
+export CLUSTERPEDIA_MYSQL_PWD="password"
 ```
 
 ### 3. 运行安装脚本
