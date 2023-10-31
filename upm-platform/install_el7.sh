@@ -113,6 +113,12 @@ installed() {
 create_kubeconf_configmap() {
   info "create kubeconf configmap..."
 
+  if kubectl get configmap upm-kubernetes -n "${PLATFORM_KUBE_NAMESPACE}" &>/dev/null; then
+    kubectl delete configmap upm-kubernetes -n "${PLATFORM_KUBE_NAMESPACE}" || {
+      echo "kubectl delete configmap failed !"
+    }
+  fi
+
   kubectl create configmap upm-kubernetes -n "${PLATFORM_KUBE_NAMESPACE}" --from-file=config="${PLATFORM_CLUSTERPEDIA_KUBECONF_YAML}" || {
     echo "kubectl create configmap failed !"
   }
