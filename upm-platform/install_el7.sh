@@ -60,10 +60,10 @@ readonly RELEASE="upm-platform"
 readonly TIME_OUT_SECOND="600s"
 readonly CHART_VERSION="1.1.0"
 readonly UI_VERSION="dev-b80f6bf4"
-readonly API_VERSION="dev-9398c8a7"
+readonly API_VERSION="dev-f0bade0c"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
-PLATFORM_INIT_DB="${PLATFORM_INIT_DB:-true}"
+PLATFORM_INIT_DB="${PLATFORM_INIT_DB:-false}"
 PLATFORM_KUBE_NAMESPACE="${PLATFORM_KUBE_NAMESPACE:-upm-system}"
 PLATFORM_SERVICE_TYPE="${PLATFORM_SERVICE_TYPE:-ClusterIP}"
 INSTALL_LOG_PATH=/tmp/upm-platform_install-$(date +'%Y-%m-%d_%H-%M-%S').log
