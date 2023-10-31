@@ -132,7 +132,7 @@ online_install_upm_platform() {
     error "${RELEASE} already installed. Use helm remove it first"
   fi
 
-  info "Start add helm bitnami repo"
+  info "Start add helm upm-charts repo"
   helm repo add upm-charts https://upmio.github.io/helm-charts &>/dev/null || error "Helm add upm-charts repo error."
   info "Start update helm upm-charts repo"
   helm repo update upm-charts 2>/dev/null || error "Helm update upm-charts repo error."
