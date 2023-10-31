@@ -50,9 +50,9 @@
 #
 #        export PLATFORM_REDIS_PWD="password"
 #
-# 13. PLATFORM_CLUSTERPEDIA_KUBECONF_PATH MUST be set as environment variable, for an example:
+# 13. PLATFORM_CLUSTERPEDIA_KUBECONF_YAML MUST be set as environment variable, for an example:
 #
-#        export PLATFORM_CLUSTERPEDIA_KUBECONF_PATH="/tmp/kubeconfig"
+#        export PLATFORM_CLUSTERPEDIA_KUBECONF_YAML="/tmp/kubeconfig"
 #
 
 readonly CHART="upm-charts/upm-platform"
@@ -113,7 +113,7 @@ installed() {
 create_kubeconf_configmap() {
   info "create kubeconf configmap..."
 
-  kubectl create configmap upm-kubernetes -n "${PLATFORM_KUBE_NAMESPACE}" --from-file=config="${PLATFORM_CLUSTERPEDIA_KUBECONF_PATH}" || {
+  kubectl create configmap upm-kubernetes -n "${PLATFORM_KUBE_NAMESPACE}" --from-file=config="${PLATFORM_CLUSTERPEDIA_KUBECONF_YAML}" || {
     echo "kubectl create configmap failed !"
   }
 
@@ -397,7 +397,7 @@ verify_supported() {
   [[ -n "${PLATFORM_REDIS_HOST}" ]] || error "PLATFORM_REDIS_HOST MUST set in environment variable."
   [[ -n "${PLATFORM_REDIS_PORT}" ]] || error "PLATFORM_REDIS_PORT MUST set in environment variable."
   [[ -n "${PLATFORM_REDIS_PWD}" ]] || error "PLATFORM_REDIS_PWD MUST set in environment variable."
-  [[ -n "${PLATFORM_CLUSTERPEDIA_KUBECONF_PATH}" ]] || error "PLATFORM_CLUSTERPEDIA_KUBECONF_PATH MUST set in environment variable."
+  [[ -n "${PLATFORM_CLUSTERPEDIA_KUBECONF_YAML}" ]] || error "PLATFORM_CLUSTERPEDIA_KUBECONF_YAML MUST set in environment variable."
 }
 
 init_log() {
