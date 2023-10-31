@@ -59,7 +59,7 @@ readonly CHART="upm-charts/upm-platform"
 readonly RELEASE="upm-platform"
 readonly TIME_OUT_SECOND="600s"
 readonly CHART_VERSION="1.1.0"
-readonly UI_VERSION="dev-b80f6bf4"
+readonly UI_VERSION="dev-158cc931"
 readonly API_VERSION="dev-f0bade0c"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
