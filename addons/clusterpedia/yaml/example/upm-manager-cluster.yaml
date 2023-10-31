@@ -3,7 +3,6 @@ kind: PediaCluster
 metadata:
   labels:
     upm.io/owner: "upm"
-    upm.io/manager: "true"
   name: upm-manager-cluster
 spec:
   apiserver: "${manager_apiserver}"
