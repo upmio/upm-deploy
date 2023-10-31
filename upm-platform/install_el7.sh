@@ -258,13 +258,14 @@ offline_install_upm_platform() {
     error "${RELEASE} already installed. Use helm remove it first"
   fi
 
+  local image_registry="${IMAGE_REGISTRY:-}"
   [[ -d "${PLATFORM_CHART_DIR}" ]] || error "PLATFORM_CHART_DIR not exist."
 
   info "Install upm-platform, It might take a long time..."
   helm install ${RELEASE} "${PLATFORM_CHART_DIR}" \
     --namespace "${PLATFORM_KUBE_NAMESPACE}" \
     --create-namespace \
-    --set-string global.imageRegistry="${IMAGE_REGISTRY}" \
+    --set-string global.imageRegistry="${image_registry}" \
     --set-string mysql.host="${PLATFORM_MYSQL_HOST}" \
     --set mysql.port="${PLATFORM_MYSQL_PORT}" \
     --set-string mysql.username="${PLATFORM_MYSQL_USER}" \
