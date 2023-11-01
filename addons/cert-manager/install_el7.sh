@@ -10,7 +10,7 @@
 readonly CHART="bitnami/cert-manager"
 readonly RELEASE="cert-manager"
 readonly TIME_OUT_SECOND="600s"
-readonly VERSION="0.12.11"
+readonly CHART_VERSION="0.12.11"
 
 CERT_MANAGER_KUBE_NAMESPACE="${CERT_MANAGER_KUBE_NAMESPACE:-cert-manager}"
 CERT_MANAGER_RESOURCE_LIMITS_CPU="${CERT_MANAGER_RESOURCE_LIMITS_CPU:-500m}"
@@ -25,7 +25,7 @@ CERT_MANAGER_CAINJECTOR_RESOURCE_LIMITS_CPU="${CERT_MANAGER_CAINJECTOR_RESOURCE_
 CERT_MANAGER_CAINJECTOR_RESOURCE_LIMITS_MEMORY="${CERT_MANAGER_CAINJECTOR_RESOURCE_LIMITS_MEMORY:-128Mi}"
 CERT_MANAGER_CAINJECTOR_RESOURCE_REQUESTS_CPU="${CERT_MANAGER_CAINJECTOR_RESOURCE_REQUESTS_CPU:-100m}"
 CERT_MANAGER_CAINJECTOR_RESOURCE_REQUESTS_MEMORY="${CERT_MANAGER_CAINJECTOR_RESOURCE_REQUESTS_MEMORY:-128Mi}"
-INSTALL_LOG_PATH=""
+INSTALL_LOG_PATH=/tmp/cert-manager_install-$(date +'%Y-%m-%d_%H-%M-%S').log
 
 info() {
   echo "[Info][$(date +'%Y-%m-%dT%H:%M:%S%z')]: $*" | tee -a "${INSTALL_LOG_PATH}"
@@ -36,38 +36,24 @@ error() {
   exit 1
 }
 
-install_kubectl() {
-  info "Install kubectl..."
-  if ! curl -LOs "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"; then
-    error "Fail to get kubectl, please confirm whether the connection to dl.k8s.io is ok?"
-  fi
-  if ! sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl; then
-    error "Install kubectl fail"
-  fi
-  info "Kubectl install completed"
+installed() {
+  command -v "$1" >/dev/null 2>&1
 }
 
-install_helm() {
-  info "Install helm..."
-  if ! curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3; then
-    error "Fail to get helm installed script, please confirm whether the connection to raw.githubusercontent.com is ok?"
-  fi
-  chmod 700 get_helm.sh
-  if ! ./get_helm.sh; then
-    error "Fail to get helm when running get_helm.sh"
-  fi
-  info "Helm install completed"
-}
-
-install_cert_managers() {
+online_install_cert_manager() {
   # check if cert-manager already installed
   if helm status ${RELEASE} -n "${CERT_MANAGER_KUBE_NAMESPACE}" &>/dev/null; then
     error "${RELEASE} already installed. Use helm remove it first"
   fi
+
+  info "Start add helm bitnami repo"
+  helm repo add bitnami https://charts.bitnami.com/bitnami &>/dev/null || error "Helm add bitnami repo error."
+  info "Start update helm bitnami repo"
+  helm repo update bitnami 2>/dev/null || error "Helm update bitnami repo error."
+
   info "Install cert-manager, It might take a long time..."
   helm install ${RELEASE} ${CHART} \
-    --debug \
-    --version "${VERSION}" \
+    --version "${CHART_VERSION}" \
     --namespace "${CERT_MANAGER_KUBE_NAMESPACE}" \
     --create-namespace \
     --set installCRDs=true \
@@ -88,36 +74,54 @@ install_cert_managers() {
     --set-string cainjector.resources.requests.cpu="${CERT_MANAGER_CAINJECTOR_RESOURCE_REQUESTS_CPU}" \
     --set-string cainjector.resources.requests.memory="${CERT_MANAGER_CAINJECTOR_RESOURCE_REQUESTS_MEMORY}" \
     --timeout $TIME_OUT_SECOND \
-    --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
+    --wait 2>&1 | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
   }
 
   #TODO: check more resources after install
 }
 
-init_helm_repo() {
-  info "Start add helm bitnami repo"
-  helm repo add bitnami https://charts.bitnami.com/bitnami &>/dev/null || {
-    error "Helm add bitnami repo error."
+offline_install_cert_manager() {
+  # check if cert-manager already installed
+  if helm status ${RELEASE} -n "${CERT_MANAGER_KUBE_NAMESPACE}" &>/dev/null; then
+    error "${RELEASE} already installed. Use helm remove it first"
+  fi
+
+  [[ -d "${CERT_MANAGER_CHART_DIR}" ]] || error "CERT_MANAGER_CHART_DIR not exist."
+
+  info "Install cert-manager, It might take a long time..."
+  helm install ${RELEASE} "${CERT_MANAGER_CHART_DIR}" \
+    --version "${CHART_VERSION}" \
+    --namespace "${CERT_MANAGER_KUBE_NAMESPACE}" \
+    --create-namespace \
+    --set-string global.imageRegistry="${IMAGE_REGISTRY}" \
+    --set installCRDs=true \
+    --set controller.nodeSelector."cert-manager/node"="enable" \
+    --set-string controller.resources.limits.cpu="${CERT_MANAGER_RESOURCE_LIMITS_CPU}" \
+    --set-string controller.resources.limits.memory="${CERT_MANAGER_RESOURCE_LIMITS_MEMORY}" \
+    --set-string controller.resources.requests.cpu="${CERT_MANAGER_RESOURCE_REQUESTS_CPU}" \
+    --set-string controller.resources.requests.memory="${CERT_MANAGER_RESOURCE_REQUESTS_MEMORY}" \
+    --set 'controller.extraArgs={--enable-certificate-owner-ref=true}' \
+    --set webhook.nodeSelector."cert-manager/node"="enable" \
+    --set-string webhook.resources.limits.cpu="${CERT_MANAGER_WEBHOOK_RESOURCE_LIMITS_CPU}" \
+    --set-string webhook.resources.limits.memory="${CERT_MANAGER_WEBHOOK_RESOURCE_LIMITS_MEMORY}" \
+    --set-string webhook.resources.requests.cpu="${CERT_MANAGER_WEBHOOK_RESOURCE_REQUESTS_CPU}" \
+    --set-string webhook.resources.requests.memory="${CERT_MANAGER_WEBHOOK_RESOURCE_REQUESTS_MEMORY}" \
+    --set cainjector.nodeSelector."cert-manager/node"="enable" \
+    --set-string cainjector.resources.limits.cpu="${CERT_MANAGER_CAINJECTOR_RESOURCE_LIMITS_CPU}" \
+    --set-string cainjector.resources.limits.memory="${CERT_MANAGER_CAINJECTOR_RESOURCE_LIMITS_MEMORY}" \
+    --set-string cainjector.resources.requests.cpu="${CERT_MANAGER_CAINJECTOR_RESOURCE_REQUESTS_CPU}" \
+    --set-string cainjector.resources.requests.memory="${CERT_MANAGER_CAINJECTOR_RESOURCE_REQUESTS_MEMORY}" \
+    --timeout $TIME_OUT_SECOND \
+    --wait 2>&1 | tee -a "${INSTALL_LOG_PATH}" || {
+    error "Fail to install ${RELEASE}."
   }
 
-  info "Start update helm bitnami repo"
-  helm repo update bitnami 2>/dev/null || {
-    error "Helm update bitnami repo error."
-  }
+  #TODO: check more resources after install
 }
 
 verify_supported() {
-  local HAS_HELM
-  HAS_HELM="$(type "helm" &>/dev/null && echo true || echo false)"
-  local HAS_KUBECTL
-  HAS_KUBECTL="$(type "kubectl" &>/dev/null && echo true || echo false)"
-  local HAS_CURL
-  HAS_CURL="$(type "curl" &>/dev/null && echo true || echo false)"
-
-  if [[ -z "${CERT_MANAGER_NODE_NAMES}" ]]; then
-    error "CERT_MANAGER_NODE_NAMES MUST set in environment variable."
-  fi
+  [[ -z "${CERT_MANAGER_NODE_NAMES}" ]] || error "CERT_MANAGER_NODE_NAMES MUST set in environment variable."
 
   local node
   local node_array
@@ -127,25 +131,10 @@ verify_supported() {
       error "kubectl label node ${node} 'cert-manager/node=enable' failed, use kubectl to check reason"
     }
   done
-
-  if [[ "${HAS_CURL}" != "true" ]]; then
-    error "curl is required"
-  fi
-
-  if [[ "${HAS_HELM}" != "true" ]]; then
-    install_helm
-  fi
-
-  if [[ "${HAS_KUBECTL}" != "true" ]]; then
-    install_kubectl
-  fi
 }
 
 init_log() {
-  INSTALL_LOG_PATH=/tmp/cert-manager_install-$(date +'%Y-%m-%d_%H-%M-%S').log
-  if ! touch "${INSTALL_LOG_PATH}"; then
-    error "Create log file ${INSTALL_LOG_PATH} error"
-  fi
+  touch "${INSTALL_LOG_PATH}" || error "Create log file ${INSTALL_LOG_PATH} error"
   info "Log file create in path ${INSTALL_LOG_PATH}"
 }
 
@@ -156,8 +145,10 @@ init_log() {
 #   namespace
 ############################################
 verify_installed() {
-  helm status "${RELEASE}" -n "${CERT_MANAGER_KUBE_NAMESPACE}" | grep deployed &>/dev/null || {
-    error "${RELEASE} installed fail, check log use helm and kubectl."
+  local status
+  status=$(helm status "${RELEASE}" -n "${NACOS_KUBE_NAMESPACE}" -o yaml | yq -r '.info.status')
+  [[ "${status}" == "deployed" ]] || {
+    error "Helm release ${RELEASE} status is not deployed, use helm to check reason"
   }
 
   info "${RELEASE} Deployment Completed!"
@@ -166,8 +157,11 @@ verify_installed() {
 main() {
   init_log
   verify_supported
-  init_helm_repo
-  install_cert_managers
+  if [[ ${OFFLINE_INSTALL} == "false" ]]; then
+    online_install_cert_manager
+  elif [[ ${OFFLINE_INSTALL} == "true" ]]; then
+    offline_install_cert_manager
+  fi
   verify_installed
 }
 
