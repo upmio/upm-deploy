@@ -60,7 +60,7 @@ readonly RELEASE="upm-platform"
 readonly TIME_OUT_SECOND="600s"
 readonly CHART_VERSION="1.1.0"
 readonly UI_VERSION="dev-f4c5becd"
-readonly API_VERSION="dev-6878d8ca"
+readonly API_VERSION="dev-23d118a7"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
 PLATFORM_INIT_DB="${PLATFORM_INIT_DB:-false}"
@@ -193,7 +193,7 @@ online_install_upm_platform() {
     --set-string gateway.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
     --set-string operatelog.image.tag="${API_VERSION}" \
     --set operatelog.replicaCount="${PLATFORM_NODE_COUNT}" \
-    --set operatelog.rdb.init=${PLATFORM_INIT_DB} \
+    --set operatelog.initDB.enabled=${PLATFORM_INIT_DB} \
     --set-string operatelog.nodeAffinityPreset.type="hard" \
     --set-string operatelog.nodeAffinityPreset.key="upm\.platform\.node" \
     --set-string operatelog.nodeAffinityPreset.values='{enable}' \
@@ -203,7 +203,7 @@ online_install_upm_platform() {
     --set-string operatelog.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
     --set-string resource.image.tag="${API_VERSION}" \
     --set resource.replicaCount="${PLATFORM_NODE_COUNT}" \
-    --set resource.rdb.init=${PLATFORM_INIT_DB} \
+    --set resource.initDB.enabled=${PLATFORM_INIT_DB} \
     --set-string resource.nodeAffinityPreset.type="hard" \
     --set-string resource.nodeAffinityPreset.key="upm\.platform\.node" \
     --set-string resource.nodeAffinityPreset.values='{enable}' \
@@ -213,7 +213,7 @@ online_install_upm_platform() {
     --set-string resource.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
     --set-string service-easysearch.image.tag="${API_VERSION}" \
     --set service-easysearch.replicaCount="${PLATFORM_NODE_COUNT}" \
-    --set service-easysearch.rdb.init=${PLATFORM_INIT_DB} \
+    --set service-easysearch.initDB.enabled=${PLATFORM_INIT_DB} \
     --set-string service-easysearch.nodeAffinityPreset.type="hard" \
     --set-string service-easysearch.nodeAffinityPreset.key="upm\.platform\.node" \
     --set-string service-easysearch.nodeAffinityPreset.values='{enable}' \
@@ -223,7 +223,7 @@ online_install_upm_platform() {
     --set-string service-easysearch.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
     --set-string service-kafka.image.tag="${API_VERSION}" \
     --set service-kafka.replicaCount="${PLATFORM_NODE_COUNT}" \
-    --set service-kafka.rdb.init=${PLATFORM_INIT_DB} \
+    --set service-kafka.initDB.enabled=${PLATFORM_INIT_DB} \
     --set-string service-kafka.nodeAffinityPreset.type="hard" \
     --set-string service-kafka.nodeAffinityPreset.key="upm\.platform\.node" \
     --set-string service-kafka.nodeAffinityPreset.values='{enable}' \
@@ -233,7 +233,7 @@ online_install_upm_platform() {
     --set-string service-kafka.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
     --set-string service-mysql.image.tag="${API_VERSION}" \
     --set service-mysql.replicaCount="${PLATFORM_NODE_COUNT}" \
-    --set service-mysql.rdb.init=${PLATFORM_INIT_DB} \
+    --set service-mysql.initDB.enabled=${PLATFORM_INIT_DB} \
     --set-string service-mysql.nodeAffinityPreset.type="hard" \
     --set-string service-mysql.nodeAffinityPreset.key="upm\.platform\.node" \
     --set-string service-mysql.nodeAffinityPreset.values='{enable}' \
@@ -243,7 +243,7 @@ online_install_upm_platform() {
     --set-string service-mysql.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
     --set-string user.image.tag="${API_VERSION}" \
     --set user.replicaCount="${PLATFORM_NODE_COUNT}" \
-    --set user.rdb.init=${PLATFORM_INIT_DB} \
+    --set user.initDB.enabled=${PLATFORM_INIT_DB} \
     --set-string user.nodeAffinityPreset.type="hard" \
     --set-string user.nodeAffinityPreset.key="upm\.platform\.node" \
     --set-string user.nodeAffinityPreset.values='{enable}' \
@@ -323,7 +323,7 @@ offline_install_upm_platform() {
     --set-string gateway.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
     --set-string operatelog.image.tag="${API_VERSION}" \
     --set operatelog.replicaCount="${PLATFORM_NODE_COUNT}" \
-    --set operatelog.rdb.init=${PLATFORM_INIT_DB} \
+    --set operatelog.initDB.enabled=${PLATFORM_INIT_DB} \
     --set-string operatelog.nodeAffinityPreset.type="hard" \
     --set-string operatelog.nodeAffinityPreset.key="upm\.platform\.node" \
     --set-string operatelog.nodeAffinityPreset.values='{enable}' \
@@ -333,7 +333,7 @@ offline_install_upm_platform() {
     --set-string operatelog.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
     --set-string resource.image.tag="${API_VERSION}" \
     --set resource.replicaCount="${PLATFORM_NODE_COUNT}" \
-    --set resource.rdb.init=${PLATFORM_INIT_DB} \
+    --set resource.initDB.enabled=${PLATFORM_INIT_DB} \
     --set-string resource.nodeAffinityPreset.type="hard" \
     --set-string resource.nodeAffinityPreset.key="upm\.platform\.node" \
     --set-string resource.nodeAffinityPreset.values='{enable}' \
@@ -343,7 +343,7 @@ offline_install_upm_platform() {
     --set-string resource.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
     --set-string service-easysearch.image.tag="${API_VERSION}" \
     --set service-easysearch.replicaCount="${PLATFORM_NODE_COUNT}" \
-    --set service-easysearch.rdb.init=${PLATFORM_INIT_DB} \
+    --set service-easysearch.initDB.enabled=${PLATFORM_INIT_DB} \
     --set-string service-easysearch.nodeAffinityPreset.type="hard" \
     --set-string service-easysearch.nodeAffinityPreset.key="upm\.platform\.node" \
     --set-string service-easysearch.nodeAffinityPreset.values='{enable}' \
@@ -353,7 +353,7 @@ offline_install_upm_platform() {
     --set-string service-easysearch.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
     --set-string service-kafka.image.tag="${API_VERSION}" \
     --set service-kafka.replicaCount="${PLATFORM_NODE_COUNT}" \
-    --set service-kafka.rdb.init=${PLATFORM_INIT_DB} \
+    --set service-kafka.initDB.enabled=${PLATFORM_INIT_DB} \
     --set-string service-kafka.nodeAffinityPreset.type="hard" \
     --set-string service-kafka.nodeAffinityPreset.key="upm\.platform\.node" \
     --set-string service-kafka.nodeAffinityPreset.values='{enable}' \
@@ -363,7 +363,7 @@ offline_install_upm_platform() {
     --set-string service-kafka.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
     --set-string service-mysql.image.tag="${API_VERSION}" \
     --set service-mysql.replicaCount="${PLATFORM_NODE_COUNT}" \
-    --set service-mysql.rdb.init=${PLATFORM_INIT_DB} \
+    --set service-mysql.initDB.enabled=${PLATFORM_INIT_DB} \
     --set-string service-mysql.nodeAffinityPreset.type="hard" \
     --set-string service-mysql.nodeAffinityPreset.key="upm\.platform\.node" \
     --set-string service-mysql.nodeAffinityPreset.values='{enable}' \
@@ -373,7 +373,7 @@ offline_install_upm_platform() {
     --set-string service-mysql.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
     --set-string user.image.tag="${API_VERSION}" \
     --set user.replicaCount="${PLATFORM_NODE_COUNT}" \
-    --set user.rdb.init=${PLATFORM_INIT_DB} \
+    --set user.initDB.enabled=${PLATFORM_INIT_DB} \
     --set-string user.nodeAffinityPreset.type="hard" \
     --set-string user.nodeAffinityPreset.key="upm\.platform\.node" \
     --set-string user.nodeAffinityPreset.values='{enable}' \
