@@ -121,7 +121,7 @@ offline_install_cert_manager() {
 }
 
 verify_supported() {
-  [[ -z "${CERT_MANAGER_NODE_NAMES}" ]] || error "CERT_MANAGER_NODE_NAMES MUST set in environment variable."
+  [[ -n "${CERT_MANAGER_NODE_NAMES}" ]] || error "CERT_MANAGER_NODE_NAMES MUST set in environment variable."
 
   local node
   local node_array
