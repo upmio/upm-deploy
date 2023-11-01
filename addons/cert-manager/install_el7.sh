@@ -146,7 +146,7 @@ init_log() {
 ############################################
 verify_installed() {
   local status
-  status=$(helm status "${RELEASE}" -n "${NACOS_KUBE_NAMESPACE}" -o yaml | yq -r '.info.status')
+  status=$(helm status "${RELEASE}" -n "${CERT_MANAGER_KUBE_NAMESPACE}" -o yaml | yq -r '.info.status')
   [[ "${status}" == "deployed" ]] || {
     error "Helm release ${RELEASE} status is not deployed, use helm to check reason"
   }
