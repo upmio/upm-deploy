@@ -129,6 +129,7 @@ verify_supported() {
   installed kubectl || error "kubectl is required"
   installed curl || error "curl is required"
   installed yq || error "yq is required"
+  installed envsubst || error "envsubst is required"
 
   [[ -n "${OPENEBS_STORAGECLASS_NAME}" ]] || error "OPENEBS_STORAGECLASS_NAME MUST set in environment variable."
   [[ -n "${OPENEBS_VG_NAME}" ]] || error "OPENEBS_VG_NAME MUST set in environment variable."
