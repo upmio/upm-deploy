@@ -96,26 +96,35 @@ offline_install_lvmlocalpv() {
 
   [[ -d "${OPENEBS_CHART_DIR}" ]] || error "OPENEBS_CHART_DIR not exist."
 
+  local image_registry plugin_image_registry
+  if [[ -z "${IMAGE_REGISTRY}" ]]; then
+    image_registry='registry.k8s.io/'
+    plugin_image_registry=''
+  else
+    image_registry="${IMAGE_REGISTRY}/"
+    plugin_image_registry="${IMAGE_REGISTRY}/"
+  fi
+
   info "Install openebs-lvmlocalpv, It might take a long time..."
   helm install ${RELEASE} "${OPENEBS_CHART_DIR}" \
     --namespace "${OPENEBS_KUBE_NAMESPACE}" \
     --create-namespace \
-    --set-string lvmController.resizer.image.registry="${IMAGE_REGISTRY}/" \
-    --set-string lvmController.snapshotter.image.registry="${IMAGE_REGISTRY}/" \
-    --set-string lvmController.snapshotController.image.registry="${IMAGE_REGISTRY}/" \
-    --set-string lvmController.provisioner.image.registry="${IMAGE_REGISTRY}/" \
+    --set-string lvmController.resizer.image.registry="${image_registry}" \
+    --set-string lvmController.snapshotter.image.registry="${image_registry}" \
+    --set-string lvmController.snapshotController.image.registry="${image_registry}" \
+    --set-string lvmController.provisioner.image.registry="${image_registry}" \
     --set lvmController.nodeSelector."openebs\.io/control-plane"="enable" \
     --set-string lvmController.resources.limits.cpu="${OPENEBS_CONTROLLER_RESOURCE_LIMITS_CPU}" \
     --set-string lvmController.resources.limits.memory="${OPENEBS_CONTROLLER_RESOURCE_LIMITS_MEMORY}" \
     --set-string lvmController.resources.requests.cpu="${OPENEBS_CONTROLLER_RESOURCE_REQUESTS_CPU}" \
     --set-string lvmController.resources.requests.memory="${OPENEBS_CONTROLLER_RESOURCE_REQUESTS_MEMORY}" \
-    --set-string lvmNode.driverRegistrar.image.registry="${IMAGE_REGISTRY}/" \
+    --set-string lvmNode.driverRegistrar.image.registry="${image_registry}" \
     --set lvmNode.nodeSelector."openebs\.io/node"="enable" \
     --set-string lvmNode.resources.limits.cpu="${OPENEBS_NODE_RESOURCE_LIMITS_CPU}" \
     --set-string lvmNode.resources.limits.memory="${OPENEBS_NODE_RESOURCE_LIMITS_MEMORY}" \
     --set-string lvmNode.resources.requests.cpu="${OPENEBS_NODE_RESOURCE_REQUESTS_CPU}" \
     --set-string lvmNode.resources.requests.memory="${OPENEBS_NODE_RESOURCE_REQUESTS_MEMORY}" \
-    --set-string lvmPlugin.image.registry="${IMAGE_REGISTRY}/" \
+    --set-string lvmPlugin.image.registry="${plugin_image_registry}" \
     --set lvmPlugin.allowedTopologies='kubernetes\.io/hostname\,openebs\.io/node' \
     --set analytics.enabled=false \
     --timeout $TIME_OUT_SECOND \
