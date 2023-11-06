@@ -100,22 +100,22 @@ offline_install_lvmlocalpv() {
   helm install ${RELEASE} "${OPENEBS_CHART_DIR}" \
     --namespace "${OPENEBS_KUBE_NAMESPACE}" \
     --create-namespace \
-    --set-string lvmController.resizer.image.registry="${IMAGE_REGISTRY}" \
-    --set-string lvmController.snapshotter.image.registry="${IMAGE_REPOSITORY}" \
-    --set-string lvmController.snapshotController.image.registry="${IMAGE_REGISTRY}" \
-    --set-string lvmController.provisioner.image.registry="${IMAGE_REGISTRY}" \
+    --set-string lvmController.resizer.image.registry="${IMAGE_REGISTRY}/" \
+    --set-string lvmController.snapshotter.image.registry="${IMAGE_REPOSITORY}/" \
+    --set-string lvmController.snapshotController.image.registry="${IMAGE_REGISTRY}/" \
+    --set-string lvmController.provisioner.image.registry="${IMAGE_REGISTRY}/" \
     --set lvmController.nodeSelector."openebs\.io/control-plane"="enable" \
     --set-string lvmController.resources.limits.cpu="${OPENEBS_CONTROLLER_RESOURCE_LIMITS_CPU}" \
     --set-string lvmController.resources.limits.memory="${OPENEBS_CONTROLLER_RESOURCE_LIMITS_MEMORY}" \
     --set-string lvmController.resources.requests.cpu="${OPENEBS_CONTROLLER_RESOURCE_REQUESTS_CPU}" \
     --set-string lvmController.resources.requests.memory="${OPENEBS_CONTROLLER_RESOURCE_REQUESTS_MEMORY}" \
-    --set-string lvmNode.driverRegistrar.image.registry="${IMAGE_REGISTRY}" \
+    --set-string lvmNode.driverRegistrar.image.registry="${IMAGE_REGISTRY}/" \
     --set lvmNode.nodeSelector."openebs\.io/node"="enable" \
     --set-string lvmNode.resources.limits.cpu="${OPENEBS_NODE_RESOURCE_LIMITS_CPU}" \
     --set-string lvmNode.resources.limits.memory="${OPENEBS_NODE_RESOURCE_LIMITS_MEMORY}" \
     --set-string lvmNode.resources.requests.cpu="${OPENEBS_NODE_RESOURCE_REQUESTS_CPU}" \
     --set-string lvmNode.resources.requests.memory="${OPENEBS_NODE_RESOURCE_REQUESTS_MEMORY}" \
-    --set-string lvmPlugin.image.registry="${IMAGE_REGISTRY}" \
+    --set-string lvmPlugin.image.registry="${IMAGE_REGISTRY}/" \
     --set lvmPlugin.allowedTopologies='kubernetes\.io/hostname\,openebs\.io/node' \
     --set analytics.enabled=false \
     --timeout $TIME_OUT_SECOND \
