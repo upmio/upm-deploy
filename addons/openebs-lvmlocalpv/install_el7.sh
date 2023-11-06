@@ -26,6 +26,8 @@ readonly CHART_VERSION="1.3.0"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
 OPENEBS_KUBE_NAMESPACE="${OPENEBS_KUBE_NAMESPACE:-openebs}"
+OPENEBS_CREATE_STORAGECLASS="${OPENEBS_CREATE_STORAGECLASS:-false}"
+OPENEBS_STORAGECLASS_YAML="${OPENEBS_STORAGECLASS_YAML:-/tmp/storageclass.yaml}"
 INSTALL_LOG_PATH=/tmp/openebs-lvmlocalpv_install-$(date +'%Y-%m-%d_%H-%M-%S').log
 
 OPENEBS_CONTROLLER_RESOURCE_LIMITS_CPU="${OPENEBS_CONTROLLER_RESOURCE_LIMITS_CPU:-500m}"
@@ -175,9 +177,20 @@ verify_installed() {
 }
 
 create_storageclass() {
-  info "create storageclass..."
-  curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/openebs-lvmlocalpv/yaml/storageclass.yaml | envsubst | kubectl apply -f - || {
-    error "kubectl create storageclass fail, check log use kubectl."
+  if [[ ${OPENEBS_CREATE_STORAGECLASS} == "false" ]]; then
+    info "OPENEBS_CREATE_STORAGECLASS is false, skip create storageclass."
+    return
+  fi
+
+  [[ -f ${OPENEBS_STORAGECLASS_YAML} ]] || {
+    local download_url="https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/openebs-lvmlocalpv/yaml/storageclass.yaml"
+    curl -sSL "${download_url}" -o "${OPENEBS_STORAGECLASS_YAML}" || {
+      error "curl get storageclass.yaml failed"
+    }
+  }
+
+  envsubst <"${OPENEBS_STORAGECLASS_YAML}" | kubectl apply -f - || {
+    error "kubectl create storageclass failed, check log use kubectl."
   }
 
   info "create storageclass successful!"
