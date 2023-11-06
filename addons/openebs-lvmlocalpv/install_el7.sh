@@ -101,7 +101,7 @@ offline_install_lvmlocalpv() {
     --namespace "${OPENEBS_KUBE_NAMESPACE}" \
     --create-namespace \
     --set-string lvmController.resizer.image.registry="${IMAGE_REGISTRY}/" \
-    --set-string lvmController.snapshotter.image.registry="${IMAGE_REPOSITORY}/" \
+    --set-string lvmController.snapshotter.image.registry="${IMAGE_REGISTRY}/" \
     --set-string lvmController.snapshotController.image.registry="${IMAGE_REGISTRY}/" \
     --set-string lvmController.provisioner.image.registry="${IMAGE_REGISTRY}/" \
     --set lvmController.nodeSelector."openebs\.io/control-plane"="enable" \
