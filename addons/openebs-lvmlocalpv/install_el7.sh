@@ -168,7 +168,7 @@ init_log() {
 ############################################
 verify_installed() {
   local status
-  status=$(helm status "${RELEASE}" -n "${NACOS_KUBE_NAMESPACE}" -o yaml | yq -r '.info.status')
+  status=$(helm status "${RELEASE}" -n "${OPENEBS_KUBE_NAMESPACE}" -o yaml | yq -r '.info.status')
   [[ "${status}" == "deployed" ]] || {
     error "Helm release ${RELEASE} status is not deployed, use helm to check reason"
   }
@@ -189,7 +189,9 @@ create_storageclass() {
     }
   }
 
-  envsubst <"${OPENEBS_STORAGECLASS_YAML}" | kubectl apply -f - || {
+  OPENEBS_STORAGECLASS_NAME="${OPENEBS_STORAGECLASS_NAME}" \
+    OPENEBS_VG_NAME="${OPENEBS_VG_NAME}" \
+    envsubst <"${OPENEBS_STORAGECLASS_YAML}" | kubectl apply -f - || {
     error "kubectl create storageclass failed, check log use kubectl."
   }
 
