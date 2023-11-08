@@ -11,6 +11,7 @@ spec:
         - namespaces
         - configmaps
         - secrets
+        - services
     - group: "apps"
       resources:
         - "*"
@@ -21,5 +22,11 @@ spec:
       resources:
         - "*"
     - group: "gauntlet.bsgchina.com"
+      resources:
+        - "*"
+    - group: "unitset.bsgchina.com"
+      resources:
+        - "*"
+    - group: "unit.bsgchina.com"
       resources:
         - "*"
