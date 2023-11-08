@@ -41,6 +41,16 @@ NACOS_CLIENT_PORT="$((NACOS_PORT + 1000))"
 NACOS_RAFT_PORT="$((NACOS_PORT + 1001))"
 NACOS_KUBE_NAMESPACE="${NACOS_KUBE_NAMESPACE:-nacos}"
 NACOS_NAMESPACE="${NACOS_NAMESPACE:-}"
+NACOS_SERVICE_TYPE="${NACOS_SERVICE_TYPE:-ClusterIP}"
+
+if [[ ${NACOS_SERVICE_TYPE} == "NodePort" ]]; then
+  NACOS_NODEPORT="${NACOS_NODEPORT:-32008}"
+elif [[ ${NACOS_SERVICE_TYPE} == "ClusterIP" ]] || [[ ${NACOS_SERVICE_TYPE} == "LoadBalancer" ]]; then
+  NACOS_NODEPORT=null
+else
+  error "NACOS_SERVICE_TYPE must be NodePort or ClusterIP or LoadBalancer"
+fi
+
 INSTALL_LOG_PATH=/tmp/nacos_install-$(date +'%Y-%m-%d_%H-%M-%S').log
 
 if [[ ${NACOS_RESOURCE_LIMITS} -eq 0 ]]; then
@@ -147,7 +157,7 @@ offline_install_nacos() {
   helm install ${RELEASE} "${NACOS_CHART_DIR}" \
     --namespace "${NACOS_KUBE_NAMESPACE}" \
     --create-namespace \
-    --set-string global.imageRegistry="${IMAGE_REGISTRY}" \
+    --set-string global.imageRegistry="${NACOS_IMAGE_REGISTRY}" \
     --set-string image.tag="${NACOS_VERSION}" \
     --set nodeAffinityPreset.type="hard" \
     --set nodeAffinityPreset.key="nacos\.io/control-plane" \
@@ -205,7 +215,7 @@ verify_supported() {
   [[ -n "${NACOS_MYSQL_PWD}" ]] || error "NACOS_MYSQL_PWD MUST set in environment variable."
 
   [[ -n "${NACOS_NODE_NAMES}" ]] || error "NACOS_NODE_NAMES MUST set in environment variable."
-  
+
   if [[ -z "${NACOS_STORAGECLASS_NAME}" ]]; then
     error "NACOS_STORAGECLASS_NAME MUST set in environment variable."
   else
@@ -248,25 +258,37 @@ verify_installed() {
 }
 
 create_nacos_namespace() {
-  info "patch service type to NodePort..."
-  kubectl patch service -n "${NACOS_KUBE_NAMESPACE}" "nacos" --type='json' -p '[{"op":"replace","path":"/spec/type","value":"NodePort"},{"op":"replace","path":"/spec/ports/1/nodePort","value":'"${NACOS_NODEPORT}"'}]' || {
-    error "kubectl patch service failed !"
-  }
+  if [[ ${NACOS_SERVICE_TYPE} == "NodePort" ]]; then
+    info "patch service type to NodePort..."
+    kubectl patch service -n "${NACOS_KUBE_NAMESPACE}" "nacos" --type='json' -p '[{"op":"replace","path":"/spec/type","value":"NodePort"},{"op":"replace","path":"/spec/ports/1/nodePort","value":'"${NACOS_NODEPORT}"'}]' || {
+      error "kubectl patch service failed !"
+    }
+    sleep 6
+    local svc_addr
+    svc_addr=$(kubectl get node -l 'node-role.kubernetes.io/control-plane=' --no-headers -o jsonpath='{.items[0].status.addresses[0].address}')
+    local svc_port="${NACOS_NODEPORT}"
+    # waiting for service started
+  elif [[ ${NACOS_SERVICE_TYPE} == "LoadBalancer" ]]; then
+    info "patch service type to LoadBalancer..."
+    kubectl patch service -n "${NACOS_KUBE_NAMESPACE}" "nacos" --type='json' -p '[{"op":"replace","path":"/spec/type","value":"LoadBalancer"}]' || {
+      error "kubectl patch service failed !"
+    }
+    # waiting for service started
+    sleep 20
+    local svc_addr
+    svc_addr=$(kubectl get svc -n "${NACOS_KUBE_NAMESPACE}" "nacos" -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    local svc_port="${NACOS_PORT}"
+  fi
 
   info "create nacos namespace..."
   local nacos_username="nacos"
   local nacos_password="nacos"
-  local kube_node_addr
-  kube_node_addr=$(kubectl get node -l 'node-role.kubernetes.io/control-plane=' --no-headers -o jsonpath='{.items[0].status.addresses[0].address}')
-
-  # waiting for service started
-  sleep 6
   # get token
   local token
-  token="$(curl --noproxy '*' -s -X POST -d 'username='"${nacos_username}"'&password='"${nacos_password}"'' --url "http://${kube_node_addr}:${NACOS_NODEPORT}/nacos/v1/auth/login" | jq -r .accessToken)"
+  token="$(curl --noproxy '*' -s -X POST -d 'username='"${nacos_username}"'&password='"${nacos_password}"'' --url "http://${svc_addr}:${svc_port}/nacos/v1/auth/login" | jq -r .accessToken)"
   [[ -n $token ]] || error "get env token failed !"
 
-  curl --noproxy '*' -X POST -d 'accessToken='"${token}"'' 'http://'"${kube_node_addr}":"${NACOS_NODEPORT}"'/nacos/v1/console/namespaces?customNamespaceId='"${NACOS_NAMESPACE}"'&namespaceName='"${NACOS_NAMESPACE}"'&namespaceDesc='"${NACOS_NAMESPACE}"'' || {
+  curl --noproxy '*' -X POST -d 'accessToken='"${token}"'' 'http://'"${svc_addr}":"${svc_port}"'/nacos/v1/console/namespaces?customNamespaceId='"${NACOS_NAMESPACE}"'&namespaceName='"${NACOS_NAMESPACE}"'&namespaceDesc='"${NACOS_NAMESPACE}"'' || {
     error "create nacos namespace failed !"
   }
 

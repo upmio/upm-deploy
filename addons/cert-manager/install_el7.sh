@@ -94,7 +94,7 @@ offline_install_cert_manager() {
     --version "${CHART_VERSION}" \
     --namespace "${CERT_MANAGER_KUBE_NAMESPACE}" \
     --create-namespace \
-    --set-string global.imageRegistry="${IMAGE_REGISTRY}" \
+    --set-string global.imageRegistry="${CERT_MANAGER_IMAGE_REGISTRY}" \
     --set installCRDs=true \
     --set controller.nodeSelector."cert-manager/node"="enable" \
     --set-string controller.resources.limits.cpu="${CERT_MANAGER_RESOURCE_LIMITS_CPU}" \

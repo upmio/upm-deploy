@@ -103,6 +103,7 @@ online_install_clusterpedia() {
     --version "${CHART_VERSION}" \
     --namespace "${CLUSTERPEDIA_KUBE_NAMESPACE}" \
     --create-namespace \
+    --set-string global.imageRegistry="${CLUSTERPEDIA_IMAGE_REGISTRY}" \
     --set installCRDs=true \
     --set postgresql.enabled=false \
     --set mysql.enabled=false \
@@ -117,14 +118,17 @@ online_install_clusterpedia() {
     --set externalStorage.user="${CLUSTERPEDIA_MYSQL_USER}" \
     --set externalStorage.password="${CLUSTERPEDIA_MYSQL_PWD}" \
     --set externalStorage.database="${CLUSTERPEDIA_MYSQL_DATABASE}" \
+    --set-string controllerManager.image.registry="m.daocloud.io/ghcr.io" \
     --set controllerManager.replicaCount="${CLUSTERPEDIA_CONTROLLER_NODE_COUNT}" \
     --set controllerManager.nodeSelector."clusterpedia\.io/control-plane"="enable" \
+    --set apiserver.image.registry="m.daocloud.io/ghcr.io" \
     --set apiserver.replicaCount="${CLUSTERPEDIA_CONTROLLER_NODE_COUNT}" \
     --set apiserver.nodeSelector."clusterpedia\.io/control-plane"="enable" \
     --set-string apiserver.resources.limits.cpu="${CLUSTERPEDIA_APISERVER_RESOURCE_LIMITS_CPU}" \
     --set-string apiserver.resources.limits.memory="${CLUSTERPEDIA_APISERVER_RESOURCE_LIMITS_MEMORY}" \
     --set-string apiserver.resources.requests.cpu="${CLUSTERPEDIA_APISERVER_RESOURCE_REQUESTS_CPU}" \
     --set-string apiserver.resources.requests.memory="${CLUSTERPEDIA_APISERVER_RESOURCE_REQUESTS_MEMORY}" \
+    --set-string clustersynchroManager.image.registry="m.daocloud.io/ghcr.io" \
     --set clustersynchroManager.replicaCount="${CLUSTERPEDIA_WORKER_NODE_COUNT}" \
     --set clustersynchroManager.nodeSelector."clusterpedia\.io/worker"="enable" \
     --set clustersynchroManager.featureGates."AllowSyncAllCustomResources"="true" \
@@ -133,6 +137,7 @@ online_install_clusterpedia() {
     --set-string clustersynchroManager.resources.limits.memory="${CLUSTERPEDIA_SYBCHRO_RESOURCE_LIMITS_MEMORY}" \
     --set-string clustersynchroManager.resources.requests.cpu="${CLUSTERPEDIA_SYBCHRO_RESOURCE_REQUESTS_CPU}" \
     --set-string clustersynchroManager.resources.requests.memory="${CLUSTERPEDIA_SYBCHRO_RESOURCE_REQUESTS_MEMORY}" \
+    --set-string hookJob.image.registry="m.daocloud.io/ghcr.io" \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
@@ -154,7 +159,7 @@ offline_install_clusterpedia() {
   helm install "${RELEASE}" "${CLUSTERPEDIA_CHART_DIR}" \
     --namespace "${CLUSTERPEDIA_KUBE_NAMESPACE}" \
     --create-namespace \
-    --set-string global.imageRegistry="${IMAGE_REGISTRY}" \
+    --set-string global.imageRegistry="${CLUSTERPEDIA_IMAGE_REGISTRY}" \
     --set installCRDs=true \
     --set postgresql.enabled=false \
     --set mysql.enabled=false \
@@ -169,14 +174,17 @@ offline_install_clusterpedia() {
     --set externalStorage.user="${CLUSTERPEDIA_MYSQL_USER}" \
     --set externalStorage.password="${CLUSTERPEDIA_MYSQL_PWD}" \
     --set externalStorage.database="${CLUSTERPEDIA_MYSQL_DATABASE}" \
+    --set-string controllerManager.image.registry="m.daocloud.io/ghcr.io" \
     --set controllerManager.replicaCount="${CLUSTERPEDIA_CONTROLLER_NODE_COUNT}" \
     --set controllerManager.nodeSelector."clusterpedia\.io/control-plane"="enable" \
+    --set-string apiserver.image.registry="m.daocloud.io/ghcr.io" \
     --set apiserver.replicaCount="${CLUSTERPEDIA_CONTROLLER_NODE_COUNT}" \
     --set apiserver.nodeSelector."clusterpedia\.io/control-plane"="enable" \
     --set-string apiserver.resources.limits.cpu="${CLUSTERPEDIA_APISERVER_RESOURCE_LIMITS_CPU}" \
     --set-string apiserver.resources.limits.memory="${CLUSTERPEDIA_APISERVER_RESOURCE_LIMITS_MEMORY}" \
     --set-string apiserver.resources.requests.cpu="${CLUSTERPEDIA_APISERVER_RESOURCE_REQUESTS_CPU}" \
     --set-string apiserver.resources.requests.memory="${CLUSTERPEDIA_APISERVER_RESOURCE_REQUESTS_MEMORY}" \
+    --set-string clustersynchroManager.image.registry="m.daocloud.io/ghcr.io" \
     --set clustersynchroManager.replicaCount="${CLUSTERPEDIA_WORKER_NODE_COUNT}" \
     --set clustersynchroManager.nodeSelector."clusterpedia\.io/worker"="enable" \
     --set clustersynchroManager.featureGates."AllowSyncAllCustomResources"="true" \
@@ -185,6 +193,7 @@ offline_install_clusterpedia() {
     --set-string clustersynchroManager.resources.limits.memory="${CLUSTERPEDIA_SYBCHRO_RESOURCE_LIMITS_MEMORY}" \
     --set-string clustersynchroManager.resources.requests.cpu="${CLUSTERPEDIA_SYBCHRO_RESOURCE_REQUESTS_CPU}" \
     --set-string clustersynchroManager.resources.requests.memory="${CLUSTERPEDIA_SYBCHRO_RESOURCE_REQUESTS_MEMORY}" \
+    --set-string hookJob.image.registry="m.daocloud.io/ghcr.io" \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."

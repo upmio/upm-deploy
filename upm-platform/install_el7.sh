@@ -60,7 +60,7 @@ readonly RELEASE="upm-platform"
 readonly TIME_OUT_SECOND="600s"
 readonly CHART_VERSION="1.1.0"
 readonly UI_VERSION="dev-129c8a9a"
-readonly API_VERSION="dev-0a7abe03"
+readonly API_VERSION="dev-8ac6c3f5"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
 PLATFORM_INIT_DB="${PLATFORM_INIT_DB:-false}"
@@ -71,10 +71,10 @@ PLATFORM_RESOURCE_LIMITS="${PLATFORM_RESOURCE_LIMITS:-1}"
 
 if [[ ${PLATFORM_SERVICE_TYPE} == "NodePort" ]]; then
   PLATFORM_NODEPORT="${PLATFORM_NODEPORT:-32010}"
-elif [[ ${PLATFORM_SERVICE_TYPE} == "ClusterIP" ]]; then
+elif [[ ${PLATFORM_SERVICE_TYPE} == "ClusterIP" ]] || [[ ${PLATFORM_SERVICE_TYPE} == "LoadBalancer" ]]; then
   PLATFORM_NODEPORT=null
 else
-  error "PLATFORM_SERVICE_TYPE must be NodePort or ClusterIP"
+  error "PLATFORM_SERVICE_TYPE must be NodePort or ClusterIP or LoadBalancer"
 fi
 
 PLATFORM_NGINX_RESOURCE_LIMITS_CPU="${PLATFORM_NGINX_RESOURCE_LIMITS_CPU:-1000m}"
@@ -265,7 +265,7 @@ offline_install_upm_platform() {
     error "${RELEASE} already installed. Use helm remove it first"
   fi
 
-  local image_registry="${IMAGE_REGISTRY:-}"
+  local image_registry="${PLATFORM_IMAGE_REGISTRY:-}"
   [[ -d "${PLATFORM_CHART_DIR}" ]] || error "PLATFORM_CHART_DIR not exist."
 
   info "Install upm-platform, It might take a long time..."

@@ -31,10 +31,10 @@ INSTALL_LOG_PATH=/tmp/mysql-install-$(date +'%Y-%m-%d_%H-%M-%S').log
 
 if [[ ${MYSQL_SERVICE_TYPE} == "NodePort" ]]; then
   MYSQL_NODEPORT="${MYSQL_NODEPORT:-32006}"
-elif [[ ${MYSQL_SERVICE_TYPE} == "ClusterIP" ]]; then
+elif [[ ${MYSQL_SERVICE_TYPE} == "ClusterIP" ]] || [[ ${MYSQL_SERVICE_TYPE} == "LoadBalancer" ]]; then
   MYSQL_NODEPORT=null
 else
-  error "MYSQL_SERVICE_TYPE must be NodePort or ClusterIP"
+  error "MYSQL_SERVICE_TYPE must be NodePort or ClusterIP or LoadBalancer"
 fi
 
 if [[ ${MYSQL_RESOURCE_LIMITS} -eq 0 ]]; then
@@ -137,7 +137,7 @@ offline_install_mysql() {
   helm install "${RELEASE}" "${MYSQL_CHART_DIR}" \
     --namespace "${MYSQL_KUBE_NAMESPACE}" \
     --create-namespace \
-    --set-string global.imageRegistry="${IMAGE_REGISTRY}" \
+    --set-string global.imageRegistry="${MYSQL_IMAGE_REGISTRY}" \
     --set-string initdbScriptsConfigMap="${MYSQL_INITDB_CONFIGMAP}" \
     --set-string architecture="standalone" \
     --set-string auth.rootPassword="${MYSQL_PWD}" \

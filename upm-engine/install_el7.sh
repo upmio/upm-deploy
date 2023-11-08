@@ -112,7 +112,7 @@ offline_install_upm_engine() {
     error "${RELEASE} already installed. Use helm remove it first"
   fi
 
-  local image_registry="${IMAGE_REGISTRY:-}"
+  local image_registry="${ENGINE_IMAGE_REGISTRY:-}"
   [[ -d "${ENGINE_CHART_DIR}" ]] || error "ENGINE_CHART_DIR not exist."
 
   info "Install upm-engine, It might take a long time..."

@@ -26,10 +26,10 @@ INSTALL_LOG_PATH=/tmp/redis-install-$(date +'%Y-%m-%d_%H-%M-%S').log
 
 if [[ ${REDIS_SERVICE_TYPE} == "NodePort" ]]; then
   REDIS_NODEPORT="${REDIS_NODEPORT:-32007}"
-elif [[ ${REDIS_SERVICE_TYPE} == "ClusterIP" ]]; then
+elif [[ ${REDIS_SERVICE_TYPE} == "ClusterIP" ]] || [[ ${REDIS_SERVICE_TYPE} == "LoadBalancer" ]]; then
   REDIS_NODEPORT=null
 else
-  error "REDIS_SERVICE_TYPE must be NodePort or ClusterIP"
+  error "REDIS_SERVICE_TYPE must be NodePort or ClusterIP or LoadBalancer"
 fi
 
 if [[ ${REDIS_RESOURCE_LIMITS} -eq 0 ]]; then
@@ -116,7 +116,7 @@ offline_install_redis() {
     --debug \
     --namespace "${REDIS_KUBE_NAMESPACE}" \
     --create-namespace \
-    --set-string global.imageRegistry="${IMAGE_REGISTRY}" \
+    --set-string global.imageRegistry="${REDIS_IMAGE_REGISTRY}" \
     --set-string global.redis.password="${REDIS_PWD}" \
     --set-string architecture="standalone" \
     --set-string master.resources.limits.cpu="${REDIS_RESOURCE_LIMITS_CPU}" \
