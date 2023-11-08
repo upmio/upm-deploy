@@ -112,14 +112,13 @@ offline_install_upm_engine() {
     error "${RELEASE} already installed. Use helm remove it first"
   fi
 
-  local image_registry="${ENGINE_IMAGE_REGISTRY:-}"
   [[ -d "${ENGINE_CHART_DIR}" ]] || error "ENGINE_CHART_DIR not exist."
 
   info "Install upm-engine, It might take a long time..."
   helm install ${RELEASE} "${ENGINE_CHART_DIR}" \
     --namespace "${ENGINE_KUBE_NAMESPACE}" \
     --create-namespace \
-    --set-string global.imageRegistry="${image_registry}" \
+    --set-string global.imageRegistry="${ENGINE_IMAGE_REGISTRY}" \
     --set tesseract.crds.enabled=true \
     --set-string configmaps.image.tag="${TEMPLATE_VERSION}" \
     --set-string tesseract.image.tag="${TESSERACT_VERSION}" \
