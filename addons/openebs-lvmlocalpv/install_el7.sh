@@ -97,12 +97,12 @@ offline_install_lvmlocalpv() {
   [[ -d "${OPENEBS_CHART_DIR}" ]] || error "OPENEBS_CHART_DIR not exist."
 
   local image_registry plugin_image_registry
-  if [[ -z "${IMAGE_REGISTRY}" ]]; then
+  if [[ -z "${OPENEBS_IMAGE_REGISTRY}" ]]; then
     image_registry='registry.k8s.io/'
     plugin_image_registry=''
   else
-    image_registry="${IMAGE_REGISTRY}/"
-    plugin_image_registry="${IMAGE_REGISTRY}/"
+    image_registry="${OPENEBS_IMAGE_REGISTRY}/"
+    plugin_image_registry="${OPENEBS_IMAGE_REGISTRY}/"
   fi
 
   info "Install openebs-lvmlocalpv, It might take a long time..."
