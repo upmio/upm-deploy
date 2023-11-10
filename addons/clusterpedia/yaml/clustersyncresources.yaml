@@ -12,6 +12,9 @@ spec:
         - configmaps
         - secrets
         - services
+    - group: batch
+      resources:
+        - '*'
     - group: "apps"
       resources:
         - "*"
