@@ -231,6 +231,16 @@ online_install_upm_platform() {
     --set-string service-kafka.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string service-kafka.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string service-kafka.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
+    --set-string service-zookeeper.image.tag="${API_VERSION}" \
+    --set service-zookeeper.replicaCount="${PLATFORM_NODE_COUNT}" \
+    --set service-zookeeper.initDB.enabled=${PLATFORM_INIT_DB} \
+    --set-string service-zookeeper.nodeAffinityPreset.type="hard" \
+    --set-string service-zookeeper.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string service-zookeeper.nodeAffinityPreset.values='{enable}' \
+    --set-string service-zookeeper.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
+    --set-string service-zookeeper.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
+    --set-string service-zookeeper.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
+    --set-string service-zookeeper.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
     --set-string service-mysql.image.tag="${API_VERSION}" \
     --set service-mysql.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-mysql.initDB.enabled=${PLATFORM_INIT_DB} \
