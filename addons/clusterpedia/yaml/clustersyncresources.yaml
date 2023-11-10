@@ -23,10 +23,11 @@ spec:
         - "*"
     - group: "gauntlet.bsgchina.com"
       resources:
-        - "*"
+        - mysqlreplications
+        - mysqlgroupreplications
     - group: "unitset.bsgchina.com"
       resources:
-        - "*"
+        - unitsets
     - group: "unit.bsgchina.com"
       resources:
-        - "*"
+        - units
