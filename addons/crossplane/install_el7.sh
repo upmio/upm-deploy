@@ -126,7 +126,7 @@ offline_install_crossplane() {
 verify_supported() {
   installed helm || error "helm is required"
   installed kubectl || error "kubectl is required"
-  installed curl || error "curl is required"
+  installed yq || error "yq is required"
 
   [[ -n "${CROSSPLANE_NODE_NAMES}" ]] || error "CROSSPLANE_NODE_NAMES MUST set in environment variable."
   local node
