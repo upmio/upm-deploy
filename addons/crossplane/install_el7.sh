@@ -14,6 +14,7 @@ readonly CHART_VERSION="1.14.0"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
 CROSSPLANE_PROVIDER_SQL_CREATE="${CROSSPLANE_PROVIDER_SQL_CREATE:-false}"
+CROSSPLANE_PROVIDER_SQL_VERSION="${CROSSPLANE_PROVIDER_SQL_VERSION:-master}"
 CROSSPLANE_KUBE_NAMESPACE="${CROSSPLANE_KUBE_NAMESPACE:-crossplane-system}"
 CROSSPLANE_RESOURCE_LIMITS="${CROSSPLANE_RESOURCE_LIMITS:-1}"
 INSTALL_LOG_PATH=/tmp/crossplane_install-$(date +'%Y-%m-%d_%H-%M-%S').log
@@ -167,13 +168,9 @@ create_provider_sql() {
     return
   fi
 
-  [[ -n ${CROSSPLANE_PROVIDER_SQL_VERSION} ]] || error "CROSSPLANE_PROVIDER_SQL_VERSION MUST set in environment variable."
-
   [[ -f ${CROSSPLANE_PROVIDER_SQL_YAML} ]] || {
     local download_url="https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/crossplane/yaml/crossplane-provider-sql.yaml"
-    curl -sSL "${download_url}" -o "${CROSSPLANE_PROVIDER_SQL_YAML}" || {
-      error "curl get crossplane-provider-sql.yaml failed"
-    }
+    curl -sSL "${download_url}" -o "${CROSSPLANE_PROVIDER_SQL_YAML}" || error "curl get crossplane-provider-sql.yaml failed"
   }
 
   CROSSPLANE_PROVIDER_SQL_VERSION="${CROSSPLANE_PROVIDER_SQL_VERSION}" \
