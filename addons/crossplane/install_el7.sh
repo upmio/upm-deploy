@@ -100,11 +100,18 @@ offline_install_crossplane() {
 
   [[ -d "${CROSSPLANE_CHART_DIR}" ]] || error "CROSSPLANE_CHART_DIR not exist."
 
+  local image_repository
+  if [[ -z "${CROSSPLANE_IMAGE_REGISTRY}" ]]; then
+    image_repository="crossplane/crossplane"
+  else
+    image_repository="${CROSSPLANE_IMAGE_REGISTRY}/crossplane/crossplane"
+  fi
+
   info "Install ${RELEASE}, It might take a long time..."
   helm install "${RELEASE}" "${CROSSPLANE_CHART_DIR}" \
     --namespace "${CROSSPLANE_KUBE_NAMESPACE}" \
     --create-namespace \
-    --set image.repository="${CROSSPLANE_IMAGE_REGISTRY}/crossplane/crossplane" \
+    --set image.repository="${image_repository}" \
     --set replicas="${CROSSPLANE_NODE_COUNT}" \
     --set nodeSelector."crossplane\.io/control-plane"="enable" \
     --set rbacManager.replicas="${CROSSPLANE_NODE_COUNT}" \
