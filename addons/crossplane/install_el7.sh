@@ -196,6 +196,7 @@ main() {
     offline_install_crossplane
   fi
   verify_installed
+  create_provider_sql
 }
 
 main
