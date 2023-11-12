@@ -104,7 +104,7 @@ offline_install_crossplane() {
   helm install "${RELEASE}" "${CROSSPLANE_CHART_DIR}" \
     --namespace "${CROSSPLANE_KUBE_NAMESPACE}" \
     --create-namespace \
-    --set image.repository="${MYSQL_IMAGE_REGISTRY}/crossplane/crossplane" \
+    --set image.repository="${CROSSPLANE_IMAGE_REGISTRY}/crossplane/crossplane" \
     --set replicas="${CROSSPLANE_NODE_COUNT}" \
     --set nodeSelector."crossplane\.io/control-plane"="enable" \
     --set rbacManager.replicas="${CROSSPLANE_NODE_COUNT}" \
