@@ -13,6 +13,7 @@ readonly TIME_OUT_SECOND="600s"
 readonly CHART_VERSION="1.14.0"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
+CROSSPLANE_PROVIDER_SQL_CREATE="${CROSSPLANE_PROVIDER_SQL_CREATE:-false}"
 CROSSPLANE_KUBE_NAMESPACE="${CROSSPLANE_KUBE_NAMESPACE:-crossplane-system}"
 CROSSPLANE_RESOURCE_LIMITS="${CROSSPLANE_RESOURCE_LIMITS:-1}"
 INSTALL_LOG_PATH=/tmp/crossplane_install-$(date +'%Y-%m-%d_%H-%M-%S').log
@@ -158,6 +159,28 @@ verify_installed() {
   [[ "${status}" == "deployed" ]] || error "Helm release ${RELEASE} status is not deployed, use helm to check reason"
 
   info "${RELEASE} Deployment Completed!"
+}
+
+create_provider_sql() {
+  if [[ ${CROSSPLANE_PROVIDER_SQL_CREATE} == "false" ]]; then
+    info "CROSSPLANE_PROVIDER_SQL_CREATE is false, skip create provider sql."
+    return
+  fi
+
+  [[ -n ${CROSSPLANE_PROVIDER_SQL_VERSION} ]] || error "CROSSPLANE_PROVIDER_SQL_VERSION MUST set in environment variable."
+
+  [[ -f ${CROSSPLANE_PROVIDER_SQL_YAML} ]] || {
+    local download_url="https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/crossplane/yaml/crossplane-provider-sql.yaml"
+    curl -sSL "${download_url}" -o "${CROSSPLANE_PROVIDER_SQL_YAML}" || {
+      error "curl get crossplane-provider-sql.yaml failed"
+    }
+  }
+
+  CROSSPLANE_PROVIDER_SQL_VERSION="${CROSSPLANE_PROVIDER_SQL_VERSION}" \
+    envsubst <"${CROSSPLANE_PROVIDER_SQL_YAML}" | kubectl apply -f - || {
+    error "kubectl create provider-sql failed, check log use kubectl."
+  }
+  info "create provider-sql successful!"
 }
 
 main() {
