@@ -13,9 +13,9 @@ readonly TIME_OUT_SECOND="600s"
 readonly CHART_VERSION="1.1.0"
 readonly TESSERACT_VERSION="dev-00ee54c3"
 readonly TESSERACT_AGENT_VERSION="dev-bd00ec00"
-readonly SCEPTER_VERSION="dev-64a4bbf8"
+readonly SCEPTER_VERSION="dev-99e4b8fa"
 readonly GAUNTLET_VERSION="dev-206aecf9"
-readonly TEMPLATE_VERSION="dev-153b45b3"
+readonly TEMPLATE_VERSION="dev-fabe3751"
 
 ENGINE_KUBE_NAMESPACE="${ENGINE_KUBE_NAMESPACE:-upm-system}"
 INSTALL_LOG_PATH=/tmp/upm_engine_install-$(date +'%Y-%m-%d_%H-%M-%S').log
