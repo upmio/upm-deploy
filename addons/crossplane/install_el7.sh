@@ -180,11 +180,29 @@ create_provider_sql() {
     curl -sSL "${download_url}" -o "${CROSSPLANE_PROVIDER_SQL_YAML}" || error "curl get crossplane-provider-sql.yaml failed"
   }
 
-  CROSSPLANE_PROVIDER_SQL_VERSION="${CROSSPLANE_PROVIDER_SQL_VERSION}" \
+  CROSSPLANE_PROVIDER_SQL_VERSION="v0.7.0-7.g9b7bbf8" \
     envsubst <"${CROSSPLANE_PROVIDER_SQL_YAML}" | kubectl apply -f - || {
     error "kubectl create provider-sql failed, check log use kubectl."
   }
   info "create provider-sql successful!"
+}
+
+create_provider_kafka() {
+  if [[ ${CROSSPLANE_PROVIDER_KAFKA_CREATE} == "false" ]]; then
+    info "CROSSPLANE_PROVIDER_KAFKA_CREATE is false, skip create provider kafka."
+    return
+  fi
+
+  [[ -f ${CROSSPLANE_PROVIDER_KAFKA_YAML} ]] || {
+    local download_url="https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/crossplane/yaml/crossplane-provider-kafka.yaml"
+    curl -sSL "${download_url}" -o "${CROSSPLANE_PROVIDER_KAFKA_YAML}" || error "curl get crossplane-provider-kafka.yaml failed"
+  }
+
+  CROSSPLANE_PROVIDER_KAFKA_VERSION="v0.4.3" \
+    envsubst <"${CROSSPLANE_PROVIDER_KAFKA_VERSION}" | kubectl apply -f - || {
+    error "kubectl create provider-kafka failed, check log use kubectl."
+  }
+  info "create provider-kafka successful!"
 }
 
 main() {
@@ -197,6 +215,7 @@ main() {
   fi
   verify_installed
   create_provider_sql
+  create_provider_kafka
 }
 
 main
