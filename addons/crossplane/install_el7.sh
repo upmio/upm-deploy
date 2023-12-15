@@ -10,7 +10,7 @@
 readonly CHART="crossplane-stable/crossplane"
 readonly RELEASE="crossplane"
 readonly TIME_OUT_SECOND="600s"
-readonly CHART_VERSION="1.14.3"
+readonly CHART_VERSION="1.14.4"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
 CROSSPLANE_PROVIDER_SQL_CREATE="${CROSSPLANE_PROVIDER_SQL_CREATE:-false}"

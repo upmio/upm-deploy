@@ -1,6 +1,6 @@
 # 部署 crossplane
 
-本文档目标是指导安装多集群管理程序 [crossplane](https://github.com/crossplane/crossplane) 。
+本文档目标是指导安装crossplane, 一个构建云原生控制平面的框架。 [crossplane](https://github.com/crossplane/crossplane) 。
 
 ## 外置数据库-快速安装 crossplane 
 
