@@ -31,7 +31,7 @@ readonly CHART="ygqygq2/nacos"
 readonly RELEASE="nacos"
 readonly TIME_OUT_SECOND="600s"
 readonly NACOS_VERSION="v2.2.3"
-readonly CHART_VERSION="2.1.4"
+readonly CHART_VERSION="2.1.6"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
 NACOS_PVC_SIZE_G="${NACOS_PVC_SIZE_G:-5}"
