@@ -1,6 +1,6 @@
 # 部署 cert-manager
 
-本文档目标是指导安装证书管理工具 [cert-manager](https://github.com/cert-manager/cert-manager) 。
+本文档目标是指导安装证书管理工具 [cert-manager](https://github.com/bitnami/charts/tree/main/bitnami/cert-manager) 。
 
 ## 快速安装指南
 
