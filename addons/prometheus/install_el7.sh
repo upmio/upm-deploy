@@ -1,10 +1,26 @@
-#!/usr/bin/env bash 
+#!/usr/bin/env bash
 
-readonly NAMESPACE="prometheus"
+# You must be prepared as follows before run install.sh:
+#
+# 1. PROM_NODE_NAMES MUST be set as environment variable, for an example:
+#
+#        export PROM_NODE_NAMES="master01,master02"
+#
+# 2. PROM_STORAGECLASS_NAME MUST be set as environment variable, for an example:
+#
+#        export PROM_STORAGECLASS_NAME="openebs-lvmsc-hdd"
+#
+# 3. PROM_PVC_SIZE_G MUST be set as environment variable, for an example:
+#
+#        export PROM_PVC_SIZE_G="30"
+#
+
 readonly CHART="prometheus-community/kube-prometheus-stack"
 readonly RELEASE="prometheus"
 readonly TIME_OUT_SECOND="600s"
+readonly CHART_VERSION="55.4.1"
 
+PROM_KUBE_NAMESPACE="${PROM_KUBE_NAMESPACE:-prometheus}"
 INSTALL_LOG_PATH=""
 
 info() {
@@ -41,15 +57,15 @@ install_helm() {
 
 install_prometheus() {
   # check if prometheus already installed
-  if helm status ${RELEASE} -n ${NAMESPACE} &>/dev/null; then
+  if helm status ${RELEASE} -n "${PROM_KUBE_NAMESPACE}" &>/dev/null; then
     error "${RELEASE} already installed. Use helm remove it first"
   fi
   info "Install prometheus, It might take a long time..."
-  helm upgrade ${RELEASE} ${CHART} \
+  helm install ${RELEASE} ${CHART} \
   --debug \
-  --namespace ${NAMESPACE} \
+  --version "${CHART_VERSION}" \
+  --namespace "${PROM_KUBE_NAMESPACE}" \
   --create-namespace \
-  --install \
   --set prometheusOperator.admissionWebhooks.patch.image.registry=docker.io \
   --set prometheusOperator.admissionWebhooks.patch.image.repository=dyrnq/kube-webhook-certgen \
   --set prometheus.prometheusSpec.podMonitorSelectorNilUsesHelmValues=false \
@@ -60,7 +76,7 @@ install_prometheus() {
   --set prometheusOperator.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].operator=Exists \
   --set prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName="${PROM_STORAGECLASS_NAME}" \
   --set prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.accessModes[0]=ReadWriteOnce \
-  --set prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.resources.requests.storage=${PROM_PVC_SIZE_G}Gi \
+  --set prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.resources.requests.storage="${PROM_PVC_SIZE_G}Gi" \
   --set prometheus.prometheusSpec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].key=prometheus.node \
   --set prometheus.prometheusSpec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].operator=Exists \
   --set alertmanager.alertmanagerSpec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].key=prometheus.node \
@@ -71,9 +87,9 @@ install_prometheus() {
   --set kube-state-metrics.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].operator=Exists \
   --set kube-state-metrics.image.registry=docker.io \
   --set kube-state-metrics.image.repository=dbscale/kube-state-metrics \
-  --set kube-state-metrics.image.tag="v2.9.2"
-    --timeout $TIME_OUT_SECOND \
-    --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
+  --set kube-state-metrics.image.tag="v2.9.2" \
+  --timeout $TIME_OUT_SECOND \
+  --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
   }
 
@@ -124,6 +140,7 @@ verify_supported() {
     error "PROM_NODE_NAMES MUST set in environment variable."
   fi
 
+  local node
   local db_node_array
   IFS="," read -r -a db_node_array <<<"${PROM_NODE_NAMES}"
   for node in "${db_node_array[@]}"; do
@@ -149,7 +166,7 @@ init_log() {
 #   namespace
 ############################################
 verify_installed() {
-  helm status "${RELEASE}" -n "${NAMESPACE}" | grep deployed &>/dev/null || {
+  helm status "${RELEASE}" -n "${PROM_KUBE_NAMESPACE}" | grep deployed &>/dev/null || {
     error "${RELEASE} installed fail, check log use helm and kubectl."
   }
 
