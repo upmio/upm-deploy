@@ -22,7 +22,7 @@
 readonly CHART="openebs-lvmlocalpv/lvm-localpv"
 readonly RELEASE="openebs-lvmlocalpv"
 readonly TIME_OUT_SECOND="600s"
-readonly CHART_VERSION="1.3.0"
+readonly CHART_VERSION="1.4.0"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
 OPENEBS_KUBE_NAMESPACE="${OPENEBS_KUBE_NAMESPACE:-openebs}"
