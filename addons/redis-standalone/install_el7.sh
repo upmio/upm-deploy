@@ -15,7 +15,7 @@ set -o nounset
 readonly CHART="bitnami/redis"
 readonly RELEASE="redis"
 readonly TIME_OUT_SECOND="600s"
-readonly CHART_VERSION="18.1.5"
+readonly CHART_VERSION="18.5.0"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
 REDIS_SERVICE_TYPE="${REDIS_SERVICE_TYPE:-ClusterIP}"
