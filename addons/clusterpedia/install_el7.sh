@@ -30,7 +30,7 @@
 readonly CHART="clusterpedia/clusterpedia"
 readonly RELEASE="clusterpedia"
 readonly TIME_OUT_SECOND="600s"
-readonly CHART_VERSION="1.9.1"
+readonly CHART_VERSION="2.2.0"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
 CLUSTERPEDIA_KUBE_NAMESPACE="${CLUSTERPEDIA_KUBE_NAMESPACE:-clusterpedia}"
