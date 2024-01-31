@@ -15,7 +15,7 @@ readonly TESSERACT_VERSION="dev-5c77b9fc"
 readonly TESSERACT_AGENT_VERSION="dev-a0f884b2"
 readonly SCEPTER_VERSION="dev-84fcae0c"
 readonly GAUNTLET_VERSION="dev-509b95ee"
-readonly TEMPLATE_VERSION="dev-f2e544e7"
+readonly TEMPLATE_VERSION="dev-00b3416d"
 
 ENGINE_KUBE_NAMESPACE="${ENGINE_KUBE_NAMESPACE:-upm-system}"
 INSTALL_LOG_PATH=/tmp/upm_engine_install-$(date +'%Y-%m-%d_%H-%M-%S').log
