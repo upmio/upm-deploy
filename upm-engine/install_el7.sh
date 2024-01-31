@@ -14,7 +14,7 @@ readonly CHART_VERSION="1.1.0"
 readonly TESSERACT_VERSION="dev-5c77b9fc"
 readonly TESSERACT_AGENT_VERSION="dev-5b415d2d"
 readonly SCEPTER_VERSION="dev-84fcae0c"
-readonly GAUNTLET_VERSION="dev-0a8f85d6"
+readonly GAUNTLET_VERSION="dev-509b95ee"
 readonly TEMPLATE_VERSION="dev-f2e544e7"
 
 ENGINE_KUBE_NAMESPACE="${ENGINE_KUBE_NAMESPACE:-upm-system}"
