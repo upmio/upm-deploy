@@ -185,11 +185,6 @@ verify_installed() {
 }
 
 create_storageclass() {
-  if [[ ${OPENEBS_CREATE_STORAGECLASS} == "false" ]]; then
-    info "OPENEBS_CREATE_STORAGECLASS is false, skip create storageclass."
-    return
-  fi
-
   [[ -f ${OPENEBS_STORAGECLASS_YAML} ]] || {
     local download_url="https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/openebs-lvmlocalpv/yaml/storageclass.yaml"
     curl -sSL "${download_url}" -o "${OPENEBS_STORAGECLASS_YAML}" || {
@@ -215,7 +210,11 @@ main() {
     offline_install_lvmlocalpv
   fi
   verify_installed
-  create_storageclass
+  if [[ ${OPENEBS_CREATE_STORAGECLASS} == "true" ]]; then
+    create_storageclass
+  else
+    info "OPENEBS_CREATE_STORAGECLASS disable, skip create storageclass."
+  fi
 }
 
 main
