@@ -139,7 +139,6 @@ verify_supported() {
   installed helm || error "helm is required"
   installed kubectl || error "kubectl is required"
   installed curl || error "curl is required"
-  installed yq || error "yq is required"
   installed envsubst || error "envsubst is required"
 
   [[ -n "${OPENEBS_STORAGECLASS_NAME}" ]] || error "OPENEBS_STORAGECLASS_NAME MUST set in environment variable."
@@ -177,7 +176,7 @@ init_log() {
 ############################################
 verify_installed() {
   local status
-  status=$(helm status "${RELEASE}" -n "${OPENEBS_KUBE_NAMESPACE}" -o yaml | yq -r '.info.status')
+  status=$(helm status "${RELEASE}" -n "${OPENEBS_KUBE_NAMESPACE}" | grep ^STATUS: | awk '{print $2}')
   [[ "${status}" == "deployed" ]] || {
     error "Helm release ${RELEASE} status is not deployed, use helm to check reason"
   }
