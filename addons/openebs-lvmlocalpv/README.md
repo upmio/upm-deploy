@@ -29,6 +29,8 @@ OPENEBS_STORAGECLASS_NAME：指定Storageclass名称。
 
 OPENEBS_VG_NAME：指定Storageclass对应的VolumeGroup名称。
 
+OPENEBS_CREATE_STORAGECLASS：指定是否创建Storageclass，非必填项，默认值为`false`。
+
 OPENEBS_KUBE_NAMESPACE：指定安装命名空间，非必填项，默认值为`openebs`。
 
 ```console
@@ -36,6 +38,8 @@ export OPENEBS_CONTROLLER_NODE_NAMES="openebs-control-plan01"
 export OPENEBS_DATA_NODE_NAMES="openebs-control-plan01,kube-node01,kube-node02,kube-node03"
 export OPENEBS_STORAGECLASS_NAME="openebs-lvmsc-hdd"
 export OPENEBS_VG_NAME="local_HDD_VG"
+export OPENEBS_CREATE_STORAGECLASS="true"
+export OPENEBS_KUBE_NAMESPACE="openebs"
 ```
 
 ### 3. 运行安装脚本
