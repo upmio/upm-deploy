@@ -28,6 +28,7 @@ spec:
       resources:
         - mysqlreplications
         - mysqlgroupreplications
+        - proxysqlsyncs
     - group: "unitset.bsgchina.com"
       resources:
         - unitsets
