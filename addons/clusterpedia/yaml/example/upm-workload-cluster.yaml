@@ -10,3 +10,4 @@ spec:
   kubeconfig: "${workload_kubeconfig_encode}"
   syncResourcesRefName: "global-base"
   syncResources: []
+  syncAllCustomResources: true
