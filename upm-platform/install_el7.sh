@@ -60,7 +60,7 @@ readonly RELEASE="upm-platform"
 readonly TIME_OUT_SECOND="600s"
 readonly CHART_VERSION="1.1.0"
 readonly UI_VERSION="dev-cdd0b9ad"
-readonly API_VERSION="dev-346a6082"
+readonly API_VERSION="dev-9f03f126"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
 PLATFORM_INIT_DB="${PLATFORM_INIT_DB:-false}"
