@@ -211,7 +211,7 @@ online_install_upm_platform() {
     --set-string resource.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string resource.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string resource.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set elasticsearch.enabled=true \
+    --set upm.elasticsearch.enabled=true \
     --set-string service-elasticsearch.image.tag="${API_VERSION}" \
     --set service-elasticsearch.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-elasticsearch.initDB.enabled=${PLATFORM_INIT_DB} \
@@ -222,7 +222,7 @@ online_install_upm_platform() {
     --set-string service-elasticsearch.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string service-elasticsearch.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string service-elasticsearch.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set kafka.enabled=true \
+    --set upm.kafka.enabled=true \
     --set-string service-kafka.image.tag="${API_VERSION}" \
     --set service-kafka.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-kafka.initDB.enabled=${PLATFORM_INIT_DB} \
@@ -233,7 +233,7 @@ online_install_upm_platform() {
     --set-string service-kafka.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string service-kafka.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string service-kafka.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set zookeeper.enabled=true \
+    --set upm.zookeeper.enabled=true \
     --set-string service-zookeeper.image.tag="${API_VERSION}" \
     --set service-zookeeper.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-zookeeper.initDB.enabled=${PLATFORM_INIT_DB} \
@@ -244,7 +244,7 @@ online_install_upm_platform() {
     --set-string service-zookeeper.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string service-zookeeper.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string service-zookeeper.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set mysql.enabled=true \
+    --set upm.mysql.enabled=true \
     --set-string service-mysql.image.tag="${API_VERSION}" \
     --set service-mysql.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-mysql.initDB.enabled=${PLATFORM_INIT_DB} \
@@ -355,7 +355,7 @@ offline_install_upm_platform() {
     --set-string resource.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string resource.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string resource.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set elasticsearch.enabled=true \
+    --set upm.elasticsearch.enabled=true \
     --set-string service-elasticsearch.image.tag="${API_VERSION}" \
     --set service-elasticsearch.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-elasticsearch.initDB.enabled=${PLATFORM_INIT_DB} \
@@ -366,7 +366,7 @@ offline_install_upm_platform() {
     --set-string service-elasticsearch.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string service-elasticsearch.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string service-elasticsearch.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set kafka.enabled=true \
+    --set upm.kafka.enabled=true \
     --set-string service-kafka.image.tag="${API_VERSION}" \
     --set service-kafka.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-kafka.initDB.enabled=${PLATFORM_INIT_DB} \
@@ -377,7 +377,7 @@ offline_install_upm_platform() {
     --set-string service-kafka.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string service-kafka.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string service-kafka.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set zookeeper.enabled=true \
+    --set upm.zookeeper.enabled=true \
     --set-string service-zookeeper.image.tag="${API_VERSION}" \
     --set service-zookeeper.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-zookeeper.initDB.enabled=${PLATFORM_INIT_DB} \
@@ -388,7 +388,7 @@ offline_install_upm_platform() {
     --set-string service-zookeeper.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string service-zookeeper.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string service-zookeeper.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set mysql.enabled=true \
+    --set upm.mysql.enabled=true \
     --set-string service-mysql.image.tag="${API_VERSION}" \
     --set service-mysql.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-mysql.initDB.enabled=${PLATFORM_INIT_DB} \
