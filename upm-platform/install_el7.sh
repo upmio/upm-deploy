@@ -68,6 +68,11 @@ PLATFORM_KUBE_NAMESPACE="${PLATFORM_KUBE_NAMESPACE:-upm-system}"
 PLATFORM_SERVICE_TYPE="${PLATFORM_SERVICE_TYPE:-ClusterIP}"
 INSTALL_LOG_PATH=/tmp/upm-platform_install-$(date +'%Y-%m-%d_%H-%M-%S').log
 PLATFORM_RESOURCE_LIMITS="${PLATFORM_RESOURCE_LIMITS:-1}"
+EASYSEARCH_ENABLED="${EASYSEARCH_ENABLED:-false}"
+KAFKA_ENABLED="${KAFKA_ENABLED:-false}"
+ZOOKEEPER_ENABLED="${ZOOKEEPER_ENABLED:-false}"
+MYSQL_ENABLED="${MYSQL_ENABLED:-false}"
+REDIS_ENABLED="${REDIS_ENABLED:-false}"
 
 if [[ ${PLATFORM_SERVICE_TYPE} == "NodePort" ]]; then
   PLATFORM_NODEPORT="${PLATFORM_NODEPORT:-32010}"
@@ -211,7 +216,7 @@ online_install_upm_platform() {
     --set-string resource.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string resource.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string resource.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set upm.easysearch.enabled=true \
+    --set upm.easysearch.enabled=${EASYSEARCH_ENABLED} \
     --set-string service-easysearch.image.tag="${API_VERSION}" \
     --set service-easysearch.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-easysearch.initDB.enabled=${PLATFORM_INIT_DB} \
@@ -222,7 +227,7 @@ online_install_upm_platform() {
     --set-string service-easysearch.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string service-easysearch.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string service-easysearch.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set upm.kafka.enabled=true \
+    --set upm.kafka.enabled=${KAFKA_ENABLED} \
     --set-string service-kafka.image.tag="${API_VERSION}" \
     --set service-kafka.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-kafka.initDB.enabled=${PLATFORM_INIT_DB} \
@@ -233,7 +238,7 @@ online_install_upm_platform() {
     --set-string service-kafka.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string service-kafka.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string service-kafka.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set upm.zookeeper.enabled=true \
+    --set upm.zookeeper.enabled=${ZOOKEEPER_ENABLED} \
     --set-string service-zookeeper.image.tag="${API_VERSION}" \
     --set service-zookeeper.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-zookeeper.initDB.enabled=${PLATFORM_INIT_DB} \
@@ -244,7 +249,7 @@ online_install_upm_platform() {
     --set-string service-zookeeper.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string service-zookeeper.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string service-zookeeper.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set upm.mysql.enabled=true \
+    --set upm.mysql.enabled=${MYSQL_ENABLED} \
     --set-string service-mysql.image.tag="${API_VERSION}" \
     --set service-mysql.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-mysql.initDB.enabled=${PLATFORM_INIT_DB} \
@@ -255,7 +260,7 @@ online_install_upm_platform() {
     --set-string service-mysql.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string service-mysql.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string service-mysql.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set upm.redis.enabled=true \
+    --set upm.redis.enabled=${REDIS_ENABLED} \
     --set-string service-redis.image.tag="${API_VERSION}" \
     --set service-redis.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-redis.initDB.enabled=${PLATFORM_INIT_DB} \
@@ -366,7 +371,7 @@ offline_install_upm_platform() {
     --set-string resource.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string resource.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string resource.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set upm.easysearch.enabled=true \
+    --set upm.easysearch.enabled=${EASYSEARCH_ENABLED} \
     --set-string service-easysearch.image.tag="${API_VERSION}" \
     --set service-easysearch.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-easysearch.initDB.enabled=${PLATFORM_INIT_DB} \
@@ -377,7 +382,7 @@ offline_install_upm_platform() {
     --set-string service-easysearch.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string service-easysearch.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string service-easysearch.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set upm.kafka.enabled=true \
+    --set upm.kafka.enabled=${KAFKA_ENABLED} \
     --set-string service-kafka.image.tag="${API_VERSION}" \
     --set service-kafka.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-kafka.initDB.enabled=${PLATFORM_INIT_DB} \
@@ -388,7 +393,7 @@ offline_install_upm_platform() {
     --set-string service-kafka.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string service-kafka.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string service-kafka.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set upm.zookeeper.enabled=true \
+    --set upm.zookeeper.enabled=${ZOOKEEPER_ENABLED} \
     --set-string service-zookeeper.image.tag="${API_VERSION}" \
     --set service-zookeeper.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-zookeeper.initDB.enabled=${PLATFORM_INIT_DB} \
@@ -399,7 +404,7 @@ offline_install_upm_platform() {
     --set-string service-zookeeper.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string service-zookeeper.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string service-zookeeper.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set upm.mysql.enabled=true \
+    --set upm.mysql.enabled=${MYSQL_ENABLED} \
     --set-string service-mysql.image.tag="${API_VERSION}" \
     --set service-mysql.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-mysql.initDB.enabled=${PLATFORM_INIT_DB} \
@@ -410,7 +415,7 @@ offline_install_upm_platform() {
     --set-string service-mysql.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string service-mysql.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string service-mysql.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set upm.redis.enabled=true \
+    --set upm.redis.enabled=${REDIS_ENABLED} \
     --set-string service-redis.image.tag="${API_VERSION}" \
     --set service-redis.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-redis.initDB.enabled=${PLATFORM_INIT_DB} \
