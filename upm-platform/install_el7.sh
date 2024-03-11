@@ -61,6 +61,7 @@ readonly TIME_OUT_SECOND="600s"
 readonly CHART_VERSION="1.1.0"
 readonly UI_VERSION="dev-09e31659"
 readonly API_VERSION="dev-ec89ecc3"
+readonly HELIX_VERSION="dev-9c017f5b"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
 PLATFORM_INIT_DB="${PLATFORM_INIT_DB:-false}"
@@ -293,6 +294,15 @@ online_install_upm_platform() {
     --set-string user.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string user.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string user.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
+    --set-string helix.image.tag="${HELIX_VERSION}" \
+    --set helix.replicaCount="${PLATFORM_NODE_COUNT}" \
+    --set-string helix.nodeAffinityPreset.type="hard" \
+    --set-string helix.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string helix.nodeAffinityPreset.values='{enable}' \
+    --set-string helix.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
+    --set-string helix.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
+    --set-string helix.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
+    --set-string helix.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
@@ -459,6 +469,15 @@ offline_install_upm_platform() {
     --set-string user.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string user.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string user.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
+    --set-string helix.image.tag="${HELIX_VERSION}" \
+    --set helix.replicaCount="${PLATFORM_NODE_COUNT}" \
+    --set-string helix.nodeAffinityPreset.type="hard" \
+    --set-string helix.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string helix.nodeAffinityPreset.values='{enable}' \
+    --set-string helix.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
+    --set-string helix.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
+    --set-string helix.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
+    --set-string helix.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
