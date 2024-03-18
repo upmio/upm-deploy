@@ -141,6 +141,19 @@ online_install_nacos() {
     error "Fail to install ${RELEASE}."
   }
 
+
+  if [[ ${NACOS_SERVICE_TYPE} == "NodePort" ]]; then
+    info "patch service type to NodePort..."
+    kubectl patch service -n "${NACOS_KUBE_NAMESPACE}" "nacos" --type='json' -p '[{"op":"replace","path":"/spec/type","value":"NodePort"},{"op":"replace","path":"/spec/ports/1/nodePort","value":'"${NACOS_NODEPORT}"'}]' || {
+      error "kubectl patch service failed !"
+    }
+  elif [[ ${NACOS_SERVICE_TYPE} == "LoadBalancer" ]]; then
+    info "patch service type to LoadBalancer..."
+    kubectl patch service -n "${NACOS_KUBE_NAMESPACE}" "nacos" --type='json' -p '[{"op":"replace","path":"/spec/type","value":"LoadBalancer"}]' || {
+      error "kubectl patch service failed !"
+    }
+  fi
+
   #TODO: check more resources after install
 }
 
@@ -197,6 +210,18 @@ offline_install_nacos() {
     --wait 2>&1 | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
   }
+
+  if [[ ${NACOS_SERVICE_TYPE} == "NodePort" ]]; then
+    info "patch service type to NodePort..."
+    kubectl patch service -n "${NACOS_KUBE_NAMESPACE}" "nacos" --type='json' -p '[{"op":"replace","path":"/spec/type","value":"NodePort"},{"op":"replace","path":"/spec/ports/1/nodePort","value":'"${NACOS_NODEPORT}"'}]' || {
+      error "kubectl patch service failed !"
+    }
+  elif [[ ${NACOS_SERVICE_TYPE} == "LoadBalancer" ]]; then
+    info "patch service type to LoadBalancer..."
+    kubectl patch service -n "${NACOS_KUBE_NAMESPACE}" "nacos" --type='json' -p '[{"op":"replace","path":"/spec/type","value":"LoadBalancer"}]' || {
+      error "kubectl patch service failed !"
+    }
+  fi
 
   #TODO: check more resources after install
 }
