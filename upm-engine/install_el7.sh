@@ -10,12 +10,12 @@
 readonly CHART="upm-charts/upm-engine"
 readonly RELEASE="upm-engine"
 readonly TIME_OUT_SECOND="600s"
-readonly CHART_VERSION="1.1.0"
-readonly TESSERACT_VERSION="dev-4f3d251e"
-readonly TESSERACT_AGENT_VERSION="dev-53415175"
-readonly SCEPTER_VERSION="dev-2dc71150"
-readonly GAUNTLET_VERSION="dev-9f35637e"
-readonly TEMPLATE_VERSION="dev-10b597ab"
+readonly CHART_VERSION="1.1.2"
+readonly TESSERACT_VERSION="v1.0.0-20240323121538"
+readonly TESSERACT_AGENT_VERSION="v1.0.0-20240323121924"
+readonly SCEPTER_VERSION="v1.0.0-20240323120855"
+readonly GAUNTLET_VERSION="v1.0.0-20240323122220"
+readonly TEMPLATE_VERSION="v1.0.0-20240323184431"
 
 ENGINE_KUBE_NAMESPACE="${ENGINE_KUBE_NAMESPACE:-upm-system}"
 INSTALL_LOG_PATH=/tmp/upm_engine_install-$(date +'%Y-%m-%d_%H-%M-%S').log
