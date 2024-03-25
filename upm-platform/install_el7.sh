@@ -273,7 +273,7 @@ online_install_upm_platform() {
     --set-string service-redis.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string service-redis.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string service-redis.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set upm.redis.enabled=${PLATFORM_REDIS_CLUSTER_ENABLED} \
+    --set upm.redis-cluster.enabled=${PLATFORM_REDIS_CLUSTER_ENABLED} \
     --set-string service-redis-cluster.image.tag="${API_VERSION}" \
     --set service-redis-cluster.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-redis-cluster.initDB.enabled=${PLATFORM_INIT_DB} \
@@ -448,7 +448,7 @@ offline_install_upm_platform() {
     --set-string service-redis.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string service-redis.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string service-redis.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set upm.redis.enabled=${PLATFORM_REDIS_CLUSTER_ENABLED} \
+    --set upm.redis-cluster.enabled=${PLATFORM_REDIS_CLUSTER_ENABLED} \
     --set-string service-redis-cluster.image.tag="${API_VERSION}" \
     --set service-redis-cluster.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-redis-cluster.initDB.enabled=${PLATFORM_INIT_DB} \
