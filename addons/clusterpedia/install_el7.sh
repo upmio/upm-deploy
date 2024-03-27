@@ -252,41 +252,6 @@ verify_installed() {
   info "${RELEASE} Deployment Completed!"
 }
 
-create_clustersyncresources() {
-  if [[ ${CLUSTERPEDIA_CREATE_SYNCRESOURCES} == "false" ]]; then
-    info "CLUSTERPEDIA_CREATE_SYNCRESOURCES is false, skip create clustersyncresources."
-    return
-  fi
-
-  [[ -f ${CLUSTERPEDIA_SYNCRESOURCES_YAML} ]] || {
-    local download_url="https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/clusterpedia/yaml/clustersyncresources.yaml"
-    curl -sSL "${download_url}" -o "${CLUSTERPEDIA_SYNCRESOURCES_YAML}" || {
-      error "curl get clustersyncresources.yaml failed"
-    }
-  }
-  kubectl apply -f "${CLUSTERPEDIA_SYNCRESOURCES_YAML}" || {
-    error "kubectl create clustersyncresources failed, check log use kubectl."
-  }
-
-  info "create clustersyncresources successful!"
-}
-
-create_pediaclusters() {
-  if [[ ${CLUSTERPEDIA_CREATE_PEDIACLUSTERS} == "false" ]]; then
-    info "CLUSTERPEDIA_CREATE_PEDIACLUSTERS is false, skip create pediaclusters."
-    return
-  fi
-
-  [[ -f ${CLUSTERPEDIA_PEDIACLUSTERS_YAML} ]] || {
-    error "curl get pediaclusters.yaml failed"
-  }
-  kubectl apply -f "${CLUSTERPEDIA_PEDIACLUSTERS_YAML}" || {
-    error "kubectl create pediaclusters failed, check log use kubectl."
-  }
-
-  info "create pediaclusters successful!"
-}
-
 main() {
   init_log
   verify_supported
@@ -296,8 +261,6 @@ main() {
     offline_install_clusterpedia
   fi
   verify_installed
-  create_clustersyncresources
-  create_pediaclusters
 }
 
 main
