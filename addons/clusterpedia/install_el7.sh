@@ -106,8 +106,6 @@ online_install_clusterpedia() {
     --set installCRDs=true \
     --set postgresql.enabled=false \
     --set mysql.enabled=false \
-    --set-string mysql.image.repository="bitnami/mysql" \
-    --set-string mysql.image.tag="8.0.36-debian-11-r0" \
     --set persistenceMatchNode=None \
     --set storageInstallMode="external" \
     --set externalStorage.createDatabase=true \
@@ -162,8 +160,6 @@ offline_install_clusterpedia() {
     --set installCRDs=true \
     --set postgresql.enabled=false \
     --set mysql.enabled=false \
-    --set-string mysql.image.repository="bitnami/mysql" \
-    --set-string mysql.image.tag="8.0.36-debian-11-r0" \
     --set persistenceMatchNode=None \
     --set storageInstallMode="external" \
     --set externalStorage.createDatabase=true \
