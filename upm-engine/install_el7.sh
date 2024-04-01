@@ -13,7 +13,7 @@ readonly TIME_OUT_SECOND="600s"
 readonly CHART_VERSION="1.1.2"
 readonly TESSERACT_VERSION="dev-7941e014"
 readonly TESSERACT_AGENT_VERSION="dev-2f46b50f"
-readonly SCEPTER_VERSION="dev-e2bbf610"
+readonly SCEPTER_VERSION="dev-790d6d45"
 readonly GAUNTLET_VERSION="dev-73b5496a"
 readonly TEMPLATE_VERSION="dev-61232a3b"
 
