@@ -52,6 +52,29 @@ installed() {
   command -v "$1" >/dev/null 2>&1
 }
 
+install_kubectl() {
+  info "Install kubectl..."
+  if ! curl -LOs "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"; then
+    error "Fail to get kubectl, please confirm whether the connection to dl.k8s.io is ok?"
+  fi
+  if ! sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl; then
+    error "Install kubectl fail"
+  fi
+  info "Kubectl install completed"
+}
+
+install_helm() {
+  info "Install helm..."
+  if ! curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3; then
+    error "Fail to get helm installed script, please confirm whether the connection to raw.githubusercontent.com is ok?"
+  fi
+  chmod 700 get_helm.sh
+  if ! ./get_helm.sh; then
+    error "Fail to get helm when running get_helm.sh"
+  fi
+  info "Helm install completed"
+}
+
 online_install_lvmlocalpv() {
   # check if openebs-lvmlocalpv already installed
   if helm status ${RELEASE} -n "${OPENEBS_KUBE_NAMESPACE}" &>/dev/null; then
@@ -136,6 +159,26 @@ offline_install_lvmlocalpv() {
 }
 
 verify_supported() {
+
+  local HAS_HELM
+  HAS_HELM="$(type "helm" &>/dev/null && echo true || echo false)"
+  local HAS_KUBECTL
+  HAS_KUBECTL="$(type "kubectl" &>/dev/null && echo true || echo false)"
+  local HAS_CURL
+  HAS_CURL="$(type "curl" &>/dev/null && echo true || echo false)"
+
+  if [[ "${HAS_CURL}" != "true" ]]; then
+    error "curl is required"
+  fi
+
+  if [[ "${HAS_HELM}" != "true" -a ${OFFLINE_INSTALL} == "false" ]]; then
+    install_helm
+  fi
+
+  if [[ "${HAS_KUBECTL}" != "true" -a ${OFFLINE_INSTALL} == "false" ]]; then
+    install_kubectl
+  fi
+
   installed helm || error "helm is required"
   installed kubectl || error "kubectl is required"
   installed curl || error "curl is required"
