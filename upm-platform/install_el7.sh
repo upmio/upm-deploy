@@ -60,7 +60,7 @@ readonly RELEASE="upm-platform"
 readonly TIME_OUT_SECOND="600s"
 readonly CHART_VERSION="1.1.1"
 readonly UI_VERSION="dev-b32ad9d0"
-readonly API_VERSION="dev-bff83da7"
+readonly API_VERSION="dev-53d45d65"
 readonly HELIX_VERSION="dev-cc2fce13"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
