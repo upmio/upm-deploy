@@ -171,11 +171,11 @@ verify_supported() {
     error "curl is required"
   fi
 
-  if [[ "${HAS_HELM}" != "true" ]]; then
+  if [[ "${HAS_HELM}" != "true" -a ${OFFLINE_INSTALL} == "false" ]]; then
     install_helm
   fi
 
-  if [[ "${HAS_KUBECTL}" != "true" ]]; then
+  if [[ "${HAS_KUBECTL}" != "true" -a ${OFFLINE_INSTALL} == "false" ]]; then
     install_kubectl
   fi
 
