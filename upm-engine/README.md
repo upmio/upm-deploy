@@ -19,6 +19,7 @@ export ENGINE_NODE_NAMES="master01,master02"
 **注意⚠️：如果找不到 Helm3，将自动安装。**
 
 运行安装脚本
+
 ```console
 # BASH
 curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/upm-engine/install_el7.sh | sh -
