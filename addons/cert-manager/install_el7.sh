@@ -10,7 +10,7 @@
 readonly CHART="bitnami/cert-manager"
 readonly RELEASE="cert-manager"
 readonly TIME_OUT_SECOND="600s"
-readonly CHART_VERSION="0.16.1"
+readonly CHART_VERSION="1.1.0"
 
 CERT_MANAGER_KUBE_NAMESPACE="${CERT_MANAGER_KUBE_NAMESPACE:-cert-manager}"
 CERT_MANAGER_RESOURCE_LIMITS_CPU="${CERT_MANAGER_RESOURCE_LIMITS_CPU:-500m}"
