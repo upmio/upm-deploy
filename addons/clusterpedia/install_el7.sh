@@ -31,6 +31,7 @@ readonly CHART="clusterpedia/clusterpedia"
 readonly RELEASE="clusterpedia"
 readonly TIME_OUT_SECOND="600s"
 readonly CHART_VERSION="2.2.0"
+readonly MYSQL_IMAGE_TAG="8.0.28-debian-10-r23"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
 CLUSTERPEDIA_KUBE_NAMESPACE="${CLUSTERPEDIA_KUBE_NAMESPACE:-clusterpedia}"
@@ -106,6 +107,7 @@ online_install_clusterpedia() {
     --set installCRDs=true \
     --set postgresql.enabled=false \
     --set mysql.enabled=false \
+    --set mysql.image.tag="${MYSQL_IMAGE_TAG}" \
     --set persistenceMatchNode=None \
     --set storageInstallMode="external" \
     --set externalStorage.createDatabase=true \
@@ -160,6 +162,7 @@ offline_install_clusterpedia() {
     --set installCRDs=true \
     --set postgresql.enabled=false \
     --set mysql.enabled=false \
+    --set mysql.image.tag="${MYSQL_IMAGE_TAG}" \
     --set persistenceMatchNode=None \
     --set storageInstallMode="external" \
     --set externalStorage.createDatabase=true \
