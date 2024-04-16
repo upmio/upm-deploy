@@ -128,6 +128,8 @@ online_install_nacos() {
     --set-string extraEnvVars[4].value="SecretKey012345678901234567890123456789012345678901234567890123456789" \
     --set-string extraEnvVars[5].name="JAVA_OPT" \
     --set-string extraEnvVars[5].value="-Dnacos.core.auth.server.identity.key=nacos -Dnacos.core.auth.server.identity.value=nacos -Dnacos.core.auth.plugin.nacos.token.secret.key=SecretKey012345678901234567890123456789012345678901234567890123456789" \
+    --set-string extraEnvVars[6].name="MYSQL_SERVICE_DB_PARAM" \
+    --set-string extraEnvVars[6].value="characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai" \
     --set mysql.enabled=false \
     --set-string mysql.external.mysqlMasterHost="${NACOS_MYSQL_HOST}" \
     --set-string mysql.external.mysqlMasterPort="${NACOS_MYSQL_PORT}" \
@@ -198,6 +200,8 @@ offline_install_nacos() {
     --set-string extraEnvVars[4].value="SecretKey012345678901234567890123456789012345678901234567890123456789" \
     --set-string extraEnvVars[5].name="JAVA_OPT" \
     --set-string extraEnvVars[5].value="-Dnacos.core.auth.server.identity.key=nacos -Dnacos.core.auth.server.identity.value=nacos -Dnacos.core.auth.plugin.nacos.token.secret.key=SecretKey012345678901234567890123456789012345678901234567890123456789" \
+    --set-string extraEnvVars[6].name="MYSQL_SERVICE_DB_PARAM" \
+    --set-string extraEnvVars[6].value="characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai" \
     --set mysql.enabled=false \
     --set-string mysql.external.mysqlMasterHost="${NACOS_MYSQL_HOST}" \
     --set-string mysql.external.mysqlMasterPort="${NACOS_MYSQL_PORT}" \
