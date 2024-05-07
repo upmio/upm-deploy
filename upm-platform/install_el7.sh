@@ -50,9 +50,6 @@
 #
 #        export PLATFORM_REDIS_PWD="password"
 #
-# 13. PLATFORM_CLUSTERPEDIA_KUBECONF_YAML MUST be set as environment variable, for an example:
-#
-#        export PLATFORM_CLUSTERPEDIA_KUBECONF_YAML="/tmp/kubeconfig"
 
 readonly CHART="upm-charts/upm-platform"
 readonly RELEASE="upm-platform"
@@ -125,22 +122,6 @@ error() {
 
 installed() {
   command -v "$1" >/dev/null 2>&1
-}
-
-create_kubeconf_configmap() {
-  info "create kubeconf configmap..."
-
-  if kubectl get configmap upm-kubernetes -n "${PLATFORM_KUBE_NAMESPACE}" &>/dev/null; then
-    kubectl delete configmap upm-kubernetes -n "${PLATFORM_KUBE_NAMESPACE}" || {
-      echo "kubectl delete configmap failed !"
-    }
-  fi
-
-  kubectl create configmap upm-kubernetes -n "${PLATFORM_KUBE_NAMESPACE}" --from-file=config="${PLATFORM_CLUSTERPEDIA_KUBECONF_YAML}" || {
-    echo "kubectl create configmap failed !"
-  }
-
-  info "create kubeconf configmap successful!"
 }
 
 online_install_upm_platform() {
@@ -523,7 +504,6 @@ verify_supported() {
   [[ -n "${PLATFORM_REDIS_HOST}" ]] || error "PLATFORM_REDIS_HOST MUST set in environment variable."
   [[ -n "${PLATFORM_REDIS_PORT}" ]] || error "PLATFORM_REDIS_PORT MUST set in environment variable."
   [[ -n "${PLATFORM_REDIS_PWD}" ]] || error "PLATFORM_REDIS_PWD MUST set in environment variable."
-  [[ -n "${PLATFORM_CLUSTERPEDIA_KUBECONF_YAML}" ]] || error "PLATFORM_CLUSTERPEDIA_KUBECONF_YAML MUST set in environment variable."
 }
 
 init_log() {
@@ -550,7 +530,6 @@ verify_installed() {
 main() {
   init_log
   verify_supported
-  create_kubeconf_configmap
   if [[ ${OFFLINE_INSTALL} == "false" ]]; then
     online_install_upm_platform
   elif [[ ${OFFLINE_INSTALL} == "true" ]]; then

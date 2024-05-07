@@ -30,8 +30,6 @@ PLATFORM_REDIS_PORT：外置Redis端口。
 
 PLATFORM_REDIS_PWD：外置Redis登录密码。
 
-PLATFORM_CLUSTERPEDIA_KUBECONF_YAML：链接clusterpedia kubeconfig yaml 文件路径。
-
 PLATFORM_SERVICE_TYPE：指定服务入口类型，支持 `ClusterIP` 、`NodePort` ，非必填项，默认值为`ClusterIP`。
 
 PLATFORM_KUBE_NAMESPACE：指定安装命名空间，非必填项，默认值为`upm-system`。
@@ -49,7 +47,6 @@ export PLATFORM_NACOS_PWD="nacos"
 export PLATFORM_REDIS_HOST="redis-master"
 export PLATFORM_REDIS_PORT=6379
 export PLATFORM_REDIS_PWD="password"
-export PLATFORM_CLUSTERPEDIA_KUBECONF_YAML="/tmp/kubeconfig"
 ```
 
 ### 2. 运行安装脚本
