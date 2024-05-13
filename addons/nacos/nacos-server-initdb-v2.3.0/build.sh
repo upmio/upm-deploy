@@ -34,7 +34,7 @@ info() {
 UPLOAD_FLAG="${1:-0}"
 PROJECT="dbscale"
 NAME="nacos-server-initdb"
-VERSION="v2.2.3"
+VERSION="v2.3.0"
 IMAGE_NAME="${PROJECT}/${NAME}:${VERSION}"
 
 info "Starting build image"
