@@ -11,11 +11,10 @@ readonly CHART="upm-charts/upm-engine"
 readonly RELEASE="upm-engine"
 readonly TIME_OUT_SECOND="600s"
 readonly CHART_VERSION="1.1.2"
-readonly TESSERACT_VERSION="v1.0.3-20240430144822"
-readonly TESSERACT_AGENT_VERSION="v1.0.0-20240329104359"
-readonly SCEPTER_VERSION="v1.0.3-20240430144753"
-readonly GAUNTLET_VERSION="v1.0.1-20240329104030"
-readonly TEMPLATE_VERSION="v1.0.9-20240430144501"
+readonly TESSERACT_CUBE_VERSION="v1.1.0"
+readonly TESSERACT_AGENT_VERSION="v1.1.0"
+readonly KAUNTLET_VERSION="v1.1.0"
+readonly TEMPLATE_VERSION="v1.1.0"
 
 ENGINE_KUBE_NAMESPACE="${ENGINE_KUBE_NAMESPACE:-upm-system}"
 INSTALL_LOG_PATH=/tmp/upm_engine_install-$(date +'%Y-%m-%d_%H-%M-%S').log
@@ -66,38 +65,28 @@ online_install_upm_engine() {
     --version "${CHART_VERSION}" \
     --namespace "${ENGINE_KUBE_NAMESPACE}" \
     --create-namespace \
-    --set tesseract.crds.enabled=true \
+    --set tesseract-cube.crds.enabled=true \
     --set-string configmaps.image.tag="${TEMPLATE_VERSION}" \
-    --set-string tesseract.image.tag="${TESSERACT_VERSION}" \
-    --set-string tesseract.agent.image.tag="${TESSERACT_AGENT_VERSION}" \
-    --set tesseract.replicaCount="${ENGINE_NODE_COUNT}" \
-    --set-string tesseract.nodeAffinityPreset.type="hard" \
-    --set-string tesseract.nodeAffinityPreset.key="upm\.engine\.node" \
-    --set-string tesseract.nodeAffinityPreset.values='{enable}' \
-    --set-string tesseract.resources.limits.cpu="${ENGINE_RESOURCE_LIMITS_CPU}" \
-    --set-string tesseract.resources.limits.memory="${ENGINE_RESOURCE_LIMITS_MEMORY}" \
-    --set-string tesseract.resources.requests.cpu="${ENGINE_RESOURCE_REQUESTS_CPU}" \
-    --set-string tesseract.resources.requests.memory="${ENGINE_RESOURCE_REQUESTS_MEMORY}" \
-    --set scepter.crds.enabled=true \
-    --set-string scepter.image.tag="${SCEPTER_VERSION}" \
-    --set scepter.replicaCount="${ENGINE_NODE_COUNT}" \
-    --set-string scepter.nodeAffinityPreset.type="hard" \
-    --set-string scepter.nodeAffinityPreset.key="upm\.engine\.node" \
-    --set-string scepter.nodeAffinityPreset.values='{enable}' \
-    --set-string scepter.resources.limits.cpu="${ENGINE_RESOURCE_LIMITS_CPU}" \
-    --set-string scepter.resources.limits.memory="${ENGINE_RESOURCE_LIMITS_MEMORY}" \
-    --set-string scepter.resources.requests.cpu="${ENGINE_RESOURCE_REQUESTS_CPU}" \
-    --set-string scepter.resources.requests.memory="${ENGINE_RESOURCE_REQUESTS_MEMORY}" \
-    --set gauntlet.crds.enabled=true \
-    --set-string gauntlet.image.tag="${GAUNTLET_VERSION}" \
-    --set gauntlet.replicaCount="${ENGINE_NODE_COUNT}" \
-    --set-string gauntlet.nodeAffinityPreset.type="hard" \
-    --set-string gauntlet.nodeAffinityPreset.key="upm\.engine\.node" \
-    --set-string gauntlet.nodeAffinityPreset.values='{enable}' \
-    --set-string gauntlet.resources.limits.cpu="${ENGINE_RESOURCE_LIMITS_CPU}" \
-    --set-string gauntlet.resources.limits.memory="${ENGINE_RESOURCE_LIMITS_MEMORY}" \
-    --set-string gauntlet.resources.requests.cpu="${ENGINE_RESOURCE_REQUESTS_CPU}" \
-    --set-string gauntlet.resources.requests.memory="${ENGINE_RESOURCE_REQUESTS_MEMORY}" \
+    --set-string tesseract-cube.image.tag="${TESSERACT_CUBE_VERSION}" \
+    --set-string tesseract-cube.agent.image.tag="${TESSERACT_AGENT_VERSION}" \
+    --set tesseract-cube.replicaCount="${ENGINE_NODE_COUNT}" \
+    --set-string tesseract-cube.nodeAffinityPreset.type="hard" \
+    --set-string tesseract-cube.nodeAffinityPreset.key="upm\.engine\.node" \
+    --set-string tesseract-cube.nodeAffinityPreset.values='{enable}' \
+    --set-string tesseract-cube.resources.limits.cpu="${ENGINE_RESOURCE_LIMITS_CPU}" \
+    --set-string tesseract-cube.resources.limits.memory="${ENGINE_RESOURCE_LIMITS_MEMORY}" \
+    --set-string tesseract-cube.resources.requests.cpu="${ENGINE_RESOURCE_REQUESTS_CPU}" \
+    --set-string tesseract-cube.resources.requests.memory="${ENGINE_RESOURCE_REQUESTS_MEMORY}" \
+    --set kauntlet.crds.enabled=true \
+    --set-string kauntlet.image.tag="${KAUNTLET_VERSION}" \
+    --set kauntlet.replicaCount="${ENGINE_NODE_COUNT}" \
+    --set-string kauntlet.nodeAffinityPreset.type="hard" \
+    --set-string kauntlet.nodeAffinityPreset.key="upm\.engine\.node" \
+    --set-string kauntlet.nodeAffinityPreset.values='{enable}' \
+    --set-string kauntlet.resources.limits.cpu="${ENGINE_RESOURCE_LIMITS_CPU}" \
+    --set-string kauntlet.resources.limits.memory="${ENGINE_RESOURCE_LIMITS_MEMORY}" \
+    --set-string kauntlet.resources.requests.cpu="${ENGINE_RESOURCE_REQUESTS_CPU}" \
+    --set-string kauntlet.resources.requests.memory="${ENGINE_RESOURCE_REQUESTS_MEMORY}" \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
@@ -119,38 +108,28 @@ offline_install_upm_engine() {
     --namespace "${ENGINE_KUBE_NAMESPACE}" \
     --create-namespace \
     --set-string global.imageRegistry="${ENGINE_IMAGE_REGISTRY}" \
-    --set tesseract.crds.enabled=true \
+    --set tesseract-cube.crds.enabled=true \
     --set-string configmaps.image.tag="${TEMPLATE_VERSION}" \
-    --set-string tesseract.image.tag="${TESSERACT_VERSION}" \
-    --set-string tesseract.agent.image.tag="${TESSERACT_AGENT_VERSION}" \
-    --set tesseract.replicaCount="${ENGINE_NODE_COUNT}" \
-    --set-string tesseract.nodeAffinityPreset.type="hard" \
-    --set-string tesseract.nodeAffinityPreset.key="upm\.engine\.node" \
-    --set-string tesseract.nodeAffinityPreset.values='{enable}' \
-    --set-string tesseract.resources.limits.cpu="${ENGINE_RESOURCE_LIMITS_CPU}" \
-    --set-string tesseract.resources.limits.memory="${ENGINE_RESOURCE_LIMITS_MEMORY}" \
-    --set-string tesseract.resources.requests.cpu="${ENGINE_RESOURCE_REQUESTS_CPU}" \
-    --set-string tesseract.resources.requests.memory="${ENGINE_RESOURCE_REQUESTS_MEMORY}" \
-    --set scepter.crds.enabled=true \
-    --set-string scepter.image.tag="${SCEPTER_VERSION}" \
-    --set scepter.replicaCount="${ENGINE_NODE_COUNT}" \
-    --set-string scepter.nodeAffinityPreset.type="hard" \
-    --set-string scepter.nodeAffinityPreset.key="upm\.engine\.node" \
-    --set-string scepter.nodeAffinityPreset.values='{enable}' \
-    --set-string scepter.resources.limits.cpu="${ENGINE_RESOURCE_LIMITS_CPU}" \
-    --set-string scepter.resources.limits.memory="${ENGINE_RESOURCE_LIMITS_MEMORY}" \
-    --set-string scepter.resources.requests.cpu="${ENGINE_RESOURCE_REQUESTS_CPU}" \
-    --set-string scepter.resources.requests.memory="${ENGINE_RESOURCE_REQUESTS_MEMORY}" \
-    --set gauntlet.crds.enabled=true \
-    --set-string gauntlet.image.tag="${GAUNTLET_VERSION}" \
-    --set gauntlet.replicaCount="${ENGINE_NODE_COUNT}" \
-    --set-string gauntlet.nodeAffinityPreset.type="hard" \
-    --set-string gauntlet.nodeAffinityPreset.key="upm\.engine\.node" \
-    --set-string gauntlet.nodeAffinityPreset.values='{enable}' \
-    --set-string gauntlet.resources.limits.cpu="${ENGINE_RESOURCE_LIMITS_CPU}" \
-    --set-string gauntlet.resources.limits.memory="${ENGINE_RESOURCE_LIMITS_MEMORY}" \
-    --set-string gauntlet.resources.requests.cpu="${ENGINE_RESOURCE_REQUESTS_CPU}" \
-    --set-string gauntlet.resources.requests.memory="${ENGINE_RESOURCE_REQUESTS_MEMORY}" \
+    --set-string tesseract-cube.image.tag="${TESSERACT_CUBE_VERSION}" \
+    --set-string tesseract-cube.agent.image.tag="${TESSERACT_AGENT_VERSION}" \
+    --set tesseract-cube.replicaCount="${ENGINE_NODE_COUNT}" \
+    --set-string tesseract-cube.nodeAffinityPreset.type="hard" \
+    --set-string tesseract-cube.nodeAffinityPreset.key="upm\.engine\.node" \
+    --set-string tesseract-cube.nodeAffinityPreset.values='{enable}' \
+    --set-string tesseract-cube.resources.limits.cpu="${ENGINE_RESOURCE_LIMITS_CPU}" \
+    --set-string tesseract-cube.resources.limits.memory="${ENGINE_RESOURCE_LIMITS_MEMORY}" \
+    --set-string tesseract-cube.resources.requests.cpu="${ENGINE_RESOURCE_REQUESTS_CPU}" \
+    --set-string tesseract-cube.resources.requests.memory="${ENGINE_RESOURCE_REQUESTS_MEMORY}" \
+    --set kauntlet.crds.enabled=true \
+    --set-string kauntlet.image.tag="${KAUNTLET_VERSION}" \
+    --set kauntlet.replicaCount="${ENGINE_NODE_COUNT}" \
+    --set-string kauntlet.nodeAffinityPreset.type="hard" \
+    --set-string kauntlet.nodeAffinityPreset.key="upm\.engine\.node" \
+    --set-string kauntlet.nodeAffinityPreset.values='{enable}' \
+    --set-string kauntlet.resources.limits.cpu="${ENGINE_RESOURCE_LIMITS_CPU}" \
+    --set-string kauntlet.resources.limits.memory="${ENGINE_RESOURCE_LIMITS_MEMORY}" \
+    --set-string kauntlet.resources.requests.cpu="${ENGINE_RESOURCE_REQUESTS_CPU}" \
+    --set-string kauntlet.resources.requests.memory="${ENGINE_RESOURCE_REQUESTS_MEMORY}" \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
