@@ -1,6 +1,6 @@
-FROM nacos/nacos-server:v2.2.3
+FROM nacos/nacos-server:v2.3.0
 
-ENV MYSQL_VERSION="8.0.34"
+ENV MYSQL_VERSION="8.0.36"
 
 # install mysql client
 RUN yum install -y https://repo.mysql.com/mysql80-community-release-el7.rpm \
