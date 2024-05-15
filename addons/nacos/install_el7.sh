@@ -82,6 +82,53 @@ installed() {
   command -v "$1" >/dev/null 2>&1
 }
 
+compatibility_openshift() {
+  if kubectl api-resources | grep security.openshift.io/v1 &>/dev/null; then
+    info "Openshift detected, patching security context constraints..."
+
+    kubectl apply -f - <<EOF
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: scc-role
+  namespace: ${NACOS_KUBE_NAMESPACE}
+rules:
+  - apiGroups:
+      - security.openshift.io
+    resourceNames:
+      - anyuid
+    resources:
+      - securitycontextconstraints
+    verbs:
+      - use
+EOF
+
+    kubectl apply -f - <<EOF
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: scc-rolebinding
+  namespace: ${NACOS_KUBE_NAMESPACE}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: scc-role
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: ${NACOS_KUBE_NAMESPACE}
+EOF
+
+    kubectl apply -f - <<EOF
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ServiceAccount
+metadata:
+  name: default
+  namespace: ${NACOS_KUBE_NAMESPACE}
+EOF
+  fi
+}
+
 online_install_nacos() {
   # check if nacos already installed
   if helm status ${RELEASE} -n "${NACOS_KUBE_NAMESPACE}" &>/dev/null; then
@@ -288,6 +335,7 @@ verify_installed() {
 main() {
   init_log
   verify_supported
+  compatibility_openshift
   if [[ ${OFFLINE_INSTALL} == "false" ]]; then
     online_install_nacos
   elif [[ ${OFFLINE_INSTALL} == "true" ]]; then
