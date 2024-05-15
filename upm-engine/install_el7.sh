@@ -55,6 +55,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
   name: tesseract-cube-catalog
+  namespace: openshift-marketplace
 spec:
   sourceType: grpc
   image: quay.io/upmio/tesseract-cube-catalog:${TESSERACT_CUBE_VERSION}
@@ -66,10 +67,11 @@ EOF
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
-  label: operators.coreos.com/tesseract-cube.openshift-operators: ""
+  labels: 
+    operators.coreos.com/tesseract-cube.openshift-operators: ""
   name: tesseract-cube-operator
   namespace: openshift-operators
-spec
+spec:
   channel: alpha
   installPlanApproval: Automatic
   name: tesseract-cube
@@ -84,6 +86,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
   name: kauntlet-catalog
+  namespace: openshift-marketplace
 spec:
   sourceType: grpc
   image: quay.io/upmio/kauntlet-catalog:${KAUNTLET_VERSION}
@@ -97,7 +100,7 @@ kind: Subscription
 metadata:
   labels:
     operators.coreos.com/kauntlet.openshift-operators: ""
-  name: kauntlet
+  name: kauntlet-operator
   namespace: openshift-operators
 spec:
   channel: alpha
@@ -165,7 +168,7 @@ metadata:
 spec:
   template:
     metadata:
-      name: {{ .Release.Name }}
+      name: ${RELEASE}
       labels:
         app.kubernetes.io/instance: ${RELEASE}
     spec:
@@ -179,7 +182,7 @@ spec:
           - /bin/bash
           - -ec
           - |
-            kubectl apply --server-side -f /configmaps/ -n ${NAMESPACE} --force-conflicts
+            kubectl apply --server-side -f /configmaps/ -n ${ENGINE_KUBE_NAMESPACE} --force-conflicts
         env:
           - name: NAMESPACE
             valueFrom:
