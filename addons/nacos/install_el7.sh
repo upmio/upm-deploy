@@ -120,7 +120,7 @@ subjects:
 EOF
 
     kubectl apply -f - <<EOF
-apiVersion: rbac.authorization.k8s.io/v1
+apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: default
