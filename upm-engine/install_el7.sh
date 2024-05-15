@@ -12,7 +12,6 @@ readonly RELEASE="upm-engine"
 readonly TIME_OUT_SECOND="600s"
 readonly CHART_VERSION="1.1.2"
 readonly TESSERACT_CUBE_VERSION="v1.1.0"
-readonly TESSERACT_AGENT_VERSION="v1.1.0"
 readonly KAUNTLET_VERSION="v1.1.0"
 readonly TEMPLATE_VERSION="v1.1.0"
 
@@ -49,6 +48,147 @@ installed() {
   command -v "$1" >/dev/null 2>&1
 }
 
+install_upm_engine_on_openshift() {
+  # install tesseract-cube-operator
+  kubectl apply -f - <<EOF
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: tesseract-cube-catalog
+spec:
+  sourceType: grpc
+  image: quay.io/upmio/tesseract-cube-catalog:${TESSERACT_CUBE_VERSION}
+  displayName: tesseract-cube
+  publisher: BSG
+EOF
+
+  kubectl apply -f - <<EOF
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  label: operators.coreos.com/tesseract-cube.openshift-operators: ""
+  name: tesseract-cube-operator
+  namespace: openshift-operators
+spec
+  channel: alpha
+  installPlanApproval: Automatic
+  name: tesseract-cube
+  source: tesseract-cube-catalog
+  sourceNamespace: openshift-marketplace
+  startingCSV: tesseract-cube.${TESSERACT_CUBE_VERSION}
+EOF
+
+  # install kauntlet-operator
+  kubectl apply -f - <<EOF
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: kauntlet-catalog
+spec:
+  sourceType: grpc
+  image: quay.io/upmio/kauntlet-catalog:${KAUNTLET_VERSION}
+  displayName: kauntlet
+  publisher: BSG
+EOF
+
+  kubectl apply -f - <<EOF
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  labels:
+    operators.coreos.com/kauntlet.openshift-operators: ""
+  name: kauntlet
+  namespace: openshift-operators
+spec:
+  channel: alpha
+  installPlanApproval: Automatic
+  name: kauntlet
+  source: kauntlet-catalog
+  sourceNamespace: openshift-marketplace
+  startingCSV: kauntlet.${KAUNTLET_VERSION}
+EOF
+
+  # create import-configmap-job rbac
+  kubectl apply -f - <<EOF
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ${RELEASE}-import-configmaps-role
+  namespace: ${ENGINE_KUBE_NAMESPACE}
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+  - patch
+  - update
+EOF
+
+  kubectl apply -f - <<EOF
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ${RELEASE}-import-configmaps-rolebinding
+  namespace: ${ENGINE_KUBE_NAMESPACE}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ${RELEASE}-import-configmaps-role
+subjects:
+- kind: ServiceAccount
+  name: ${RELEASE}-import-configmaps-sa
+  namespace: ${ENGINE_KUBE_NAMESPACE}
+EOF
+
+  kubectl apply -f - <<EOF
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ${RELEASE}-import-configmaps-sa
+  namespace: ${ENGINE_KUBE_NAMESPACE}
+EOF
+
+  # create import-configmap-job
+  kubectl apply -f - <<EOF
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    app.kubernetes.io/instance: ${RELEASE}
+  name: "${RELEASE}-import-configmaps"
+  namespace: ${ENGINE_KUBE_NAMESPACE}
+spec:
+  template:
+    metadata:
+      name: {{ .Release.Name }}
+      labels:
+        app.kubernetes.io/instance: ${RELEASE}
+    spec:
+      serviceAccountName: ${RELEASE}-import-configmaps-sa
+      restartPolicy: Never
+      containers:
+      - name: import-configmaps
+        image: quay.io/upmio/upm-template:${TEMPLATE_VERSION}
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/bash
+          - -ec
+          - |
+            kubectl apply --server-side -f /configmaps/ -n ${NAMESPACE} --force-conflicts
+        env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+EOF
+}
+
 online_install_upm_engine() {
   # check if upm-engine already installed
   if helm status ${RELEASE} -n "${ENGINE_KUBE_NAMESPACE}" &>/dev/null; then
@@ -68,7 +208,7 @@ online_install_upm_engine() {
     --set tesseract-cube.crds.enabled=true \
     --set-string configmaps.image.tag="${TEMPLATE_VERSION}" \
     --set-string tesseract-cube.image.tag="${TESSERACT_CUBE_VERSION}" \
-    --set-string tesseract-cube.agent.image.tag="${TESSERACT_AGENT_VERSION}" \
+    --set-string tesseract-cube.agent.image.tag="${TESSERACT_CUBE_VERSION}" \
     --set tesseract-cube.replicaCount="${ENGINE_NODE_COUNT}" \
     --set-string tesseract-cube.nodeAffinityPreset.type="hard" \
     --set-string tesseract-cube.nodeAffinityPreset.key="upm\.engine\.node" \
@@ -111,7 +251,7 @@ offline_install_upm_engine() {
     --set tesseract-cube.crds.enabled=true \
     --set-string configmaps.image.tag="${TEMPLATE_VERSION}" \
     --set-string tesseract-cube.image.tag="${TESSERACT_CUBE_VERSION}" \
-    --set-string tesseract-cube.agent.image.tag="${TESSERACT_AGENT_VERSION}" \
+    --set-string tesseract-cube.agent.image.tag="${TESSERACT_CUBE_VERSION}" \
     --set tesseract-cube.replicaCount="${ENGINE_NODE_COUNT}" \
     --set-string tesseract-cube.nodeAffinityPreset.type="hard" \
     --set-string tesseract-cube.nodeAffinityPreset.key="upm\.engine\.node" \
@@ -181,12 +321,19 @@ verify_installed() {
 main() {
   init_log
   verify_supported
-  if [[ ${OFFLINE_INSTALL} == "false" ]]; then
-    online_install_upm_engine
-  elif [[ ${OFFLINE_INSTALL} == "true" ]]; then
-    offline_install_upm_engine
+
+  # detect if the cluster is OpenShift
+  if kubectl api-resources | grep security.openshift.io/v1 &>/dev/null; then
+    install_upm_engine_on_openshift
+  # detect if the cluster is Kubernetes
+  else
+    if [[ ${OFFLINE_INSTALL} == "false" ]]; then
+      online_install_upm_engine
+    elif [[ ${OFFLINE_INSTALL} == "true" ]]; then
+      offline_install_upm_engine
+    fi
+    verify_installed
   fi
-  verify_installed
 }
 
 main
