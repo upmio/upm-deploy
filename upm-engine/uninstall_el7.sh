@@ -21,10 +21,8 @@ installed() {
 }
 
 uninstall_upm_engine_on_openshift() {
-  if [ -n "$(kubectl get job -n "${ENGINE_KUBE_NAMESPACE}" -l 'app.kubernetes.io/name=upm-engine')" ]; then
-    kubectl delete job -n "${ENGINE_KUBE_NAMESPACE}" -l 'app.kubernetes.io/name=upm-engine'
-  else
-    error "delete job upm-engine error"
+  if [ -n "$(kubectl get job -n "${ENGINE_KUBE_NAMESPACE}" upm-engine-import-configmaps )" ]; then
+    kubectl delete job -n "${ENGINE_KUBE_NAMESPACE}" upm-engine-import-configmaps
   fi
 
   kubectl delete roles -n "${ENGINE_KUBE_NAMESPACE}" "${RELEASE}-import-configmaps-role" || {
@@ -58,10 +56,8 @@ uninstall_upm_engine_on_k8s() {
     error "remove label upm-engine/node error"
   }
 
-  if [ -n "$(kubectl get job -n "${ENGINE_KUBE_NAMESPACE}" -l 'app.kubernetes.io/name=upm-engine')" ]; then
-    kubectl delete job -n "${ENGINE_KUBE_NAMESPACE}" -l 'app.kubernetes.io/name=upm-engine'
-  else
-    error "delete job upm-engine error"
+  if [ -n "$(kubectl get job -n "${ENGINE_KUBE_NAMESPACE}" upm-engine-import-configmaps )" ]; then
+    kubectl delete job -n "${ENGINE_KUBE_NAMESPACE}" upm-engine-import-configmaps
   fi
 
   kubectl delete roles -n "${ENGINE_KUBE_NAMESPACE}" -l 'app.kubernetes.io/name=upm-engine' || {
