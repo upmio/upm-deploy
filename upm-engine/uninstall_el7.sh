@@ -4,8 +4,8 @@ readonly RELEASE="upm-engine"
 readonly TESSERACT_CUBE_VERSION="v1.1.0"
 readonly KAUNTLET_VERSION="v1.1.0"
 
-INSTALL_LOG_PATH=/tmp/upm-engine-uninstall-$(date +'%Y-%m-%d_%H-%M-%S').log
 ENGINE_KUBE_NAMESPACE="${ENGINE_KUBE_NAMESPACE:-upm-system}"
+INSTALL_LOG_PATH=/tmp/upm-engine-uninstall-$(date +'%Y-%m-%d_%H-%M-%S').log
 
 info() {
   echo "[Info][$(date +'%Y-%m-%dT%H:%M:%S%z')]: $*" | tee -a "${INSTALL_LOG_PATH}"
@@ -21,9 +21,6 @@ installed() {
 }
 
 uninstall_upm_engine_on_openshift() {
-  kubectl get node --no-headers -l 'upm.engine.node=enable' | awk '{print $1}' | xargs -I {} kubectl label nodes {} 'upm.engine.node-' || {
-    error "remove label upm-engine/node error"
-  }
   kubectl delete job -n "${ENGINE_KUBE_NAMESPACE}" "${RELEASE}-import-configmaps" || {
     error "delete job upm-engine error"
   }
