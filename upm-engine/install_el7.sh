@@ -182,7 +182,7 @@ spec:
           - /bin/bash
           - -ec
           - |
-            kubectl apply --server-side -f /configmaps/ -n ${ENGINE_KUBE_NAMESPACE} --force-conflicts
+            kubectl apply --server-side -f /configmaps/ -n openshift-marketplace --force-conflicts
         env:
           - name: NAMESPACE
             valueFrom:
@@ -322,6 +322,7 @@ main() {
   # detect if the cluster is OpenShift
   if kubectl api-resources | grep security.openshift.io/v1 &>/dev/null; then
     install_upm_engine_on_openshift
+    check_resource_on_openshift
   # detect if the cluster is Kubernetes
   else
     if [[ ${OFFLINE_INSTALL} == "false" ]]; then
@@ -331,6 +332,33 @@ main() {
     fi
     verify_installed
   fi
+}
+
+check_resource_on_openshift() {
+  if [[ "$(kubectl get csv -n openshift-operators kauntlet."${TEMPLATE_VERSION}" -o jsonpath='{.status.phase}')" == 'Succeeded' ]]; then
+    echo "csv kauntlet.${TEMPLATE_VERSION} create Succeeded"
+  else
+    echo "csv kauntlet.${TEMPLATE_VERSION} create failed"
+  fi
+
+  if [[ "$(kubectl get csv -n openshift-operators tesseract-cube."${TESSERACT_CUBE_VERSION}" -o jsonpath='{.status.phase}')" == 'Succeeded' ]]; then
+    echo "csv tesseract-cube.${TESSERACT_CUBE_VERSION} create Succeeded"
+  else
+    echo "csv tesseract-cube.${TESSERACT_CUBE_VERSION} create failed"
+  fi
+  
+  if [[ "$(kubectl get catalogsources -n openshift-operators kauntlet-catalog -o jsonpath='{.status.lastObservedState}')" == 'READY' ]]; then
+    echo "catalogsources kauntlet-catalog create Succeeded"
+  else
+    echo "catalogsources kauntlet-catalog create failed"
+  fi
+
+  if [[ "$(kubectl get catalogsources  -n openshift-marketplace tesseract-cube-catalog -o jsonpath='{.status.lastObservedState}')" == 'READY' ]]; then
+    echo "catalogsources tesseract-cube-catalog create Succeeded"
+  else
+    echo "catalogsources tesseract-cube-catalog create failed"
+  fi
+  
 }
 
 main
