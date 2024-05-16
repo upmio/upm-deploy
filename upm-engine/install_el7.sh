@@ -305,12 +305,6 @@ init_log() {
   info "Log file create in path ${INSTALL_LOG_PATH}"
 }
 
-############################################
-# Check if helm release deployment correctly
-# Arguments:
-#   release
-#   namespace
-############################################
 verify_installed() {
   local status
   status=$(helm status "${RELEASE}" -n "${ENGINE_KUBE_NAMESPACE}" -o yaml | yq -r '.info.status')
