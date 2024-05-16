@@ -23,9 +23,10 @@ installed() {
 uninstall_upm_engine_on_openshift() {
   if [ -n "$(kubectl get job -n "${ENGINE_KUBE_NAMESPACE}" -l 'app.kubernetes.io/name=upm-engine')" ]; then
     kubectl delete job -n "${ENGINE_KUBE_NAMESPACE}" -l 'app.kubernetes.io/name=upm-engine'
-  fi || {
-    error "delete job upm-engine error"
-  }
+  else
+    echo "delete job upm-engine error"
+  fi
+
   kubectl delete roles -n "${ENGINE_KUBE_NAMESPACE}" "${RELEASE}-import-configmaps-role" || {
     error "delete roles upm-engine error"
   }
@@ -59,9 +60,9 @@ uninstall_upm_engine_on_k8s() {
 
   if [ -n "$(kubectl get job -n "${ENGINE_KUBE_NAMESPACE}" -l 'app.kubernetes.io/name=upm-engine')" ]; then
     kubectl delete job -n "${ENGINE_KUBE_NAMESPACE}" -l 'app.kubernetes.io/name=upm-engine'
-  fi || {
-    error "delete job upm-engine error"
-  }
+  else
+    echo "delete job upm-engine error"
+  fi
 
   kubectl delete roles -n "${ENGINE_KUBE_NAMESPACE}" -l 'app.kubernetes.io/name=upm-engine' || {
     error "delete roles upm-engine error"
