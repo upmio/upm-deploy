@@ -117,7 +117,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: ${RELEASE}-import-configmaps-role
-  namespace: ${ENGINE_KUBE_NAMESPACE}
+  namespace: openshift-operators
 rules:
 - apiGroups:
   - ""
@@ -137,7 +137,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: ${RELEASE}-import-configmaps-rolebinding
-  namespace: ${ENGINE_KUBE_NAMESPACE}
+  namespace: openshift-operators
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -145,7 +145,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: ${RELEASE}-import-configmaps-sa
-  namespace: ${ENGINE_KUBE_NAMESPACE}
+  namespace: openshift-operators
 EOF
 
   kubectl apply -f - <<EOF
@@ -153,7 +153,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: ${RELEASE}-import-configmaps-sa
-  namespace: ${ENGINE_KUBE_NAMESPACE}
+  namespace: openshift-operators
 EOF
 
   # create import-configmap-job
@@ -164,7 +164,7 @@ metadata:
   labels:
     app.kubernetes.io/instance: ${RELEASE}
   name: "${RELEASE}-import-configmaps"
-  namespace: ${ENGINE_KUBE_NAMESPACE}
+  namespace: openshift-operators
 spec:
   template:
     metadata:
