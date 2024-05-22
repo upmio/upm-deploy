@@ -182,13 +182,8 @@ spec:
           - /bin/bash
           - -ec
           - |
-            kubectl apply --server-side -f /configmaps/ -n openshift-marketplace --force-conflicts
-        env:
-          - name: NAMESPACE
-            valueFrom:
-              fieldRef:
-                apiVersion: v1
-                fieldPath: metadata.namespace
+            kubectl apply --server-side -f /configmaps/ -n openshift-operators --force-conflicts
+       
 EOF
 }
 
