@@ -21,17 +21,17 @@ installed() {
 }
 
 uninstall_upm_engine_on_openshift() {
-  if [ -n "$(kubectl get job -n "${ENGINE_KUBE_NAMESPACE}" upm-engine-import-configmaps )" ]; then
-    kubectl delete job -n "${ENGINE_KUBE_NAMESPACE}" upm-engine-import-configmaps
+  if [ -n "$(kubectl get job -n openshift-operators upm-engine-import-configmaps )" ]; then
+    kubectl delete job -n openshift-operators upm-engine-import-configmaps
   fi
 
-  kubectl delete roles -n "${ENGINE_KUBE_NAMESPACE}" "${RELEASE}-import-configmaps-role" || {
+  kubectl delete roles -n openshift-operators "${RELEASE}-import-configmaps-role" || {
     error "delete roles upm-engine error"
   }
-  kubectl delete rolebindings -n "${ENGINE_KUBE_NAMESPACE}" "${RELEASE}-import-configmaps-rolebinding" || {
+  kubectl delete rolebindings -n openshift-operators "${RELEASE}-import-configmaps-rolebinding" || {
     error "delete rolebindings upm-engine error"
   }
-  kubectl delete serviceaccounts -n "${ENGINE_KUBE_NAMESPACE}" "${RELEASE}-import-configmaps-sa" || {
+  kubectl delete serviceaccounts -n openshift-operators "${RELEASE}-import-configmaps-sa" || {
     error "delete serviceaccounts upm-engine error"
   }
 
