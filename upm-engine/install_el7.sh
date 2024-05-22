@@ -280,7 +280,9 @@ verify_supported() {
   installed helm || error "helm is required"
   installed kubectl || error "kubectl is required"
   installed yq || error "yq is required"
+}
 
+label_resource() {
   [[ -n "${ENGINE_NODE_NAMES}" ]] || error "ENGINE_NODE_NAMES MUST set in environment variable."
 
   local node
@@ -320,6 +322,7 @@ main() {
     check_resource_on_openshift
   # detect if the cluster is Kubernetes
   else
+    label_resource
     if [[ ${OFFLINE_INSTALL} == "false" ]]; then
       online_install_upm_engine
     elif [[ ${OFFLINE_INSTALL} == "true" ]]; then
@@ -341,19 +344,18 @@ check_resource_on_openshift() {
   else
     echo "csv tesseract-cube.${TESSERACT_CUBE_VERSION} create failed"
   fi
-  
+
   if [[ "$(kubectl get catalogsources -n openshift-operators kauntlet-catalog -o jsonpath='{.status.lastObservedState}')" == 'READY' ]]; then
     echo "catalogsources kauntlet-catalog create Succeeded"
   else
     echo "catalogsources kauntlet-catalog create failed"
   fi
 
-  if [[ "$(kubectl get catalogsources  -n openshift-marketplace tesseract-cube-catalog -o jsonpath='{.status.lastObservedState}')" == 'READY' ]]; then
+  if [[ "$(kubectl get catalogsources -n openshift-marketplace tesseract-cube-catalog -o jsonpath='{.status.lastObservedState}')" == 'READY' ]]; then
     echo "catalogsources tesseract-cube-catalog create Succeeded"
   else
     echo "catalogsources tesseract-cube-catalog create failed"
   fi
-  
 }
 
 main
