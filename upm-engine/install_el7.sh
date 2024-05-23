@@ -312,6 +312,82 @@ verify_installed() {
   info "${RELEASE} Deployment Completed!"
 }
 
+check_resource_on_openshift() {
+
+  local RESOURCE_NAME_1='controller-manager-metrics-service'
+  local RESOURCE_NAME_2='catalog'
+
+  count=0
+  kauntlet_svc_matched=false
+  kauntlet_cat_matched=false
+  cube_svc_matched=false
+  kauntlet_cat_matched=false
+  import_job_matched=false
+
+  while true; do
+
+    kauntlet_svc=$(kubectl get svc -n openshift-operators kauntlet-"${RESOURCE_NAME_1}" -o jsonpath='{.spec.type}')
+    cube_svc=$(kubectl get svc -n openshift-operators tesseract-cube-"${RESOURCE_NAME_1}" -o jsonpath='{.spec.type}')
+
+    cube_cat=$(kubectl get catalogsources -n openshift-marketplace tesseract-cube-"${RESOURCE_NAME_2}" -o jsonpath='{.status.connectionState.lastObservedState}')
+    kauntlet_cat=$(kubectl get catalogsources -n openshift-marketplace kauntlet-"${RESOURCE_NAME_2}" -o jsonpath='{.status.connectionState.lastObservedState}')
+
+    import_job=$(kubectl get job -n openshift-operators upm-engine-import-configmaps -o jsonpath='{.status.conditions[0].type}')
+
+    if [ "$kauntlet_svc" == "ClusterIP" ]; then
+      kauntlet_svc_matched=true
+    else
+      kauntlet_svc_matched=false
+    fi
+
+    if [ "$kauntlet_cat" == "READY" ]; then
+      kauntlet_cat_matched=true
+    else
+      kauntlet_cat_matched=false
+    fi
+
+    if [ "$cube_svc" == "ClusterIP" ]; then
+      cube_svc_matched=true
+    else
+      cube_svc_matched=false
+    fi
+
+    if [ "$cube_cat" == "READY" ]; then
+      cube_cat_matched=true
+    else
+      cube_cat_matched=false
+    fi
+
+    if [ "$import_job" == "Complete" ]; then
+      import_job_matched=true
+    else
+      import_job_matched=false
+    fi
+
+    # 如果所有变量都匹配，则退出脚本
+    if $kauntlet_svc_matched && $kauntlet_cat_matched && $cube_svc_matched && $cube_cat_matched && $import_job_matched; then
+      echo "创建资源成功"
+      exit 0
+    fi
+
+    # 检查是否超时
+    ((count++))
+    if [ $count -gt 60 ]; then
+      # 显示未匹配的变量
+      if ! $kauntlet_svc_matched; then echo "kauntlet svc 未创建成功"; fi
+      if ! $kauntlet_cat_matched; then echo "kauntlet catalogsources 未创建成功"; fi
+      if ! $cube_svc_matched; then echo "tesseract-cube svc 未创建成功"; fi
+      if ! $kauntlet_cat_matched; then echo "tesseract-cube catalogsources 未创建成功"; fi
+      if ! $import_job_matched; then echo "import configmaps job 未创建成功"; fi
+      echo "资源创建未达到预期"
+      exit 1
+    fi
+
+    sleep 5
+  done
+
+}
+
 main() {
   init_log
   verify_supported
@@ -329,32 +405,6 @@ main() {
       offline_install_upm_engine
     fi
     verify_installed
-  fi
-}
-
-check_resource_on_openshift() {
-  if [[ "$(kubectl get csv -n openshift-operators kauntlet."${TEMPLATE_VERSION}" -o jsonpath='{.status.phase}')" == 'Succeeded' ]]; then
-    echo "csv kauntlet.${TEMPLATE_VERSION} create Succeeded"
-  else
-    echo "csv kauntlet.${TEMPLATE_VERSION} create failed"
-  fi
-
-  if [[ "$(kubectl get csv -n openshift-operators tesseract-cube."${TESSERACT_CUBE_VERSION}" -o jsonpath='{.status.phase}')" == 'Succeeded' ]]; then
-    echo "csv tesseract-cube.${TESSERACT_CUBE_VERSION} create Succeeded"
-  else
-    echo "csv tesseract-cube.${TESSERACT_CUBE_VERSION} create failed"
-  fi
-
-  if [[ "$(kubectl get catalogsources -n openshift-operators kauntlet-catalog -o jsonpath='{.status.lastObservedState}')" == 'READY' ]]; then
-    echo "catalogsources kauntlet-catalog create Succeeded"
-  else
-    echo "catalogsources kauntlet-catalog create failed"
-  fi
-
-  if [[ "$(kubectl get catalogsources -n openshift-marketplace tesseract-cube-catalog -o jsonpath='{.status.lastObservedState}')" == 'READY' ]]; then
-    echo "catalogsources tesseract-cube-catalog create Succeeded"
-  else
-    echo "catalogsources tesseract-cube-catalog create failed"
   fi
 }
 
