@@ -9,7 +9,7 @@
 
 readonly CHART="upm-charts/upm-engine"
 readonly RELEASE="upm-engine"
-readonly TIME_OUT_SECOND="600s"
+readonly TIME_OUT_SECOND="600"
 readonly CHART_VERSION="1.1.2"
 readonly TESSERACT_CUBE_VERSION="v1.1.0"
 readonly KAUNTLET_VERSION="v1.1.0"
@@ -51,8 +51,6 @@ installed() {
 add_operator_on_openshift() {
   local operator_name=$1
   local operator_version=$2
-  local operator_catalog=$3
-  local display_name=$4
   local catalog_namespace="openshift-marketplace"
   local operators_namespace="openshift-operators"
   local publisher="BSG"
@@ -61,12 +59,12 @@ add_operator_on_openshift() {
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
-  name: ${operator_catalog}
+  name: ${operator_name}-catalog
   namespace: ${catalog_namespace}
 spec:
   sourceType: grpc
   image: quay.io/upmio/${operator_name}-catalog:${operator_version}
-  displayName: ${display_name}
+  displayName: ${operator_name}
   publisher: ${publisher}
 EOF
 
@@ -82,19 +80,18 @@ spec:
   channel: alpha
   installPlanApproval: Automatic
   name: ${operator_name}
-  source: ${operator_catalog}
+  source: ${operator_name}-catalog
   sourceNamespace: ${catalog_namespace}
   startingCSV: ${operator_name}.${operator_version}
 EOF
 
-
-  # get ClusterServiceVersion name from Subscription
-  local csv_name
-  csv_name=$(kubectl get subscription -n ${operators_namespace} "${operator_name}"-operator -ojsonpath='{.status.installedCSV}')
-
   # while csv status is not Succeeded, keep checking
   count=0
   while true; do
+    # get ClusterServiceVersion name from Subscription
+    local csv_name
+    csv_name=$(kubectl get subscription -n "${operators_namespace}" "${operator_name}-operator" -ojsonpath='{.status.installedCSV}')
+    local csv_phase
     csv_phase=$(kubectl get csv -n ${operators_namespace} "${csv_name}" -ojsonpath='{.status.phase}')
     if [ "$csv_phase" == "Succeeded" ]; then
       echo "${operator_name} csv created successfully"
@@ -102,7 +99,7 @@ EOF
     fi
 
     ((count++))
-    if [[ $count -gt 60 ]]; then
+    if [[ $count -gt $TIME_OUT_SECOND ]]; then
       echo "${operator_name} csv not created successfully"
       exit 1
     fi
@@ -189,7 +186,7 @@ spec:
             kubectl apply --server-side -f /configmaps/ -n openshift-operators --force-conflicts
 EOF
 
-# while job status is not Completed, keep checking
+  # while job status is not Completed, keep checking
   count=0
   while true; do
     job_phase=$(kubectl get job -n ${operators_namespace} ${RELEASE}-import-configmaps -ojsonpath='{.status.succeeded}')
@@ -199,7 +196,7 @@ EOF
     fi
 
     ((count++))
-    if [[ $count -gt 60 ]]; then
+    if [[ $count -gt $TIME_OUT_SECOND ]]; then
       echo "import-configmaps job not created successfully"
       exit 1
     fi
@@ -208,13 +205,12 @@ EOF
   done
 }
 
-
 install_upm_engine_on_openshift() {
   # install tesseract-cube-operator
-  add_operator_on_openshift tesseract-cube-operator ${TESSERACT_CUBE_VERSION} tesseract-cube-catalog tesseract-cube
+  add_operator_on_openshift tesseract-cube ${TESSERACT_CUBE_VERSION}
 
   # install kauntlet-operator
-  add_operator_on_openshift kauntlet-operator ${KAUNTLET_VERSION} kauntlet-catalog kauntlet
+  add_operator_on_openshift kauntlet ${KAUNTLET_VERSION}
 
   # import configmaps
   import_configmaps_on_openshift
@@ -258,7 +254,7 @@ online_install_upm_engine() {
     --set-string kauntlet.resources.limits.memory="${ENGINE_RESOURCE_LIMITS_MEMORY}" \
     --set-string kauntlet.resources.requests.cpu="${ENGINE_RESOURCE_REQUESTS_CPU}" \
     --set-string kauntlet.resources.requests.memory="${ENGINE_RESOURCE_REQUESTS_MEMORY}" \
-    --timeout $TIME_OUT_SECOND \
+    --timeout "${TIME_OUT_SECOND}s" \
     --wait 2>&1 | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
   }
@@ -301,7 +297,7 @@ offline_install_upm_engine() {
     --set-string kauntlet.resources.limits.memory="${ENGINE_RESOURCE_LIMITS_MEMORY}" \
     --set-string kauntlet.resources.requests.cpu="${ENGINE_RESOURCE_REQUESTS_CPU}" \
     --set-string kauntlet.resources.requests.memory="${ENGINE_RESOURCE_REQUESTS_MEMORY}" \
-    --timeout $TIME_OUT_SECOND \
+    --timeout "${TIME_OUT_SECOND}s" \
     --wait 2>&1 | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
   }
