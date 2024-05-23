@@ -322,6 +322,12 @@ check_resource_on_openshift() {
   kauntlet_cat_matched=false
   cube_svc_matched=false
   kauntlet_cat_matched=false
+
+  kauntlet_pod_ctrl_matched=false
+  cube_pod_ctrl_matched=false
+  kauntlet_pod_cat_matched=false
+  cube_pod_cat_matched=false
+
   import_job_matched=false
 
   while true; do
@@ -329,8 +335,14 @@ check_resource_on_openshift() {
     kauntlet_svc=$(kubectl get svc -n openshift-operators kauntlet-"${RESOURCE_NAME_1}" -o jsonpath='{.spec.type}')
     cube_svc=$(kubectl get svc -n openshift-operators tesseract-cube-"${RESOURCE_NAME_1}" -o jsonpath='{.spec.type}')
 
-    cube_cat=$(kubectl get catalogsources -n openshift-marketplace tesseract-cube-"${RESOURCE_NAME_2}" -o jsonpath='{.status.connectionState.lastObservedState}')
     kauntlet_cat=$(kubectl get catalogsources -n openshift-marketplace kauntlet-"${RESOURCE_NAME_2}" -o jsonpath='{.status.connectionState.lastObservedState}')
+    cube_cat=$(kubectl get catalogsources -n openshift-marketplace tesseract-cube-"${RESOURCE_NAME_2}" -o jsonpath='{.status.connectionState.lastObservedState}')
+
+    kauntlet_pod_ctrl=$(kubectl get pod -n openshift-operators -l app.kubernetes.io/name=kauntlet -ojsonpath='{.items[0].status.phase}')
+    cube_pod_ctrl=$(kubectl get pod -n openshift-operators -l app.kubernetes.io/name=tesseract-cube -ojsonpath='{.items[0].status.phase}')
+
+    kauntlet_pod_cat=$(kubectl get pod -n openshift-marketplace -l olm.catalogSource=kauntlet-catalog -ojsonpath='{.items[0].status.phase}')
+    cube_pod_cat=$(kubectl get pod -n openshift-marketplace -l olm.catalogSource=tesseract-cube-catalog -ojsonpath='{.items[0].status.phase}')
 
     import_job=$(kubectl get job -n openshift-operators upm-engine-import-configmaps -o jsonpath='{.status.conditions[0].type}')
 
@@ -364,8 +376,32 @@ check_resource_on_openshift() {
       import_job_matched=false
     fi
 
+    if [ "$kauntlet_pod_ctrl" == "Running" ]; then
+      kauntlet_pod_ctrl_matched=true
+    else
+      kauntlet_pod_ctrl_matched=false
+    fi
+
+    if [ "$cube_pod_ctrl" == "Running" ]; then
+      cube_pod_ctrl_matched=true
+    else
+      cube_pod_ctrl_matched=false
+    fi
+
+    if [ "$kauntlet_pod_cat" == "Running" ]; then
+      kauntlet_pod_cat_matched=true
+    else
+      kauntlet_pod_cat_matched=false
+    fi
+
+    if [ "$cube_pod_cat" == "Running" ]; then
+      cube_pod_cat_matched=true
+    else
+      cube_pod_cat_matched=false
+    fi
+
     # 如果所有变量都匹配，则退出脚本
-    if $kauntlet_svc_matched && $kauntlet_cat_matched && $cube_svc_matched && $cube_cat_matched && $import_job_matched; then
+    if $kauntlet_svc_matched && $kauntlet_cat_matched && $cube_svc_matched && $cube_cat_matched && $import_job_matched && $kauntlet_pod_ctrl_matched && $cube_pod_ctrl_matched && $kauntlet_pod_cat_matched && $cube_pod_cat_matched; then
       echo "创建资源成功"
       exit 0
     fi
@@ -379,6 +415,10 @@ check_resource_on_openshift() {
       if ! $cube_svc_matched; then echo "tesseract-cube svc 未创建成功"; fi
       if ! $kauntlet_cat_matched; then echo "tesseract-cube catalogsources 未创建成功"; fi
       if ! $import_job_matched; then echo "import configmaps job 未创建成功"; fi
+      if ! $kauntlet_pod_ctrl_matched; then echo "kauntlet pod ctrl 未创建成功"; fi
+      if ! $cube_pod_ctrl_matched; then echo "cube pod ctrl 未创建成功"; fi
+      if ! $kauntlet_pod_cat_matched; then echo "kauntlet pod cat 未创建成功"; fi
+      if ! $cube_pod_cat_matched; then echo "cube pod cat 未创建成功"; fi
       echo "资源创建未达到预期"
       exit 1
     fi
