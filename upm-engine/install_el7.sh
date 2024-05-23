@@ -48,50 +48,26 @@ installed() {
   command -v "$1" >/dev/null 2>&1
 }
 
-install_upm_engine_on_openshift() {
-  # install tesseract-cube-operator
+add_operator_on_openshift() {
+  local operator_name=$1
+  local operator_version=$2
+  local operator_catalog=$3
+  local display_name=$4
+  local catalog_namespace="openshift-marketplace"
+  local operators_namespace="openshift-operators"
+  local publisher="BSG"
+
   kubectl apply -f - <<EOF
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
-  name: tesseract-cube-catalog
-  namespace: openshift-marketplace
+  name: ${operator_catalog}
+  namespace: ${catalog_namespace}
 spec:
   sourceType: grpc
-  image: quay.io/upmio/tesseract-cube-catalog:${TESSERACT_CUBE_VERSION}
-  displayName: tesseract-cube
-  publisher: BSG
-EOF
-
-  kubectl apply -f - <<EOF
-apiVersion: operators.coreos.com/v1alpha1
-kind: Subscription
-metadata:
-  labels: 
-    operators.coreos.com/tesseract-cube.openshift-operators: ""
-  name: tesseract-cube-operator
-  namespace: openshift-operators
-spec:
-  channel: alpha
-  installPlanApproval: Automatic
-  name: tesseract-cube
-  source: tesseract-cube-catalog
-  sourceNamespace: openshift-marketplace
-  startingCSV: tesseract-cube.${TESSERACT_CUBE_VERSION}
-EOF
-
-  # install kauntlet-operator
-  kubectl apply -f - <<EOF
-apiVersion: operators.coreos.com/v1alpha1
-kind: CatalogSource
-metadata:
-  name: kauntlet-catalog
-  namespace: openshift-marketplace
-spec:
-  sourceType: grpc
-  image: quay.io/upmio/kauntlet-catalog:${KAUNTLET_VERSION}
-  displayName: kauntlet
-  publisher: BSG
+  image: quay.io/upmio/${operator_name}-catalog:${operator_version}
+  displayName: ${display_name}
+  publisher: ${publisher}
 EOF
 
   kubectl apply -f - <<EOF
@@ -99,25 +75,61 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   labels:
-    operators.coreos.com/kauntlet.openshift-operators: ""
-  name: kauntlet-operator
-  namespace: openshift-operators
+    operators.coreos.com/${operator_name}.openshift-operators: ""
+  name: ${operator_name}-operator
+  namespace: ${operators_namespace}
 spec:
   channel: alpha
   installPlanApproval: Automatic
-  name: kauntlet
-  source: kauntlet-catalog
-  sourceNamespace: openshift-marketplace
-  startingCSV: kauntlet.${KAUNTLET_VERSION}
+  name: ${operator_name}
+  source: ${operator_catalog}
+  sourceNamespace: ${catalog_namespace}
+  startingCSV: ${operator_name}.${operator_version}
 EOF
 
-  # create import-configmap-job rbac
+
+  # get ClusterServiceVersion name from Subscription
+  local csv_name
+  csv_name=$(kubectl get subscription -n ${operators_namespace} "${operator_name}"-operator -ojsonpath='{.status.installedCSV}')
+
+  # while csv status is not Succeeded, keep checking
+  count=0
+  while true; do
+    csv_phase=$(kubectl get csv -n ${operators_namespace} "${csv_name}" -ojsonpath='{.status.phase}')
+    if [ "$csv_phase" == "Succeeded" ]; then
+      echo "${operator_name} csv created successfully"
+      break
+    fi
+
+    ((count++))
+    if [[ $count -gt 60 ]]; then
+      echo "${operator_name} csv not created successfully"
+      exit 1
+    fi
+
+    sleep 2
+  done
+}
+
+import_configmaps_on_openshift() {
+  local operators_namespace="openshift-operators"
+
+  # create service account
+  kubectl apply -f - <<EOF
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ${RELEASE}-import-configmaps-sa
+  namespace: ${operators_namespace}
+EOF
+
+  # create role
   kubectl apply -f - <<EOF
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: ${RELEASE}-import-configmaps-role
-  namespace: openshift-operators
+  namespace: ${operators_namespace}
 rules:
 - apiGroups:
   - ""
@@ -132,12 +144,13 @@ rules:
   - update
 EOF
 
+  # create rolebinding
   kubectl apply -f - <<EOF
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: ${RELEASE}-import-configmaps-rolebinding
-  namespace: openshift-operators
+  namespace: ${operators_namespace}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -145,15 +158,6 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: ${RELEASE}-import-configmaps-sa
-  namespace: openshift-operators
-EOF
-
-  kubectl apply -f - <<EOF
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: ${RELEASE}-import-configmaps-sa
-  namespace: openshift-operators
 EOF
 
   # create import-configmap-job
@@ -183,8 +187,37 @@ spec:
           - -ec
           - |
             kubectl apply --server-side -f /configmaps/ -n openshift-operators --force-conflicts
-       
 EOF
+
+# while job status is not Completed, keep checking
+  count=0
+  while true; do
+    job_phase=$(kubectl get job -n ${operators_namespace} ${RELEASE}-import-configmaps -ojsonpath='{.status.succeeded}')
+    if [ "$job_phase" == "1" ]; then
+      echo "import-configmaps job created successfully"
+      break
+    fi
+
+    ((count++))
+    if [[ $count -gt 60 ]]; then
+      echo "import-configmaps job not created successfully"
+      exit 1
+    fi
+
+    sleep 2
+  done
+}
+
+
+install_upm_engine_on_openshift() {
+  # install tesseract-cube-operator
+  add_operator_on_openshift tesseract-cube-operator ${TESSERACT_CUBE_VERSION} tesseract-cube-catalog tesseract-cube
+
+  # install kauntlet-operator
+  add_operator_on_openshift kauntlet-operator ${KAUNTLET_VERSION} kauntlet-catalog kauntlet
+
+  # import configmaps
+  import_configmaps_on_openshift
 }
 
 online_install_upm_engine() {
@@ -312,122 +345,6 @@ verify_installed() {
   info "${RELEASE} Deployment Completed!"
 }
 
-check_resource_on_openshift() {
-
-  local RESOURCE_NAME_1='controller-manager-metrics-service'
-  local RESOURCE_NAME_2='catalog'
-
-  count=0
-  kauntlet_svc_matched=false
-  kauntlet_cat_matched=false
-  cube_svc_matched=false
-  kauntlet_cat_matched=false
-
-  kauntlet_pod_ctrl_matched=false
-  cube_pod_ctrl_matched=false
-  kauntlet_pod_cat_matched=false
-  cube_pod_cat_matched=false
-
-  import_job_matched=false
-
-  while true; do
-
-    kauntlet_svc=$(kubectl get svc -n openshift-operators kauntlet-"${RESOURCE_NAME_1}" -o jsonpath='{.spec.type}')
-    cube_svc=$(kubectl get svc -n openshift-operators tesseract-cube-"${RESOURCE_NAME_1}" -o jsonpath='{.spec.type}')
-
-    kauntlet_cat=$(kubectl get catalogsources -n openshift-marketplace kauntlet-"${RESOURCE_NAME_2}" -o jsonpath='{.status.connectionState.lastObservedState}')
-    cube_cat=$(kubectl get catalogsources -n openshift-marketplace tesseract-cube-"${RESOURCE_NAME_2}" -o jsonpath='{.status.connectionState.lastObservedState}')
-
-    kauntlet_pod_ctrl=$(kubectl get pod -n openshift-operators -l app.kubernetes.io/name=kauntlet -ojsonpath='{.items[0].status.phase}')
-    cube_pod_ctrl=$(kubectl get pod -n openshift-operators -l app.kubernetes.io/name=tesseract-cube -ojsonpath='{.items[0].status.phase}')
-
-    kauntlet_pod_cat=$(kubectl get pod -n openshift-marketplace -l olm.catalogSource=kauntlet-catalog -ojsonpath='{.items[0].status.phase}')
-    cube_pod_cat=$(kubectl get pod -n openshift-marketplace -l olm.catalogSource=tesseract-cube-catalog -ojsonpath='{.items[0].status.phase}')
-
-    import_job=$(kubectl get job -n openshift-operators upm-engine-import-configmaps -o jsonpath='{.status.conditions[0].type}')
-
-    if [ "$kauntlet_svc" == "ClusterIP" ]; then
-      kauntlet_svc_matched=true
-    else
-      kauntlet_svc_matched=false
-    fi
-
-    if [ "$kauntlet_cat" == "READY" ]; then
-      kauntlet_cat_matched=true
-    else
-      kauntlet_cat_matched=false
-    fi
-
-    if [ "$cube_svc" == "ClusterIP" ]; then
-      cube_svc_matched=true
-    else
-      cube_svc_matched=false
-    fi
-
-    if [ "$cube_cat" == "READY" ]; then
-      cube_cat_matched=true
-    else
-      cube_cat_matched=false
-    fi
-
-    if [ "$import_job" == "Complete" ]; then
-      import_job_matched=true
-    else
-      import_job_matched=false
-    fi
-
-    if [ "$kauntlet_pod_ctrl" == "Running" ]; then
-      kauntlet_pod_ctrl_matched=true
-    else
-      kauntlet_pod_ctrl_matched=false
-    fi
-
-    if [ "$cube_pod_ctrl" == "Running" ]; then
-      cube_pod_ctrl_matched=true
-    else
-      cube_pod_ctrl_matched=false
-    fi
-
-    if [ "$kauntlet_pod_cat" == "Running" ]; then
-      kauntlet_pod_cat_matched=true
-    else
-      kauntlet_pod_cat_matched=false
-    fi
-
-    if [ "$cube_pod_cat" == "Running" ]; then
-      cube_pod_cat_matched=true
-    else
-      cube_pod_cat_matched=false
-    fi
-
-    # 如果所有变量都匹配，则退出脚本
-    if $kauntlet_svc_matched && $kauntlet_cat_matched && $cube_svc_matched && $cube_cat_matched && $import_job_matched && $kauntlet_pod_ctrl_matched && $cube_pod_ctrl_matched && $kauntlet_pod_cat_matched && $cube_pod_cat_matched; then
-      echo "创建资源成功"
-      exit 0
-    fi
-
-    # 检查是否超时
-    ((count++))
-    if [ $count -gt 60 ]; then
-      # 显示未匹配的变量
-      if ! $kauntlet_svc_matched; then echo "kauntlet svc 未创建成功"; fi
-      if ! $kauntlet_cat_matched; then echo "kauntlet catalogsources 未创建成功"; fi
-      if ! $cube_svc_matched; then echo "tesseract-cube svc 未创建成功"; fi
-      if ! $kauntlet_cat_matched; then echo "tesseract-cube catalogsources 未创建成功"; fi
-      if ! $import_job_matched; then echo "import configmaps job 未创建成功"; fi
-      if ! $kauntlet_pod_ctrl_matched; then echo "kauntlet pod ctrl 未创建成功"; fi
-      if ! $cube_pod_ctrl_matched; then echo "cube pod ctrl 未创建成功"; fi
-      if ! $kauntlet_pod_cat_matched; then echo "kauntlet pod cat 未创建成功"; fi
-      if ! $cube_pod_cat_matched; then echo "cube pod cat 未创建成功"; fi
-      echo "资源创建未达到预期"
-      exit 1
-    fi
-
-    sleep 5
-  done
-
-}
-
 main() {
   init_log
   verify_supported
@@ -435,7 +352,6 @@ main() {
   # detect if the cluster is OpenShift
   if kubectl api-resources | grep security.openshift.io/v1 &>/dev/null; then
     install_upm_engine_on_openshift
-    check_resource_on_openshift
   # detect if the cluster is Kubernetes
   else
     label_resource
