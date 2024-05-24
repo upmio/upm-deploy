@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-readonly RELEASE="upm-engine"
+#readonly RELEASE="upm-engine"
 readonly TESSERACT_CUBE_VERSION="v1.1.0"
 readonly KAUNTLET_VERSION="v1.1.0"
 
@@ -21,31 +21,57 @@ installed() {
 }
 
 uninstall_upm_engine_on_openshift() {
-  if [ -n "$(kubectl get job -n openshift-operators upm-engine-import-configmaps )" ]; then
-    kubectl delete job -n openshift-operators upm-engine-import-configmaps
+
+  local operators_ns
+  operators_ns=openshift-operators=openshift-operators
+  local marketplace_ns
+  marketplace_ns=openshift-marketplace=openshift-marketplace
+
+  #delete import job
+  if [[ -n "$(kubectl get job -n ${operators_ns} upm-engine-import-configmaps)" ]]; then
+    kubectl delete job -n ${operators_ns} upm-engine-import-configmaps || {
+      error "delete job upm-engine-import-configmaps error"
+    }
   fi
 
-  kubectl delete roles -n openshift-operators "${RELEASE}-import-configmaps-role" || {
-    error "delete roles upm-engine error"
-  }
-  kubectl delete rolebindings -n openshift-operators "${RELEASE}-import-configmaps-rolebinding" || {
-    error "delete rolebindings upm-engine error"
-  }
-  kubectl delete serviceaccounts -n openshift-operators "${RELEASE}-import-configmaps-sa" || {
-    error "delete serviceaccounts upm-engine error"
-  }
+  #delete kauntlet
+  if [[ -n "$(kubectl get csv -n ${operators_ns} kauntlet."${KAUNTLET_VERSION}")" ]]; then
+    kubectl delete csv -n ${operators_ns} kauntlet."${KAUNTLET_VERSION}" || {
+      error "delete csv kauntlet error "
+    }
+  fi
 
-  kubectl delete catalogsources -n openshift-marketplace tesseract-cube-catalog kauntlet-catalog || {
-    error "delete catalogsources upm-engine error"
-  }
+  if [[ -n "$(kubectl get catalogsources -n ${marketplace_ns} kauntlet-catalog)" ]]; then
+    kubectl delete catalogsources -n ${marketplace_ns} kauntlet-catalog || {
+      error "delete catalogsource kauntlet-catalog error"
+    }
+  fi
 
-  kubectl delete subscriptions -n openshift-operators kauntlet-operator tesseract-cube-operator || {
-    error "delete subscriptions upm-engine error"
-  }
+  if [[ -n "$(kubectl get subscriptions -n ${operators_ns} kauntlet-operator)" ]]; then
+    kubectl delete subscriptions -n ${operators_ns} kauntlet-operator || {
+      error "delete subscription kauntlet-operator error"
+    }
+  fi
 
-  kubectl delete csv -n openshift-operators "kauntlet.${KAUNTLET_VERSION}" "tesseract-cube.${TESSERACT_CUBE_VERSION}" || {
-    error "delete csv upm-engine error"
-  }
+  #delete tesseract-cube
+  if [[ -n "$(kubectl get csv -n ${operators_ns} tesseract-cube."${TESSERACT_CUBE_VERSION}")" ]]; then
+    kubectl delete csv -n ${operators_ns} tesseract-cube."${TESSERACT_CUBE_VERSION}" || {
+      error "delete csv tesseract-cube error "
+    }
+  fi
+
+  if [[ -n "$(kubectl get catalogsources -n ${marketplace_ns} tesseract-cube-catalog)" ]]; then
+    kubectl delete catalogsources -n ${marketplace_ns} tesseract-cube-catalog || {
+      error "delete catalogsource tesseract-cube-catalog error"
+    }
+  fi
+
+  if [[ -n "$(kubectl get subscriptions -n ${operators_ns} tesseract-cube-operator)" ]]; then
+    kubectl delete subscriptions -n ${operators_ns} tesseract-cube-operator || {
+      error "delete subscription kauntlet-operator error"
+    }
+  fi
+
 }
 
 uninstall_upm_engine_on_k8s() {
@@ -56,7 +82,7 @@ uninstall_upm_engine_on_k8s() {
     error "remove label upm-engine/node error"
   }
 
-  if [ -n "$(kubectl get job -n "${ENGINE_KUBE_NAMESPACE}" upm-engine-import-configmaps )" ]; then
+  if [ -n "$(kubectl get job -n "${ENGINE_KUBE_NAMESPACE}" upm-engine-import-configmaps)" ]; then
     kubectl delete job -n "${ENGINE_KUBE_NAMESPACE}" upm-engine-import-configmaps
   fi
 
