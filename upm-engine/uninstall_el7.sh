@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-#readonly RELEASE="upm-engine"
 readonly TESSERACT_CUBE_VERSION="v1.1.0"
 readonly KAUNTLET_VERSION="v1.1.0"
 
@@ -22,10 +21,9 @@ installed() {
 
 uninstall_upm_engine_on_openshift() {
 
-  local operators_ns
-  operators_ns=openshift-operators=openshift-operators
-  local marketplace_ns
-  marketplace_ns=openshift-marketplace=openshift-marketplace
+  local operators_ns=openshift-operators
+  local marketplace_ns=openshift-marketplace
+  local MAX_ATTEMPTS=24
 
   #delete import job
   if [[ -n "$(kubectl get job -n ${operators_ns} upm-engine-import-configmaps)" ]]; then
@@ -72,9 +70,43 @@ uninstall_upm_engine_on_openshift() {
     }
   fi
 
+  for ((i = 1; i <= "${MAX_ATTEMPTS}"; i++)); do
+
+    if ! kubectl get job -n ${operators_ns} | grep 'upm-engine-import-configmaps'; then
+      echo "job deleted successfully."
+    else
+      echo "Delete job failed, retrying."
+    fi
+
+    if ! kubectl get csv -n ${operators_ns} | grep -qE 'tesseract-cube|kauntlet'; then
+      echo "CSV deleted successfully."
+    else
+      echo "Delete csv failed, retrying."
+    fi
+
+    # check CatalogSources
+    if ! kubectl get catalogsources -n ${marketplace_ns} | grep -qE 'tesseract-cube|kauntlet'; then
+      echo "CatalogSources deleted successfully."
+    else
+      echo "Delete CatalogSources failed, retrying."
+    fi
+
+    # check Subscriptions
+    if ! kubectl get subscriptions -n ${operators_ns} | grep -qE 'tesseract-cube|kauntlet'; then
+      echo "Subscriptions deleted successfully."
+      break
+    else
+      echo "Delete Subscriptions failed, retrying"
+    fi
+
+    sleep 5
+  done
+
 }
 
 uninstall_upm_engine_on_k8s() {
+  local upm-system="upm-system"
+
   helm uninstall "upm-engine" -n "${ENGINE_KUBE_NAMESPACE}" || {
     error "Uninstall upm-engine failed"
   }
@@ -82,19 +114,17 @@ uninstall_upm_engine_on_k8s() {
     error "remove label upm-engine/node error"
   }
 
-  if [ -n "$(kubectl get job -n "${ENGINE_KUBE_NAMESPACE}" upm-engine-import-configmaps)" ]; then
-    kubectl delete job -n "${ENGINE_KUBE_NAMESPACE}" upm-engine-import-configmaps
+  if [[ -n "$(kubectl get job -n "${upm-system}" upm-engine-import-configmaps)" ]]; then
+    kubectl delete job -n "${upm-system}" upm-engine-import-configmaps || {
+      error "delete job upm-engine-import-configmaps error"
+    }
   fi
 
-  kubectl delete roles -n "${ENGINE_KUBE_NAMESPACE}" -l 'app.kubernetes.io/name=upm-engine' || {
-    error "delete roles upm-engine error"
-  }
-  kubectl delete rolebindings -n "${ENGINE_KUBE_NAMESPACE}" -l 'app.kubernetes.io/name=upm-engine' || {
-    error "delete rolebindings upm-engine error"
-  }
-  kubectl delete serviceaccounts -n "${ENGINE_KUBE_NAMESPACE}" -l 'app.kubernetes.io/name=upm-engine' || {
-    error "delete serviceaccounts upm-engine error"
-  }
+  if [[ -n "$(helm ls -n "${upm-system}" upm-engine)" ]]; then
+    helm uninstall upm-engine -n "${upm-system}" upm-engine || {
+      error "delete job upm-engine-import-configmaps error"
+    }
+  fi
 }
 
 init_log() {
