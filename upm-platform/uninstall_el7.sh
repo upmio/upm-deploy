@@ -22,19 +22,18 @@ uninstall_upm_platform() {
   }
 
   # check PLATFORM_KUBE_NAMESPACE exists
-  if [[ -n "$(kubectl get namespace "${PLATFORM_KUBE_NAMESPACE}" 2>/dev/null)" ]]; then
-    if [[ -n "$(kubectl get job -n "${PLATFORM_KUBE_NAMESPACE}" -l 'app.kubernetes.io/instance=upm-platform' 2>/dev/null)" ]]; then
+  if kubectl get namespace "${PLATFORM_KUBE_NAMESPACE}" 2>/dev/null; then
+    if kubectl get job -n "${PLATFORM_KUBE_NAMESPACE}" -l 'app.kubernetes.io/instance=upm-platform' &> /dev/null; then
       kubectl delete job -n "${PLATFORM_KUBE_NAMESPACE}" -l 'app.kubernetes.io/instance=upm-platform' || {
         error "delete upm-platform job error"
       }
     fi
 
-    if [[ -n "$(helm list -n "${PLATFORM_KUBE_NAMESPACE}" upm-platform)" ]]; then
+    if helm list -n "${PLATFORM_KUBE_NAMESPACE}" -q | grep upm-platform &> /dev/null; then
       helm uninstall upm-platform -n "${PLATFORM_KUBE_NAMESPACE}" || {
         error "uninstall upm-platform error"
       }
     fi
-
   else
     info "namespace ${PLATFORM_KUBE_NAMESPACE} not exists"
   fi

@@ -110,14 +110,14 @@ uninstall_upm_engine_on_k8s() {
   }
 
   # check ENGINE_KUBE_NAMESPACE exists
-  if [[ -n "$(kubectl get namespace "${ENGINE_KUBE_NAMESPACE}")" ]]; then
-    if [[ -n "$(kubectl get job -n "${ENGINE_KUBE_NAMESPACE}" upm-engine-import-configmaps)" ]]; then
+  if kubectl get namespace "${ENGINE_KUBE_NAMESPACE}" 2>/dev/null; then
+    if kubectl get job -n "${ENGINE_KUBE_NAMESPACE}" upm-engine-import-configmaps &> /dev/null; then
       kubectl delete job -n "${ENGINE_KUBE_NAMESPACE}" upm-engine-import-configmaps || {
         error "delete job upm-engine-import-configmaps error"
       }
     fi
 
-    if [[ -n "$(helm list -n "${ENGINE_KUBE_NAMESPACE}" upm-engine)" ]]; then
+    if helm list -n "${ENGINE_KUBE_NAMESPACE}" -q | grep upm-engine &> /dev/null; then
       helm uninstall upm-engine -n "${ENGINE_KUBE_NAMESPACE}" upm-engine || {
         error "uninstall upm-engine error"
       }
