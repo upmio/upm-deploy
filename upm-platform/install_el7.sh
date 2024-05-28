@@ -72,7 +72,21 @@ PLATFORM_ZOOKEEPER_ENABLED="${PLATFORM_ZOOKEEPER_ENABLED:-false}"
 PLATFORM_MYSQL_ENABLED="${PLATFORM_MYSQL_ENABLED:-false}"
 PLATFORM_REDIS_ENABLED="${PLATFORM_REDIS_ENABLED:-false}"
 PLATFORM_REDIS_CLUSTER_ENABLED="${PLATFORM_REDIS_CLUSTER_ENABLED:-false}"
+PLATFORM_POSTGRESQL_ENABLED="${PLATFORM_POSTGRESQL_ENABLED:-false}"
 PLATFORM_UI_LANG="${PLATFORM_UI_LANG:-CN}"
+
+info() {
+  echo "[Info][$(date +'%Y-%m-%dT%H:%M:%S%z')]: $*" | tee -a "${INSTALL_LOG_PATH}"
+}
+
+error() {
+  echo "[Error][$(date +'%Y-%m-%dT%H:%M:%S%z')]: $*" | tee -a "${INSTALL_LOG_PATH}"
+  exit 1
+}
+
+installed() {
+  command -v "$1" >/dev/null 2>&1
+}
 
 if [[ ${PLATFORM_SERVICE_TYPE} == "NodePort" ]]; then
   PLATFORM_NODEPORT="${PLATFORM_NODEPORT:-32010}"
@@ -110,19 +124,6 @@ elif [[ ${PLATFORM_UI_LANG} == "EN" ]]; then
 else
   error "PLATFORM_UI_LANG must be CN or EN"
 fi
-
-info() {
-  echo "[Info][$(date +'%Y-%m-%dT%H:%M:%S%z')]: $*" | tee -a "${INSTALL_LOG_PATH}"
-}
-
-error() {
-  echo "[Error][$(date +'%Y-%m-%dT%H:%M:%S%z')]: $*" | tee -a "${INSTALL_LOG_PATH}"
-  exit 1
-}
-
-installed() {
-  command -v "$1" >/dev/null 2>&1
-}
 
 online_install_upm_platform() {
   # check if upm-platform already installed
@@ -274,6 +275,17 @@ online_install_upm_platform() {
     --set-string service-redis-cluster.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string service-redis-cluster.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string service-redis-cluster.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
+    --set upm.postgresql.enabled=${PLATFORM_POSTGRESQL_ENABLED} \
+    --set-string service-postgresql.image.tag="${API_VERSION}" \
+    --set service-postgresql.replicaCount="${PLATFORM_NODE_COUNT}" \
+    --set service-postgresql.initDB.enabled=${PLATFORM_INIT_DB} \
+    --set-string service-postgresql.nodeAffinityPreset.type="hard" \
+    --set-string service-postgresql.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string service-postgresql.nodeAffinityPreset.values='{enable}' \
+    --set-string service-postgresql.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
+    --set-string service-postgresql.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
+    --set-string service-postgresql.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
+    --set-string service-postgresql.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
     --set-string user.image.tag="${API_VERSION}" \
     --set user.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set user.initDB.enabled=${PLATFORM_INIT_DB} \
@@ -449,6 +461,17 @@ offline_install_upm_platform() {
     --set-string service-redis-cluster.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string service-redis-cluster.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string service-redis-cluster.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
+    --set upm.postgresql.enabled=${PLATFORM_POSTGRESQL_ENABLED} \
+    --set-string service-postgresql.image.tag="${API_VERSION}" \
+    --set service-postgresql.replicaCount="${PLATFORM_NODE_COUNT}" \
+    --set service-postgresql.initDB.enabled=${PLATFORM_INIT_DB} \
+    --set-string service-postgresql.nodeAffinityPreset.type="hard" \
+    --set-string service-postgresql.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string service-postgresql.nodeAffinityPreset.values='{enable}' \
+    --set-string service-postgresql.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
+    --set-string service-postgresql.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
+    --set-string service-postgresql.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
+    --set-string service-postgresql.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
     --set-string user.image.tag="${API_VERSION}" \
     --set user.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set user.initDB.enabled=${PLATFORM_INIT_DB} \
