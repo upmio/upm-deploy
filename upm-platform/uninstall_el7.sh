@@ -17,13 +17,27 @@ installed() {
 }
 
 uninstall_upm_platform() {
-  helm uninstall "upm-platform" -n "${PLATFORM_KUBE_NAMESPACE}" || error "Uninstall upm-platform error"
-  kubectl get node --no-headers -l 'upm.platform.node=enable' | awk '{print $1}' | xargs -I {} kubectl label node {} 'upm.platform.node-' || {
-    error "remove label upm.platform.node error"
+  kubectl get node --no-headers -l 'upm.platform.node=enabled' -o custom-columns=NAME:.metadata.name | xargs -I {} kubectl label node {} upm.platform.node- || {
+    error "remove upm.platform.node label error"
   }
-  kubectl delete job -n "${PLATFORM_KUBE_NAMESPACE}" -l 'app.kubernetes.io/instance=upm-platform' || {
-    error "delete upm-platform job error"
-  }
+
+  # check PLATFORM_KUBE_NAMESPACE exists
+  if [[ -n "$(kubectl get namespace "${PLATFORM_KUBE_NAMESPACE}" 2>/dev/null)" ]]; then
+    if [[ -n "$(kubectl get job -n "${PLATFORM_KUBE_NAMESPACE}" -l 'app.kubernetes.io/instance=upm-platform' 2>/dev/null)" ]]; then
+      kubectl delete job -n "${PLATFORM_KUBE_NAMESPACE}" -l 'app.kubernetes.io/instance=upm-platform' || {
+        error "delete upm-platform job error"
+      }
+    fi
+
+    if [[ -n "$(helm list -n "${PLATFORM_KUBE_NAMESPACE}" upm-platform)" ]]; then
+      helm uninstall upm-platform -n "${PLATFORM_KUBE_NAMESPACE}" || {
+        error "uninstall upm-platform error"
+      }
+    fi
+
+  else
+    info "namespace ${PLATFORM_KUBE_NAMESPACE} not exists"
+  fi
 }
 
 verify_supported() {
@@ -40,6 +54,7 @@ main() {
   init_log
   verify_supported
   uninstall_upm_platform
+  info "Uninstall upm-platform successfully"
 }
 
 main
