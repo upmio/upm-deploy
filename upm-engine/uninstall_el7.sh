@@ -105,25 +105,25 @@ uninstall_upm_engine_on_openshift() {
 }
 
 uninstall_upm_engine_on_k8s() {
-  local upm-system="upm-system"
-
-  helm uninstall "upm-engine" -n "${ENGINE_KUBE_NAMESPACE}" || {
-    error "Uninstall upm-engine failed"
-  }
   kubectl get node --no-headers -l 'upm.engine.node=enable' | awk '{print $1}' | xargs -I {} kubectl label nodes {} 'upm.engine.node-' || {
     error "remove label upm-engine/node error"
   }
 
-  if [[ -n "$(kubectl get job -n "${upm-system}" upm-engine-import-configmaps)" ]]; then
-    kubectl delete job -n "${upm-system}" upm-engine-import-configmaps || {
-      error "delete job upm-engine-import-configmaps error"
-    }
-  fi
+  # check ENGINE_KUBE_NAMESPACE exists
+  if [[ -n "$(kubectl get namespace "${ENGINE_KUBE_NAMESPACE}")" ]]; then
+    if [[ -n "$(kubectl get job -n "${ENGINE_KUBE_NAMESPACE}" upm-engine-import-configmaps)" ]]; then
+      kubectl delete job -n "${ENGINE_KUBE_NAMESPACE}" upm-engine-import-configmaps || {
+        error "delete job upm-engine-import-configmaps error"
+      }
+    fi
 
-  if [[ -n "$(helm ls -n "${upm-system}" upm-engine)" ]]; then
-    helm uninstall upm-engine -n "${upm-system}" upm-engine || {
-      error "delete job upm-engine-import-configmaps error"
-    }
+    if [[ -n "$(helm ls -n "${ENGINE_KUBE_NAMESPACE}" upm-engine)" ]]; then
+      helm uninstall upm-engine -n "${ENGINE_KUBE_NAMESPACE}" upm-engine || {
+        error "delete job upm-engine-import-configmaps error"
+      }
+    fi
+  else
+    info "namespace ${ENGINE_KUBE_NAMESPACE} not exists"
   fi
 }
 
