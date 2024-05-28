@@ -117,9 +117,9 @@ uninstall_upm_engine_on_k8s() {
       }
     fi
 
-    if [[ -n "$(helm ls -n "${ENGINE_KUBE_NAMESPACE}" upm-engine)" ]]; then
+    if [[ -n "$(helm list -n "${ENGINE_KUBE_NAMESPACE}" upm-engine)" ]]; then
       helm uninstall upm-engine -n "${ENGINE_KUBE_NAMESPACE}" upm-engine || {
-        error "delete job upm-engine-import-configmaps error"
+        error "uninstall upm-engine error"
       }
     fi
   else
@@ -146,6 +146,8 @@ main() {
   else
     uninstall_upm_engine_on_k8s
   fi
+
+  info "Uninstall upm-engine successfully"
 }
 
 main
