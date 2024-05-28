@@ -118,7 +118,7 @@ uninstall_upm_engine_on_k8s() {
     fi
 
     if helm list -n "${ENGINE_KUBE_NAMESPACE}" -q | grep upm-engine &> /dev/null; then
-      helm uninstall upm-engine -n "${ENGINE_KUBE_NAMESPACE}" upm-engine || {
+      helm uninstall -n "${ENGINE_KUBE_NAMESPACE}" upm-engine || {
         error "uninstall upm-engine error"
       }
     fi
