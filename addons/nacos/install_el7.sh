@@ -151,7 +151,7 @@ online_install_nacos() {
     --set nodeAffinityPreset.type="hard" \
     --set nodeAffinityPreset.key="nacos\.io/control-plane" \
     --set nodeAffinityPreset.values='{enable}' \
-    --set replicaCount=${NACOS_NODE_COUNT} \
+    --set replicaCount=1 \
     --set service.ports.http.port="${NACOS_PORT}" \
     --set service.ports.client-rpc.port="${NACOS_CLIENT_PORT}" \
     --set service.ports.raft-rpc.port="${NACOS_RAFT_PORT}" \
@@ -175,8 +175,10 @@ online_install_nacos() {
     --set-string extraEnvVars[4].value="SecretKey012345678901234567890123456789012345678901234567890123456789" \
     --set-string extraEnvVars[5].name="JAVA_OPT" \
     --set-string extraEnvVars[5].value="-Dnacos.core.auth.server.identity.key=nacos -Dnacos.core.auth.server.identity.value=nacos -Dnacos.core.auth.plugin.nacos.token.secret.key=SecretKey012345678901234567890123456789012345678901234567890123456789" \
-    --set-string extraEnvVars[6].name="MYSQL_SERVICE_DB_PARAM" \
-    --set-string extraEnvVars[6].value="characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai" \
+    --set-string extraEnvVars[6].name="MODE" \
+    --set-string extraEnvVars[6].value="standalone" \
+    --set-string extraEnvVars[7].name="MYSQL_SERVICE_DB_PARAM" \
+    --set-string extraEnvVars[7].value="characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai" \
     --set mysql.enabled=false \
     --set-string mysql.external.mysqlMasterHost="${NACOS_MYSQL_HOST}" \
     --set-string mysql.external.mysqlMasterPort="${NACOS_MYSQL_PORT}" \
@@ -223,7 +225,7 @@ offline_install_nacos() {
     --set nodeAffinityPreset.type="hard" \
     --set nodeAffinityPreset.key="nacos\.io/control-plane" \
     --set nodeAffinityPreset.values='{enable}' \
-    --set replicaCount=${NACOS_NODE_COUNT} \
+    --set replicaCount=1 \
     --set service.ports.http.port="${NACOS_PORT}" \
     --set service.ports.client-rpc.port="${NACOS_CLIENT_PORT}" \
     --set service.ports.raft-rpc.port="${NACOS_RAFT_PORT}" \
@@ -247,8 +249,10 @@ offline_install_nacos() {
     --set-string extraEnvVars[4].value="SecretKey012345678901234567890123456789012345678901234567890123456789" \
     --set-string extraEnvVars[5].name="JAVA_OPT" \
     --set-string extraEnvVars[5].value="-Dnacos.core.auth.server.identity.key=nacos -Dnacos.core.auth.server.identity.value=nacos -Dnacos.core.auth.plugin.nacos.token.secret.key=SecretKey012345678901234567890123456789012345678901234567890123456789" \
-    --set-string extraEnvVars[6].name="MYSQL_SERVICE_DB_PARAM" \
-    --set-string extraEnvVars[6].value="characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai" \
+    --set-string extraEnvVars[6].name="MODE" \
+    --set-string extraEnvVars[6].value="standalone" \
+    --set-string extraEnvVars[7].name="MYSQL_SERVICE_DB_PARAM" \
+    --set-string extraEnvVars[7].value="characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai" \
     --set mysql.enabled=false \
     --set-string mysql.external.mysqlMasterHost="${NACOS_MYSQL_HOST}" \
     --set-string mysql.external.mysqlMasterPort="${NACOS_MYSQL_PORT}" \
