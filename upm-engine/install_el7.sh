@@ -11,7 +11,7 @@ readonly CHART="upm-charts/upm-engine"
 readonly RELEASE="upm-engine"
 readonly TIME_OUT_SECOND="600"
 readonly CHART_VERSION="1.1.2"
-readonly TESSERACT_CUBE_VERSION="v1.1.0"
+readonly TESSERACT_CUBE_VERSION="v1.1.1"
 readonly KAUNTLET_VERSION="v1.1.0"
 readonly TEMPLATE_VERSION="v1.1.0"
 
