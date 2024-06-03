@@ -252,7 +252,7 @@ offline_install_nacos() {
     --set-string extraEnvVars[6].name="MODE" \
     --set-string extraEnvVars[6].value="standalone" \
     --set-string extraEnvVars[7].name="MYSQL_SERVICE_DB_PARAM" \
-    --set-string extraEnvVars[7].value="characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai" \
+    --set-string extraEnvVars[7].value="characterEncoding=utf8&allowPublicKeyRetrieval=true&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai" \
     --set mysql.enabled=false \
     --set-string mysql.external.mysqlMasterHost="${NACOS_MYSQL_HOST}" \
     --set-string mysql.external.mysqlMasterPort="${NACOS_MYSQL_PORT}" \
