@@ -29,7 +29,7 @@ uninstall_upm_platform() {
       }
     fi
 
-    if helm list -n "${PLATFORM_KUBE_NAMESPACE}" -q | grep upm-platform &> /dev/null; then
+    if helm list -n "${PLATFORM_KUBE_NAMESPACE}" -qa | grep upm-platform &> /dev/null; then
       helm uninstall -n "${PLATFORM_KUBE_NAMESPACE}" upm-platform || {
         error "uninstall upm-platform error"
       }
