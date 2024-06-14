@@ -16,6 +16,7 @@ readonly KAUNTLET_VERSION="v1.1.0"
 readonly TEMPLATE_VERSION="v1.1.2"
 
 ENGINE_KUBE_NAMESPACE="${ENGINE_KUBE_NAMESPACE:-upm-system}"
+ENGINE_IMAGE_REGISTRY="${ENGINE_IMAGE_REGISTRY:-quay.io}"
 INSTALL_LOG_PATH=/tmp/upm_engine_install-$(date +'%Y-%m-%d_%H-%M-%S').log
 
 if [[ ${ENGINE_RESOURCE_LIMITS} -eq 0 ]]; then
@@ -184,6 +185,15 @@ spec:
           - -ec
           - |
             kubectl apply --server-side -f /configmaps/ -n openshift-operators --force-conflicts
+            if [[ $IMAGE_REGISTRY == "" ]]; then
+              IMAGE_REGISTRY="quay.io"
+            fi
+            for cm_name in $(kubectl get cm -n "${NAMESPACE}" | grep pod-tmpl | awk '{print $1}');do
+              kubectl patch configmap -n ${NAMESPACE} $cm_name --patch '{"data": {"imageRegistry": "'"${IMAGE_REGISTRY}"'"}}';
+            done
+        env:
+          - name: IMAGE_REGISTRY
+          value: ${ENGINE_IMAGE_REGISTRY}
 EOF
 
   # while job status is not Completed, keep checking
