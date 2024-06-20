@@ -184,12 +184,12 @@ spec:
           - /bin/bash
           - -ec
           - |
-            kubectl apply --server-side -f /configmaps/ -n openshift-operators --force-conflicts
+            kubectl apply --server-side -f /configmaps/ -n "${operators_namespace}" --force-conflicts
             if [[ -z \$IMAGE_REGISTRY ]]; then
               IMAGE_REGISTRY="quay.io"
             fi
-            for cm_name in \$(kubectl get cm -n openshift-operators | grep pod-tmpl | awk '{print \$1}');do
-              kubectl patch configmap -n openshift-operators \$cm_name --patch '{"data": {"imageRegistry": "\${IMAGE_REGISTRY}"}}';
+            for cm_name in \$(kubectl get cm -n "${operators_namespace}" | grep pod-tmpl | awk '{print \$1}');do
+              kubectl patch configmap -n "${operators_namespace}" \$cm_name --patch '{"data": {"imageRegistry": "\${IMAGE_REGISTRY}"}}';
             done
         env:
           - name: IMAGE_REGISTRY
