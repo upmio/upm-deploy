@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-readonly TESSERACT_CUBE_VERSION="v1.1.0"
+readonly TESSERACT_CUBE_VERSION="v1.1.1"
 readonly KAUNTLET_VERSION="v1.1.0"
 
 ENGINE_KUBE_NAMESPACE="${ENGINE_KUBE_NAMESPACE:-upm-system}"
