@@ -185,11 +185,11 @@ spec:
           - -ec
           - |
             kubectl apply --server-side -f /configmaps/ -n openshift-operators --force-conflicts
-            if [[ $IMAGE_REGISTRY == "" ]]; then
+            if [[ -z \$IMAGE_REGISTRY ]]; then
               IMAGE_REGISTRY="quay.io"
             fi
-            for cm_name in $(kubectl get cm -n openshift-operators | grep pod-tmpl | awk '{print $1}');do
-              kubectl patch configmap -n openshift-operators $cm_name --patch '{"data": {"imageRegistry": "'"${IMAGE_REGISTRY}"'"}}';
+            for cm_name in \$(kubectl get cm -n openshift-operators | grep pod-tmpl | awk '{print $1}');do
+              kubectl patch configmap -n openshift-operators $cm_name --patch '{"data": {"imageRegistry": "'"\${IMAGE_REGISTRY}"'"}}';
             done
         env:
           - name: IMAGE_REGISTRY
