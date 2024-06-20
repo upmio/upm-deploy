@@ -188,12 +188,12 @@ spec:
             if [[ $IMAGE_REGISTRY == "" ]]; then
               IMAGE_REGISTRY="quay.io"
             fi
-            for cm_name in $(kubectl get cm -n "${NAMESPACE}" | grep pod-tmpl | awk '{print $1}');do
-              kubectl patch configmap -n ${NAMESPACE} $cm_name --patch '{"data": {"imageRegistry": "'"${IMAGE_REGISTRY}"'"}}';
+            for cm_name in $(kubectl get cm -n openshift-operators | grep pod-tmpl | awk '{print $1}');do
+              kubectl patch configmap -n openshift-operators $cm_name --patch '{"data": {"imageRegistry": "'"${IMAGE_REGISTRY}"'"}}';
             done
         env:
           - name: IMAGE_REGISTRY
-          value: ${ENGINE_IMAGE_REGISTRY}
+            value: ${ENGINE_IMAGE_REGISTRY}
 EOF
 
   # while job status is not Completed, keep checking
