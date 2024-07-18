@@ -16,7 +16,7 @@
 #
 # 4. PLATFORM_MYSQL_USER MUST be set as environment variable, for an example:
 #
-#        export PLATFORM_MYSQL_USER="upm"
+#        export PLATFORM_MYSQL_USER="epm"
 #
 # 5. PLATFORM_MYSQL_PWD MUST be set as environment variable, for an example:
 #
@@ -51,8 +51,8 @@
 #        export PLATFORM_REDIS_PWD="password"
 #
 
-readonly CHART="upm-charts/upm-platform"
-readonly RELEASE="upm-platform"
+readonly CHART="epm-charts/epm-platform"
+readonly RELEASE="epm-platform"
 readonly TIME_OUT_SECOND="600s"
 readonly CHART_VERSION="1.1.1"
 readonly UI_CN_VERSION="v1.1.2-CN"
@@ -62,9 +62,9 @@ readonly HELIX_VERSION="v1.1.1"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
 PLATFORM_INIT_DB="${PLATFORM_INIT_DB:-false}"
-PLATFORM_KUBE_NAMESPACE="${PLATFORM_KUBE_NAMESPACE:-upm-system}"
+PLATFORM_KUBE_NAMESPACE="${PLATFORM_KUBE_NAMESPACE:-epm-system}"
 PLATFORM_SERVICE_TYPE="${PLATFORM_SERVICE_TYPE:-ClusterIP}"
-INSTALL_LOG_PATH=/tmp/upm-platform_install-$(date +'%Y-%m-%d_%H-%M-%S').log
+INSTALL_LOG_PATH=/tmp/epm-platform_install-$(date +'%Y-%m-%d_%H-%M-%S').log
 PLATFORM_RESOURCE_LIMITS="${PLATFORM_RESOURCE_LIMITS:-1}"
 PLATFORM_EASYSEARCH_ENABLED="${PLATFORM_EASYSEARCH_ENABLED:-false}"
 PLATFORM_UI_LANG="${PLATFORM_UI_LANG:-CN}"
@@ -119,18 +119,18 @@ else
   error "PLATFORM_UI_LANG must be CN or EN"
 fi
 
-online_install_upm_platform() {
-  # check if upm-platform already installed
+online_install_epm_platform() {
+  # check if epm-platform already installed
   if helm status ${RELEASE} -n "${PLATFORM_KUBE_NAMESPACE}" &>/dev/null; then
     error "${RELEASE} already installed. Use helm remove it first"
   fi
 
-  info "Start add helm upm-charts repo"
-  helm repo add upm-charts https://upmio.github.io/helm-charts &>/dev/null || error "Helm add upm-charts repo error."
-  info "Start update helm upm-charts repo"
-  helm repo update upm-charts 2>/dev/null || error "Helm update upm-charts repo error."
+  info "Start add helm epm-charts repo"
+  helm repo add epm-charts https://upmio.github.io/helm-charts &>/dev/null || error "Helm add epm-charts repo error."
+  info "Start update helm epm-charts repo"
+  helm repo update epm-charts 2>/dev/null || error "Helm update epm-charts repo error."
 
-  info "Install upm-platform, It might take a long time..."
+  info "Install epm-platform, It might take a long time..."
   helm install ${RELEASE} ${CHART} \
     --version "${CHART_VERSION}" \
     --namespace "${PLATFORM_KUBE_NAMESPACE}" \
@@ -241,8 +241,8 @@ online_install_upm_platform() {
   #TODO: check more resources after install
 }
 
-offline_install_upm_platform() {
-  # check if upm-platform already installed
+offline_install_epm_platform() {
+  # check if epm-platform already installed
   if helm status ${RELEASE} -n "${PLATFORM_KUBE_NAMESPACE}" &>/dev/null; then
     error "${RELEASE} already installed. Use helm remove it first"
   fi
@@ -250,7 +250,7 @@ offline_install_upm_platform() {
   local image_registry="${PLATFORM_IMAGE_REGISTRY:-}"
   [[ -d "${PLATFORM_CHART_DIR}" ]] || error "PLATFORM_CHART_DIR not exist."
 
-  info "Install upm-platform, It might take a long time..."
+  info "Install epm-platform, It might take a long time..."
   helm install ${RELEASE} "${PLATFORM_CHART_DIR}" \
     --namespace "${PLATFORM_KUBE_NAMESPACE}" \
     --create-namespace \
@@ -410,9 +410,9 @@ main() {
   init_log
   verify_supported
   if [[ ${OFFLINE_INSTALL} == "false" ]]; then
-    online_install_upm_platform
+    online_install_epm_platform
   elif [[ ${OFFLINE_INSTALL} == "true" ]]; then
-    offline_install_upm_platform
+    offline_install_epm_platform
   fi
   verify_installed
 }

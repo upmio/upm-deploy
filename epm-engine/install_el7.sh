@@ -7,17 +7,17 @@
 #        export ENGINE_NODE_NAMES="master01,master02"
 #
 
-readonly CHART="upm-charts/upm-engine"
-readonly RELEASE="upm-engine"
+readonly CHART="epm-charts/epm-engine"
+readonly RELEASE="epm-engine"
 readonly TIME_OUT_SECOND="600"
 readonly CHART_VERSION="1.1.2"
 readonly TESSERACT_CUBE_VERSION="v1.1.1"
 readonly KAUNTLET_VERSION="v1.1.0"
 readonly TEMPLATE_VERSION="v1.1.2"
 
-ENGINE_KUBE_NAMESPACE="${ENGINE_KUBE_NAMESPACE:-upm-system}"
+ENGINE_KUBE_NAMESPACE="${ENGINE_KUBE_NAMESPACE:-epm-system}"
 ENGINE_IMAGE_REGISTRY="${ENGINE_IMAGE_REGISTRY:-quay.io}"
-INSTALL_LOG_PATH=/tmp/upm_engine_install-$(date +'%Y-%m-%d_%H-%M-%S').log
+INSTALL_LOG_PATH=/tmp/epm_engine_install-$(date +'%Y-%m-%d_%H-%M-%S').log
 
 if [[ ${ENGINE_RESOURCE_LIMITS} -eq 0 ]]; then
   ENGINE_RESOURCE_LIMITS_CPU="0"
@@ -215,7 +215,7 @@ EOF
   done
 }
 
-install_upm_engine_on_openshift() {
+install_epm_engine_on_openshift() {
   # install tesseract-cube-operator
   add_operator_on_openshift tesseract-cube ${TESSERACT_CUBE_VERSION}
 
@@ -226,18 +226,18 @@ install_upm_engine_on_openshift() {
   import_configmaps_on_openshift
 }
 
-online_install_upm_engine() {
-  # check if upm-engine already installed
+online_install_epm_engine() {
+  # check if epm-engine already installed
   if helm status ${RELEASE} -n "${ENGINE_KUBE_NAMESPACE}" &>/dev/null; then
     error "${RELEASE} already installed. Use helm remove it first"
   fi
 
-  info "Start add helm upm-charts repo"
-  helm repo add upm-charts https://upmio.github.io/helm-charts &>/dev/null || error "Helm add upm-charts repo error."
-  info "Start update helm upm-charts repo"
-  helm repo update upm-charts 2>/dev/null || error "Helm update upm-charts repo error."
+  info "Start add helm epm-charts repo"
+  helm repo add epm-charts https://upmio.github.io/helm-charts &>/dev/null || error "Helm add epm-charts repo error."
+  info "Start update helm epm-charts repo"
+  helm repo update epm-charts 2>/dev/null || error "Helm update epm-charts repo error."
 
-  info "Install upm-engine, It might take a long time..."
+  info "Install epm-engine, It might take a long time..."
   helm install ${RELEASE} ${CHART} \
     --version "${CHART_VERSION}" \
     --namespace "${ENGINE_KUBE_NAMESPACE}" \
@@ -272,15 +272,15 @@ online_install_upm_engine() {
   #TODO: check more resources after install
 }
 
-offline_install_upm_engine() {
-  # check if upm-engine already installed
+offline_install_epm_engine() {
+  # check if epm-engine already installed
   if helm status ${RELEASE} -n "${ENGINE_KUBE_NAMESPACE}" &>/dev/null; then
     error "${RELEASE} already installed. Use helm remove it first"
   fi
 
   [[ -d "${ENGINE_CHART_DIR}" ]] || error "ENGINE_CHART_DIR not exist."
 
-  info "Install upm-engine, It might take a long time..."
+  info "Install epm-engine, It might take a long time..."
   helm install ${RELEASE} "${ENGINE_CHART_DIR}" \
     --namespace "${ENGINE_KUBE_NAMESPACE}" \
     --create-namespace \
@@ -357,14 +357,14 @@ main() {
 
   # detect if the cluster is OpenShift
   if kubectl api-resources | grep security.openshift.io/v1 &>/dev/null; then
-    install_upm_engine_on_openshift
+    install_epm_engine_on_openshift
   # detect if the cluster is Kubernetes
   else
     label_resource
     if [[ ${OFFLINE_INSTALL} == "false" ]]; then
-      online_install_upm_engine
+      online_install_epm_engine
     elif [[ ${OFFLINE_INSTALL} == "true" ]]; then
-      offline_install_upm_engine
+      offline_install_epm_engine
     fi
     verify_installed
   fi

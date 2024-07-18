@@ -1,12 +1,12 @@
-# 部署 upm
+# 部署 epm
 
-本文档目标是指导部署 upm 。
+本文档目标是指导部署 epm 。
 
 ## 快速安装指南
 
 ### 1. 部署 cert-manager
 
-**注意⚠️：cert-manager 是被依赖的服务，必须在安装 upm 前完成 cert-manager 部署。**
+**注意⚠️：cert-manager 是被依赖的服务，必须在安装 epm 前完成 cert-manager 部署。**
 
 部署方法请使用[cert-manger 部署](https://github.com/upmio/upm-install/tree/main/addons/cert-manager)
 
