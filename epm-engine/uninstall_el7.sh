@@ -3,8 +3,8 @@
 readonly TESSERACT_CUBE_VERSION="v1.1.1"
 readonly KAUNTLET_VERSION="v1.1.0"
 
-ENGINE_KUBE_NAMESPACE="${ENGINE_KUBE_NAMESPACE:-upm-system}"
-INSTALL_LOG_PATH=/tmp/upm-engine-uninstall-$(date +'%Y-%m-%d_%H-%M-%S').log
+ENGINE_KUBE_NAMESPACE="${ENGINE_KUBE_NAMESPACE:-epm-system}"
+INSTALL_LOG_PATH=/tmp/epm-engine-uninstall-$(date +'%Y-%m-%d_%H-%M-%S').log
 
 info() {
   echo "[Info][$(date +'%Y-%m-%dT%H:%M:%S%z')]: $*" | tee -a "${INSTALL_LOG_PATH}"
@@ -19,16 +19,16 @@ installed() {
   command -v "$1" >/dev/null 2>&1
 }
 
-uninstall_upm_engine_on_openshift() {
+uninstall_epm_engine_on_openshift() {
 
   local operators_ns=openshift-operators
   local marketplace_ns=openshift-marketplace
   local MAX_ATTEMPTS=24
 
   #delete import job
-  if [[ -n "$(kubectl get job -n ${operators_ns} upm-engine-import-configmaps)" ]]; then
-    kubectl delete job -n ${operators_ns} upm-engine-import-configmaps || {
-      error "delete job upm-engine-import-configmaps error"
+  if [[ -n "$(kubectl get job -n ${operators_ns} epm-engine-import-configmaps)" ]]; then
+    kubectl delete job -n ${operators_ns} epm-engine-import-configmaps || {
+      error "delete job epm-engine-import-configmaps error"
     }
   fi
 
@@ -72,7 +72,7 @@ uninstall_upm_engine_on_openshift() {
 
   for ((i = 1; i <= "${MAX_ATTEMPTS}"; i++)); do
 
-    if ! kubectl get job -n ${operators_ns} | grep 'upm-engine-import-configmaps'; then
+    if ! kubectl get job -n ${operators_ns} | grep 'epm-engine-import-configmaps'; then
       echo "job deleted successfully."
     else
       echo "Delete job failed, retrying."
@@ -104,22 +104,22 @@ uninstall_upm_engine_on_openshift() {
 
 }
 
-uninstall_upm_engine_on_k8s() {
+uninstall_epm_engine_on_k8s() {
   kubectl get node --no-headers -l 'upm.engine.node=enable' | awk '{print $1}' | xargs -I {} kubectl label nodes {} 'upm.engine.node-' || {
     error "remove label upm-engine/node error"
   }
 
   # check ENGINE_KUBE_NAMESPACE exists
   if kubectl get namespace "${ENGINE_KUBE_NAMESPACE}" 2>/dev/null; then
-    if kubectl get job -n "${ENGINE_KUBE_NAMESPACE}" upm-engine-import-configmaps &> /dev/null; then
-      kubectl delete job -n "${ENGINE_KUBE_NAMESPACE}" upm-engine-import-configmaps || {
-        error "delete job upm-engine-import-configmaps error"
+    if kubectl get job -n "${ENGINE_KUBE_NAMESPACE}" epm-engine-import-configmaps &> /dev/null; then
+      kubectl delete job -n "${ENGINE_KUBE_NAMESPACE}" epm-engine-import-configmaps || {
+        error "delete job epm-engine-import-configmaps error"
       }
     fi
 
-    if helm list -n "${ENGINE_KUBE_NAMESPACE}" -q | grep upm-engine &> /dev/null; then
-      helm uninstall -n "${ENGINE_KUBE_NAMESPACE}" upm-engine || {
-        error "uninstall upm-engine error"
+    if helm list -n "${ENGINE_KUBE_NAMESPACE}" -q | grep epm-engine &> /dev/null; then
+      helm uninstall -n "${ENGINE_KUBE_NAMESPACE}" epm-engine || {
+        error "uninstall epm-engine error"
       }
     fi
   else
@@ -142,12 +142,12 @@ main() {
   verify_supported
 
   if kubectl api-resources | grep security.openshift.io/v1 &>/dev/null; then
-    uninstall_upm_engine_on_openshift
+    uninstall_epm_engine_on_openshift
   else
-    uninstall_upm_engine_on_k8s
+    uninstall_epm_engine_on_k8s
   fi
 
-  info "Uninstall upm-engine successfully"
+  info "Uninstall epm-engine successfully"
 }
 
 main
