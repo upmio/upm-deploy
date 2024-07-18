@@ -105,8 +105,8 @@ uninstall_epm_engine_on_openshift() {
 }
 
 uninstall_epm_engine_on_k8s() {
-  kubectl get node --no-headers -l 'upm.engine.node=enable' | awk '{print $1}' | xargs -I {} kubectl label nodes {} 'upm.engine.node-' || {
-    error "remove label upm-engine/node error"
+  kubectl get node --no-headers -l 'epm.engine.node=enable' | awk '{print $1}' | xargs -I {} kubectl label nodes {} 'epm.engine.node-' || {
+    error "remove label epm-engine/node error"
   }
 
   # check ENGINE_KUBE_NAMESPACE exists
