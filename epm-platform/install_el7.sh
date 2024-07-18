@@ -66,7 +66,6 @@ PLATFORM_KUBE_NAMESPACE="${PLATFORM_KUBE_NAMESPACE:-epm-system}"
 PLATFORM_SERVICE_TYPE="${PLATFORM_SERVICE_TYPE:-ClusterIP}"
 INSTALL_LOG_PATH=/tmp/epm-platform_install-$(date +'%Y-%m-%d_%H-%M-%S').log
 PLATFORM_RESOURCE_LIMITS="${PLATFORM_RESOURCE_LIMITS:-1}"
-PLATFORM_EASYSEARCH_ENABLED="${PLATFORM_EASYSEARCH_ENABLED:-false}"
 PLATFORM_UI_LANG="${PLATFORM_UI_LANG:-CN}"
 
 info() {
@@ -150,7 +149,7 @@ online_install_epm_platform() {
     --set nginx.service.nodePorts.http="${PLATFORM_NODEPORT}" \
     --set nginx.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set-string nginx.nodeAffinityPreset.type="hard" \
-    --set-string nginx.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string nginx.nodeAffinityPreset.key="epm\.platform\.node" \
     --set-string nginx.nodeAffinityPreset.values='{enable}' \
     --set-string nginx.resources.limits.cpu="${PLATFORM_NGINX_RESOURCE_LIMITS_CPU}" \
     --set-string nginx.resources.limits.memory="${PLATFORM_NGINX_RESOURCE_LIMITS_MEMORY}" \
@@ -159,7 +158,7 @@ online_install_epm_platform() {
     --set-string ui.image.tag="${UI_VERSION}" \
     --set ui.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set-string ui.nodeAffinityPreset.type="hard" \
-    --set-string ui.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string ui.nodeAffinityPreset.key="epm\.platform\.node" \
     --set-string ui.nodeAffinityPreset.values='{enable}' \
     --set-string ui.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
     --set-string ui.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
@@ -168,7 +167,7 @@ online_install_epm_platform() {
     --set-string auth.image.tag="${API_VERSION}" \
     --set auth.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set-string auth.nodeAffinityPreset.type="hard" \
-    --set-string auth.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string auth.nodeAffinityPreset.key="epm\.platform\.node" \
     --set-string auth.nodeAffinityPreset.values='{enable}' \
     --set-string auth.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
     --set-string auth.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
@@ -177,7 +176,7 @@ online_install_epm_platform() {
     --set-string gateway.image.tag="${API_VERSION}" \
     --set gateway.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set-string gateway.nodeAffinityPreset.type="hard" \
-    --set-string gateway.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string gateway.nodeAffinityPreset.key="epm\.platform\.node" \
     --set-string gateway.nodeAffinityPreset.values='{enable}' \
     --set-string gateway.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
     --set-string gateway.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
@@ -187,7 +186,7 @@ online_install_epm_platform() {
     --set operatelog.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set operatelog.initDB.enabled=${PLATFORM_INIT_DB} \
     --set-string operatelog.nodeAffinityPreset.type="hard" \
-    --set-string operatelog.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string operatelog.nodeAffinityPreset.key="epm\.platform\.node" \
     --set-string operatelog.nodeAffinityPreset.values='{enable}' \
     --set-string operatelog.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
     --set-string operatelog.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
@@ -197,18 +196,18 @@ online_install_epm_platform() {
     --set resource.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set resource.initDB.enabled=${PLATFORM_INIT_DB} \
     --set-string resource.nodeAffinityPreset.type="hard" \
-    --set-string resource.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string resource.nodeAffinityPreset.key="epm\.platform\.node" \
     --set-string resource.nodeAffinityPreset.values='{enable}' \
     --set-string resource.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
     --set-string resource.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string resource.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string resource.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set upm.easysearch.enabled=${PLATFORM_EASYSEARCH_ENABLED} \
+    --set upm.easysearch.enabled=true \
     --set-string service-easysearch.image.tag="${API_VERSION}" \
     --set service-easysearch.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-easysearch.initDB.enabled=${PLATFORM_INIT_DB} \
     --set-string service-easysearch.nodeAffinityPreset.type="hard" \
-    --set-string service-easysearch.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string service-easysearch.nodeAffinityPreset.key="epm\.platform\.node" \
     --set-string service-easysearch.nodeAffinityPreset.values='{enable}' \
     --set-string service-easysearch.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
     --set-string service-easysearch.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
@@ -218,7 +217,7 @@ online_install_epm_platform() {
     --set user.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set user.initDB.enabled=${PLATFORM_INIT_DB} \
     --set-string user.nodeAffinityPreset.type="hard" \
-    --set-string user.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string user.nodeAffinityPreset.key="epm\.platform\.node" \
     --set-string user.nodeAffinityPreset.values='{enable}' \
     --set-string user.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
     --set-string user.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
@@ -227,7 +226,7 @@ online_install_epm_platform() {
     --set-string helix.image.tag="${HELIX_VERSION}" \
     --set helix.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set-string helix.nodeAffinityPreset.type="hard" \
-    --set-string helix.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string helix.nodeAffinityPreset.key="epm\.platform\.node" \
     --set-string helix.nodeAffinityPreset.values='{enable}' \
     --set-string helix.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
     --set-string helix.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
@@ -270,7 +269,7 @@ offline_install_epm_platform() {
     --set nginx.service.nodePorts.http="${PLATFORM_NODEPORT}" \
     --set nginx.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set-string nginx.nodeAffinityPreset.type="hard" \
-    --set-string nginx.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string nginx.nodeAffinityPreset.key="epm\.platform\.node" \
     --set-string nginx.nodeAffinityPreset.values='{enable}' \
     --set-string nginx.resources.limits.cpu="${PLATFORM_NGINX_RESOURCE_LIMITS_CPU}" \
     --set-string nginx.resources.limits.memory="${PLATFORM_NGINX_RESOURCE_LIMITS_MEMORY}" \
@@ -279,7 +278,7 @@ offline_install_epm_platform() {
     --set-string ui.image.tag="${UI_VERSION}" \
     --set ui.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set-string ui.nodeAffinityPreset.type="hard" \
-    --set-string ui.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string ui.nodeAffinityPreset.key="epm\.platform\.node" \
     --set-string ui.nodeAffinityPreset.values='{enable}' \
     --set-string ui.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
     --set-string ui.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
@@ -288,7 +287,7 @@ offline_install_epm_platform() {
     --set-string auth.image.tag="${API_VERSION}" \
     --set auth.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set-string auth.nodeAffinityPreset.type="hard" \
-    --set-string auth.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string auth.nodeAffinityPreset.key="epm\.platform\.node" \
     --set-string auth.nodeAffinityPreset.values='{enable}' \
     --set-string auth.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
     --set-string auth.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
@@ -297,7 +296,7 @@ offline_install_epm_platform() {
     --set-string gateway.image.tag="${API_VERSION}" \
     --set gateway.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set-string gateway.nodeAffinityPreset.type="hard" \
-    --set-string gateway.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string gateway.nodeAffinityPreset.key="epm\.platform\.node" \
     --set-string gateway.nodeAffinityPreset.values='{enable}' \
     --set-string gateway.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
     --set-string gateway.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
@@ -307,7 +306,7 @@ offline_install_epm_platform() {
     --set operatelog.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set operatelog.initDB.enabled=${PLATFORM_INIT_DB} \
     --set-string operatelog.nodeAffinityPreset.type="hard" \
-    --set-string operatelog.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string operatelog.nodeAffinityPreset.key="epm\.platform\.node" \
     --set-string operatelog.nodeAffinityPreset.values='{enable}' \
     --set-string operatelog.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
     --set-string operatelog.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
@@ -317,18 +316,18 @@ offline_install_epm_platform() {
     --set resource.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set resource.initDB.enabled=${PLATFORM_INIT_DB} \
     --set-string resource.nodeAffinityPreset.type="hard" \
-    --set-string resource.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string resource.nodeAffinityPreset.key="epm\.platform\.node" \
     --set-string resource.nodeAffinityPreset.values='{enable}' \
     --set-string resource.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
     --set-string resource.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
     --set-string resource.resources.requests.cpu="${PLATFORM_RESOURCE_REQUESTS_CPU}" \
     --set-string resource.resources.requests.memory="${PLATFORM_RESOURCE_REQUESTS_MEMORY}" \
-    --set upm.easysearch.enabled=${PLATFORM_EASYSEARCH_ENABLED} \
+    --set upm.easysearch.enabled=true \
     --set-string service-easysearch.image.tag="${API_VERSION}" \
     --set service-easysearch.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set service-easysearch.initDB.enabled=${PLATFORM_INIT_DB} \
     --set-string service-easysearch.nodeAffinityPreset.type="hard" \
-    --set-string service-easysearch.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string service-easysearch.nodeAffinityPreset.key="epm\.platform\.node" \
     --set-string service-easysearch.nodeAffinityPreset.values='{enable}' \
     --set-string service-easysearch.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
     --set-string service-easysearch.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
@@ -338,7 +337,7 @@ offline_install_epm_platform() {
     --set user.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set user.initDB.enabled=${PLATFORM_INIT_DB} \
     --set-string user.nodeAffinityPreset.type="hard" \
-    --set-string user.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string user.nodeAffinityPreset.key="epm\.platform\.node" \
     --set-string user.nodeAffinityPreset.values='{enable}' \
     --set-string user.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
     --set-string user.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
@@ -347,7 +346,7 @@ offline_install_epm_platform() {
     --set-string helix.image.tag="${HELIX_VERSION}" \
     --set helix.replicaCount="${PLATFORM_NODE_COUNT}" \
     --set-string helix.nodeAffinityPreset.type="hard" \
-    --set-string helix.nodeAffinityPreset.key="upm\.platform\.node" \
+    --set-string helix.nodeAffinityPreset.key="epm\.platform\.node" \
     --set-string helix.nodeAffinityPreset.values='{enable}' \
     --set-string helix.resources.limits.cpu="${PLATFORM_RESOURCE_LIMITS_CPU}" \
     --set-string helix.resources.limits.memory="${PLATFORM_RESOURCE_LIMITS_MEMORY}" \
@@ -372,8 +371,8 @@ verify_supported() {
   IFS="," read -r -a node_array <<<"${PLATFORM_NODE_NAMES}"
   PLATFORM_NODE_COUNT=0
   for node in "${node_array[@]}"; do
-    kubectl label node "${node}" 'upm.platform.node=enable' --overwrite &>/dev/null || {
-      error "kubectl label node ${node} 'upm.platform.node=enable' failed, use kubectl to check reason"
+    kubectl label node "${node}" 'epm.platform.node=enable' --overwrite &>/dev/null || {
+      error "kubectl label node ${node} 'epm.platform.node=enable' failed, use kubectl to check reason"
     }
     ((PLATFORM_NODE_COUNT++))
   done
