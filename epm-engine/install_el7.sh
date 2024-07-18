@@ -178,7 +178,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: import-configmaps
-        image: quay.io/upmio/upm-template:${TEMPLATE_VERSION}
+        image: cr.infini.cloud:65000/infinilabs/epm-template:${TEMPLATE_VERSION}
         imagePullPolicy: IfNotPresent
         command:
           - /bin/bash
@@ -248,7 +248,7 @@ online_install_epm_engine() {
     --set-string tesseract-cube.agent.image.tag="${TESSERACT_CUBE_VERSION}" \
     --set tesseract-cube.replicaCount="${ENGINE_NODE_COUNT}" \
     --set-string tesseract-cube.nodeAffinityPreset.type="hard" \
-    --set-string tesseract-cube.nodeAffinityPreset.key="upm\.engine\.node" \
+    --set-string tesseract-cube.nodeAffinityPreset.key="epm\.engine\.node" \
     --set-string tesseract-cube.nodeAffinityPreset.values='{enable}' \
     --set-string tesseract-cube.resources.limits.cpu="${ENGINE_RESOURCE_LIMITS_CPU}" \
     --set-string tesseract-cube.resources.limits.memory="${ENGINE_RESOURCE_LIMITS_MEMORY}" \
@@ -258,7 +258,7 @@ online_install_epm_engine() {
     --set-string kauntlet.image.tag="${KAUNTLET_VERSION}" \
     --set kauntlet.replicaCount="${ENGINE_NODE_COUNT}" \
     --set-string kauntlet.nodeAffinityPreset.type="hard" \
-    --set-string kauntlet.nodeAffinityPreset.key="upm\.engine\.node" \
+    --set-string kauntlet.nodeAffinityPreset.key="epm\.engine\.node" \
     --set-string kauntlet.nodeAffinityPreset.values='{enable}' \
     --set-string kauntlet.resources.limits.cpu="${ENGINE_RESOURCE_LIMITS_CPU}" \
     --set-string kauntlet.resources.limits.memory="${ENGINE_RESOURCE_LIMITS_MEMORY}" \
@@ -291,7 +291,7 @@ offline_install_epm_engine() {
     --set-string tesseract-cube.agent.image.tag="${TESSERACT_CUBE_VERSION}" \
     --set tesseract-cube.replicaCount="${ENGINE_NODE_COUNT}" \
     --set-string tesseract-cube.nodeAffinityPreset.type="hard" \
-    --set-string tesseract-cube.nodeAffinityPreset.key="upm\.engine\.node" \
+    --set-string tesseract-cube.nodeAffinityPreset.key="epm\.engine\.node" \
     --set-string tesseract-cube.nodeAffinityPreset.values='{enable}' \
     --set-string tesseract-cube.resources.limits.cpu="${ENGINE_RESOURCE_LIMITS_CPU}" \
     --set-string tesseract-cube.resources.limits.memory="${ENGINE_RESOURCE_LIMITS_MEMORY}" \
@@ -301,7 +301,7 @@ offline_install_epm_engine() {
     --set-string kauntlet.image.tag="${KAUNTLET_VERSION}" \
     --set kauntlet.replicaCount="${ENGINE_NODE_COUNT}" \
     --set-string kauntlet.nodeAffinityPreset.type="hard" \
-    --set-string kauntlet.nodeAffinityPreset.key="upm\.engine\.node" \
+    --set-string kauntlet.nodeAffinityPreset.key="epm\.engine\.node" \
     --set-string kauntlet.nodeAffinityPreset.values='{enable}' \
     --set-string kauntlet.resources.limits.cpu="${ENGINE_RESOURCE_LIMITS_CPU}" \
     --set-string kauntlet.resources.limits.memory="${ENGINE_RESOURCE_LIMITS_MEMORY}" \
@@ -329,8 +329,8 @@ label_resource() {
   IFS="," read -r -a node_array <<<"${ENGINE_NODE_NAMES}"
   ENGINE_NODE_COUNT=0
   for node in "${node_array[@]}"; do
-    kubectl label node "${node}" 'upm.engine.node=enable' --overwrite &>/dev/null || {
-      error "kubectl label node ${node} 'upm.engine.node=enable' failed, use kubectl to check reason"
+    kubectl label node "${node}" 'epm.engine.node=enable' --overwrite &>/dev/null || {
+      error "kubectl label node ${node} 'epm.engine.node=enable' failed, use kubectl to check reason"
     }
     ((ENGINE_NODE_COUNT++))
   done
