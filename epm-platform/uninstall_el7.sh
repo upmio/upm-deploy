@@ -17,8 +17,8 @@ installed() {
 }
 
 uninstall_epm_platform() {
-  kubectl get node --no-headers -l 'upm.platform.node=enabled' -o custom-columns=NAME:.metadata.name | xargs -I {} kubectl label node {} upm.platform.node- || {
-    error "remove upm.platform.node label error"
+  kubectl get node --no-headers -l 'epm.platform.node=enabled' -o custom-columns=NAME:.metadata.name | xargs -I {} kubectl label node {} epm.platform.node- || {
+    error "remove epm.platform.node label error"
   }
 
   # check PLATFORM_KUBE_NAMESPACE exists
