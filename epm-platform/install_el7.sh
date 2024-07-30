@@ -57,7 +57,7 @@ readonly TIME_OUT_SECOND="600s"
 readonly CHART_VERSION="1.1.1"
 readonly UI_CN_VERSION="v1.1.3-CN"
 readonly UI_EN_VERSION=""
-readonly API_VERSION="v1.1.3-epm"
+readonly API_VERSION="v1.1.4"
 readonly HELIX_VERSION="v1.1.1"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
