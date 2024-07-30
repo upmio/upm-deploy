@@ -86,7 +86,7 @@ online_install_mysql() {
 
   if [[ -z ${MYSQL_CONFIG_FILE} ]]; then
     local mysql_conf="/tmp/bitnami-mysql.cnf"
-    local download_url="https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/mysql-standalone/config/my.cnf"
+    local download_url="https://raw.githubusercontent.com/upmio/epm-deploy/main/addons/mysql-standalone/config/my.cnf"
     curl -sSL ${download_url} -o "${mysql_conf}" || error "get mysql config failed"
   else
     [[ -f ${MYSQL_CONFIG_FILE} ]] || error "MYSQL_CONFIG_FILE not exist."
