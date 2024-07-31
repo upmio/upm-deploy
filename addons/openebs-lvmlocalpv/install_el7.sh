@@ -186,7 +186,7 @@ verify_installed() {
 
 create_storageclass() {
   [[ -f ${OPENEBS_STORAGECLASS_YAML} ]] || {
-    local download_url="https://raw.githubusercontent.com/upmio/epm-deploy/main/addons/openebs-lvmlocalpv/yaml/storageclass.yaml"
+    local download_url="https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/openebs-lvmlocalpv/yaml/storageclass.yaml"
     curl -sSL "${download_url}" -o "${OPENEBS_STORAGECLASS_YAML}" || {
       error "curl get storageclass.yaml failed"
     }
