@@ -123,7 +123,7 @@ verify_supported() {
   local control_node_array
   IFS="," read -r -a control_node_array <<<"${LOCAL_PATH_CONTROLLER_NODE_NAMES}"
   for node in "${control_node_array[@]}"; do
-    kubectl label node "${node}" 'local-path-provisioner/control-plane' --overwrite &>/dev/null || {
+    kubectl label node "${node}" 'local-path-provisioner/control-plane=' --overwrite &>/dev/null || {
       error "kubectl label node ${node} 'local-path-provisioner/control-plane' failed, use kubectl to check reason"
     }
   done
