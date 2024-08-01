@@ -64,7 +64,8 @@ online_install_local_path() {
     --set storageClass.create=true \
     --set-string storageClass.name="${LOCAL_PATH_STORAGECLASS_NAME}" \
     --set-string storageClass.reclaimPolicy="Delete" \
-    --set-string nodePathMap.paths="${LOCAL_PATH_NODE_PATH}" \
+    --set-string nodePathMap[0].node="DEFAULT_PATH_FOR_NON_LISTED_NODES" \
+    --set-string nodePathMap[0].paths="${LOCAL_PATH_NODE_PATH}" \
     --set nodeSelector."local-path-provisioner/control-plane"="enable" \
     --set resources.limits.cpu="${LOCAL_PATH_CONTROLLER_RESOURCE_LIMITS_CPU}" \
     --set resources.limits.memory="${LOCAL_PATH_CONTROLLER_RESOURCE_LIMITS_MEMORY}" \
@@ -123,7 +124,7 @@ verify_supported() {
   local control_node_array
   IFS="," read -r -a control_node_array <<<"${LOCAL_PATH_CONTROLLER_NODE_NAMES}"
   for node in "${control_node_array[@]}"; do
-    kubectl label node "${node}" 'local-path-provisioner/control-plane=' --overwrite &>/dev/null || {
+    kubectl label node "${node}" 'local-path-provisioner/control-plane=enable' --overwrite &>/dev/null || {
       error "kubectl label node ${node} 'local-path-provisioner/control-plane' failed, use kubectl to check reason"
     }
   done
