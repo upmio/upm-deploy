@@ -85,7 +85,6 @@ offline_install_local_path() {
   fi
 
   [[ -d "${LOCAL_PATH_CHART_DIR}" ]] || error "LOCAL_PATH_CHART_DIR not exist."
-  [[ -n "${LOCAL_PATH_REGISTRY_URL}" ]] || error "LOCAL_PATH_REGISTRY_URL MUST set in environment variable."
 
   info "Install local-path-provisioner, It might take a long time..."
   helm install ${RELEASE} "${LOCAL_PATH_CHART_DIR}" \
@@ -97,7 +96,7 @@ offline_install_local_path() {
     --set storageClass.create=true \
     --set-string storageClass.name="${LOCAL_PATH_STORAGECLASS_NAME}" \
     --set-string storageClass.reclaimPolicy="Delete" \
-    --set-string nodePathMap.paths="${LOCAL_PATH_NODE_PATH}" \
+    --set-string nodePathMap[0].paths[0]="${LOCAL_PATH_NODE_PATH}" \
     --set nodeSelector."local-path-provisioner/control-plane"="enable" \
     --set resources.limits.cpu="${LOCAL_PATH_CONTROLLER_RESOURCE_LIMITS_CPU}" \
     --set resources.limits.memory="${LOCAL_PATH_CONTROLLER_RESOURCE_LIMITS_MEMORY}" \
