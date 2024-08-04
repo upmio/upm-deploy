@@ -65,6 +65,7 @@ online_install_local_path() {
     --set-string storageClass.name="${LOCAL_PATH_STORAGECLASS_NAME}" \
     --set-string storageClass.reclaimPolicy="Delete" \
     --set-string nodePathMap[0].paths[0]="${LOCAL_PATH_NODE_PATH}" \
+    --set-string nodePathMap[0].node="DEFAULT_PATH_FOR_NON_LISTED_NODES" \
     --set nodeSelector."local-path-provisioner/control-plane"="enable" \
     --set resources.limits.cpu="${LOCAL_PATH_CONTROLLER_RESOURCE_LIMITS_CPU}" \
     --set resources.limits.memory="${LOCAL_PATH_CONTROLLER_RESOURCE_LIMITS_MEMORY}" \
@@ -97,6 +98,7 @@ offline_install_local_path() {
     --set-string storageClass.name="${LOCAL_PATH_STORAGECLASS_NAME}" \
     --set-string storageClass.reclaimPolicy="Delete" \
     --set-string nodePathMap[0].paths[0]="${LOCAL_PATH_NODE_PATH}" \
+    --set-string nodePathMap[0].node="DEFAULT_PATH_FOR_NON_LISTED_NODES" \
     --set nodeSelector."local-path-provisioner/control-plane"="enable" \
     --set resources.limits.cpu="${LOCAL_PATH_CONTROLLER_RESOURCE_LIMITS_CPU}" \
     --set resources.limits.memory="${LOCAL_PATH_CONTROLLER_RESOURCE_LIMITS_MEMORY}" \
