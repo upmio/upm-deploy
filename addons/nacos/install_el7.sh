@@ -185,8 +185,8 @@ online_install_nacos() {
     --set-string mysql.external.mysqlMasterUser="${NACOS_MYSQL_USER}" \
     --set-string mysql.external.mysqlMasterPassword="${NACOS_MYSQL_PWD}" \
     --set-string mysql.external.mysqlDatabase="nacos" \
-    --set-string initDB.image.repository="dbscale/nacos-server-initdb" \
-    --set-string initDB.image.tag="${NACOS_VERSION}" \
+    --set-string initDB.image.repository="bitnami/mysql" \
+    --set-string initDB.image.tag="8.0.36-debian-12-r10" \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
@@ -259,8 +259,8 @@ offline_install_nacos() {
     --set-string mysql.external.mysqlMasterUser="${NACOS_MYSQL_USER}" \
     --set-string mysql.external.mysqlMasterPassword="${NACOS_MYSQL_PWD}" \
     --set-string mysql.external.mysqlDatabase="nacos" \
-    --set-string initDB.image.repository="dbscale/nacos-server-initdb" \
-    --set-string initDB.image.tag="${NACOS_VERSION}" \
+    --set-string initDB.image.repository="bitnami/mysql" \
+    --set-string initDB.image.tag="8.0.36-debian-12-r10" \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | tee -a "${INSTALL_LOG_PATH}" || {
     error "Fail to install ${RELEASE}."
