@@ -1,0 +1,47 @@
+#!/bin/bash
+set -e
+cd /tmp/
+
+MYSQL_HOST=$MYSQL_HOST
+MYSQL_PORT=${MYSQL_PORT:-3306}
+MYSQL_USER=$MYSQL_USER
+MYSQL_PASSWD=$MYSQL_PASSWD
+MYSQL_DB=$MYSQL_DB
+SQL_FILE=$BASE_DIR/conf/mysql-schema.sql
+
+function log() {
+  echo "$@"
+}
+
+# check mysql connection
+function check_conn() {
+  mysql -h"${MYSQL_HOST}" -u"${MYSQL_USER}" -p"${MYSQL_PASSWD}" -P"${MYSQL_PORT}" -e "select 1;" >/dev/null
+  return $?
+}
+
+# exec sql files
+
+check_conn
+if [ $? -ne 0 ]; then
+  log "Mysql connect error."
+  exit 10
+fi
+
+if [ ! -f "$SQL_FILE" ]; then
+  log "$SQL_FILE not found."
+  exit 20
+fi
+
+# create database
+mysql -h"${MYSQL_HOST}" -u"${MYSQL_USER}" -p"${MYSQL_PASSWD}" -P"${MYSQL_PORT}" -e "CREATE DATABASE IF NOT EXISTS nacos" >/dev/null || {
+  log "exec sql file failed."
+  exit 30
+}
+
+# exec sql file
+mysql -h"${MYSQL_HOST}" -u"${MYSQL_USER}" -p"${MYSQL_PASSWD}" -P"${MYSQL_PORT}" "${MYSQL_DB}" <"${SQL_FILE}" >/dev/null || {
+  log "exec sql file failed."
+  exit 30
+}
+
+log "Used $SECONDS seconds."
