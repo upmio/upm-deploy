@@ -1,4 +1,4 @@
-FROM nacos/nacos-server:v2.3.0
+FROM nacos/nacos-server:v2.4.0
 
 
 # install mysql client
