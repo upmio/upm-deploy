@@ -1,4 +1,4 @@
-FROM nacos/nacos-server:v2.4.0
+FROM bitnami/mysql:8.0.36-debian-12-r10
 
 
 # install mysql client
