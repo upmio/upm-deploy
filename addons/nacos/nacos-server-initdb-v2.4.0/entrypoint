@@ -7,7 +7,7 @@ MYSQL_PORT=${MYSQL_PORT:-3306}
 MYSQL_USER=$MYSQL_USER
 MYSQL_PASSWD=$MYSQL_PASSWD
 MYSQL_DB=$MYSQL_DB
-SQL_FILE=$BASE_DIR/conf/mysql-schema.sql
+SQL_FILE=/home/nacos/conf/mysql-schema.sql
 
 function log() {
   echo "$@"
