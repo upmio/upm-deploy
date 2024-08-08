@@ -45,7 +45,7 @@ mysql -h"${MYSQL_HOST}" -u"${MYSQL_USER}" -p"${MYSQL_PASSWD}" -P"${MYSQL_PORT}" 
 }
 
 # init nacos user
-SQL="INSERT INTO `nacos`.`users` (id, username, password, enabled) VALUES (1, 'nacos', '\$2a\$10\$WE53z00OLzek9ntSRg5SyOj4qnoqv62GR6Yr4zjxOibC7K0BqCTEq', 1);"
+SQL="INSERT INTO nacos.users (id, username, password, enabled) VALUES (1, 'nacos', '\$2a\$10\$WE53z00OLzek9ntSRg5SyOj4qnoqv62GR6Yr4zjxOibC7K0BqCTEq', 1);"
 mysql -h"${MYSQL_HOST}" -u"${MYSQL_USER}" -p"${MYSQL_PASSWD}" -P"${MYSQL_PORT}" "${MYSQL_DB}" -e "${SQL}"  >/dev/null || {
   log "insert sql file failed."
   exit 30
