@@ -4,7 +4,7 @@
 
 ## 快速安装指南
 
-nacos helm chart 版本为2.1.7
+nacos helm chart 版本为`2.1.7`
 
 ## 外置数据库-快速安装 nacos
 
