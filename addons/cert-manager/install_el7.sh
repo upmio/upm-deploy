@@ -10,7 +10,7 @@
 readonly CHART="bitnami/cert-manager"
 readonly RELEASE="cert-manager"
 readonly TIME_OUT_SECOND="600s"
-readonly CHART_VERSION="1.1.1"
+readonly CHART_VERSION="1.3.16"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
 CERT_MANAGER_KUBE_NAMESPACE="${CERT_MANAGER_KUBE_NAMESPACE:-cert-manager}"
