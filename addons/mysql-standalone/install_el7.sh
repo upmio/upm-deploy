@@ -19,7 +19,7 @@
 readonly CHART="bitnami/mysql"
 readonly RELEASE="mysql"
 readonly TIME_OUT_SECOND="600s"
-readonly CHART_VERSION="10.1.1"
+readonly CHART_VERSION="10.3.0"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
 MYSQL_PVC_SIZE_G="${MYSQL_PVC_SIZE_G:-20}"
