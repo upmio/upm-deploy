@@ -1,10 +1,10 @@
 # 部署 Redis 单机版
 
-本文档目标是指导安装 Redis 单机版，Redis 版本为 7.4.0。
+本文档目标是指导安装 Redis 单机版，Redis 版本为 7.2.5。
 
 ## 快速安装指南
 
-redis helm chart版本为`20.0.1`
+redis helm chart版本为`19.6.4`
 
 ### 1. 设置环境变量
 
