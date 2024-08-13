@@ -31,22 +31,22 @@ info() {
 # ##############################################################################
 # The main() function is called at the action function.
 # ##############################################################################
-UPLOAD_FLAG="${1:-0}"
-PROJECT="dbscale"
+REPO="quay.io"
+PROJECT="upmio"
 NAME="nacos-server-initdb"
 VERSION="v2.4.0"
-IMAGE_NAME="${PROJECT}/${NAME}:${VERSION}"
+IMAGE_NAME="${REPO}/${PROJECT}/${NAME}:${VERSION}"
 
 info "Starting build image"
 
 cd "${BASE_DIR}" || die 11 "cd ${BASE_DIR} failed!"
 if printenv http_proxy; then
-  docker build --rm=true --network=host -t "${IMAGE_NAME}" --build-arg http_proxy="$(printenv http_proxy)" --build-arg https_proxy="$(printenv https_proxy)" . || {
-    die 12 "build docker image(${IMAGE_NAME}) files failed!"
+  docker buildx build  --platform linux/amd64,linux/arm64 --build-arg http_proxy="$(printenv http_proxy)" --build-arg https_proxy="$(printenv https_proxy)" -t "${IMAGE_NAME}" . --push || {
+    die 12 "build and push docker image(${IMAGE_NAME}) files failed!"
   }
 else
-  docker build --rm=true --network=host -t "${IMAGE_NAME}" . || {
-    die 13 "build docker image(${IMAGE_NAME}) files failed!"
+  docker buildx build  --platform linux/amd64,linux/arm64 -t "${IMAGE_NAME}" . --push || {
+    die 13 "build and push docker image(${IMAGE_NAME}) files failed!"
   }
 fi
 
@@ -64,13 +64,4 @@ if [[ "${local_image_id}" != "${image_id}" ]]; then
   git push || die 15 "git push failed!"
 
   info "Push image(${IMAGE_NAME}) ID done !!!"
-fi
-
-if [[ "${UPLOAD_FLAG}" == 1 ]]; then
-  info "Starting upload image(${IMAGE_NAME}) to docker.io/${PROJECT}"
-
-  docker login || die 16 "docker login failed!"
-  docker push "${IMAGE_NAME}" || die 17 "docker push failed!"
-
-  info "upload image(${IMAGE_NAME}) to docker.io/${PROJECT} done !!!"
 fi
