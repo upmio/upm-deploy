@@ -51,17 +51,3 @@ else
 fi
 
 info "Build image(${IMAGE_NAME}) done !!!"
-
-# Get image ID
-local_image_id=$(docker images --no-trunc "${IMAGE_NAME}" --format "{{.ID}}" | awk -F: '{print $2}') || die 14 "get docker image(${IMAGE_NAME}) ID failed!"
-image_id=$(cat "${BASE_DIR}/IMG_ID")
-if [[ "${local_image_id}" != "${image_id}" ]]; then
-  info "Starting push image ID"
-
-  echo "${local_image_id}" >"${BASE_DIR}/IMG_ID"
-  git add "${BASE_DIR}/IMG_ID" || die 18 "git add ${BASE_DIR}/IMG_ID failed!"
-  git commit -m "update ${IMAGE_NAME} IMG_ID" || die 19 "git commit failed!"
-  git push || die 15 "git push failed!"
-
-  info "Push image(${IMAGE_NAME}) ID done !!!"
-fi
