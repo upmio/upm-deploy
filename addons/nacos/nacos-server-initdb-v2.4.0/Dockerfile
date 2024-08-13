@@ -1,4 +1,4 @@
-FROM nacos/nacos-server:v2.4.0 as nacos-server
+FROM nacos/nacos-server:v2.4.0 AS nacos-server
 
 FROM bitnami/mysql:8.0.36-debian-12-r10
 
