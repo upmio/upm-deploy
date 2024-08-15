@@ -185,7 +185,8 @@ online_install_nacos() {
     --set-string mysql.external.mysqlMasterUser="${NACOS_MYSQL_USER}" \
     --set-string mysql.external.mysqlMasterPassword="${NACOS_MYSQL_PWD}" \
     --set-string mysql.external.mysqlDatabase="nacos" \
-    --set-string initDB.image.repository="quay.io/upmio/nacos-server-initdb" \
+    --set-string initDB.image.registry="quay.io" \
+    --set-string initDB.image.repository="upmio/nacos-server-initdb" \
     --set-string initDB.image.tag="${NACOS_VERSION}" \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | grep "\[debug\]" | awk '{$1="[Helm]"; $2=""; print }' | tee -a "${INSTALL_LOG_PATH}" || {
@@ -259,7 +260,8 @@ offline_install_nacos() {
     --set-string mysql.external.mysqlMasterUser="${NACOS_MYSQL_USER}" \
     --set-string mysql.external.mysqlMasterPassword="${NACOS_MYSQL_PWD}" \
     --set-string mysql.external.mysqlDatabase="nacos" \
-    --set-string initDB.image.repository="quay.io/upmio/nacos-server-initdb" \
+    --set-string initDB.image.registry="quay.io" \
+    --set-string initDB.image.repository="upmio/nacos-server-initdb" \
     --set-string initDB.image.tag="${NACOS_VERSION}" \
     --timeout $TIME_OUT_SECOND \
     --wait 2>&1 | tee -a "${INSTALL_LOG_PATH}" || {
