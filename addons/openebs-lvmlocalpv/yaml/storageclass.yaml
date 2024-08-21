@@ -5,7 +5,7 @@ metadata:
 allowVolumeExpansion: true
 volumeBindingMode: WaitForFirstConsumer
 parameters:
-  shared: "no"
+  shared: "yes"
   storage: "lvm"
   volgroup: "${OPENEBS_VG_NAME}"
   fsType: ext4
