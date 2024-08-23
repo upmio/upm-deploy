@@ -51,7 +51,7 @@ export OPENEBS_KUBE_NAMESPACE="openebs"
 运行安装脚本
 ```console
 # BASH
-curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/main/addons/openebs-lvmlocalpv/install_el7.sh | sh -
+curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/v1.2/addons/openebs-lvmlocalpv/install_el7.sh | sh -
 ```
 
 等几分钟。 如果所有 openebs-lvmlocalpv  pod 都在运行，则 openebs-lvmlocalpv 将成功安装。
