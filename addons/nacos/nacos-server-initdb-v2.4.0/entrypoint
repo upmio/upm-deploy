@@ -21,11 +21,16 @@ function check_conn() {
 
 # exec sql files
 
-check_conn
-if [ $? -ne 0 ]; then
-  log "Mysql connect error."
-  exit 10
-fi
+while true; do
+  check_conn
+  if [ $? -eq 0 ]; then
+    echo "MySQL 连接成功。"
+    break
+  else
+    echo "MySQL 连接失败。5 秒后重试..."
+    sleep 5
+  fi
+done
 
 if [ ! -f "$SQL_FILE" ]; then
   log "$SQL_FILE not found."
