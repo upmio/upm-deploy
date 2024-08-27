@@ -9,39 +9,29 @@ MYSQL_PASSWD=$MYSQL_PASSWD
 MYSQL_DB=$MYSQL_DB
 SQL_FILE=/home/nacos/conf/mysql-schema.sql
 
-function log() {
-  echo "$@"
-}
-
-# check mysql connect success or not
+# Wait for MySQL check MYSQL_DB exist
 while true; do
-  mysql -h"${MYSQL_HOST}" -u"${MYSQL_USER}" -p"${MYSQL_PASSWD}" -P"${MYSQL_PORT}" -e "use ${MYSQL_DB}" >/dev/null
-  if [ $? -eq 0 ]; then
-    echo "check $MYSQL_DB success"
-    break
-  else
-    echo "check $MYSQL_DB failed, retrying in 5 seconds..."
+    mysql -h$MYSQL_HOST -P$MYSQL_PORT -u$MYSQL_USER -p$MYSQL_PASSWD -e "use $MYSQL_DB" && break
+    echo "Waiting for MySQL service [$MYSQL_HOST:$MYSQL_PORT] to be ready..."
     sleep 5
-  fi
 done
 
-# check sql file exists
-if [ ! -f "$SQL_FILE" ]; then
-  log "$SQL_FILE not found."
-  exit 20
+# Check SQL file exist
+if [ ! -f $SQL_FILE ]; then
+    echo "SQL file $SQL_FILE not exist"
+    exit 1
 fi
 
-# exec sql file
+# Import SQL file
 mysql -h"${MYSQL_HOST}" -u"${MYSQL_USER}" -p"${MYSQL_PASSWD}" -P"${MYSQL_PORT}" "${MYSQL_DB}" <"${SQL_FILE}" >/dev/null || {
   log "exec sql file failed."
   exit 30
 }
 
-# init nacos user
+# Init nacos user
 SQL="INSERT INTO nacos.users (id, username, password, enabled) VALUES (1, 'nacos', '\$2a\$10\$WE53z00OLzek9ntSRg5SyOj4qnoqv62GR6Yr4zjxOibC7K0BqCTEq', TRUE);
 INSERT INTO roles (username, role) VALUES ('nacos', 'ROLE_ADMIN');"
 mysql -h"${MYSQL_HOST}" -u"${MYSQL_USER}" -p"${MYSQL_PASSWD}" -P"${MYSQL_PORT}" "${MYSQL_DB}" -e "${SQL}"  >/dev/null || {
   log "insert sql file failed."
   exit 30
 }
-
