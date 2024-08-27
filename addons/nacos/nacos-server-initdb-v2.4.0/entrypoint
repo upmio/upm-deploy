@@ -24,10 +24,10 @@ function check_conn() {
 while true; do
   check_conn
   if [ $? -eq 0 ]; then
-    echo "MySQL 连接成功。"
+    echo "MySQL connection successed。"
     break
   else
-    echo "MySQL 连接失败。5 秒后重试..."
+    echo "MySQL connection fail。Try again after 5 seconds..."
     sleep 5
   fi
 done
