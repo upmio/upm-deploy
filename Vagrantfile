@@ -60,6 +60,7 @@ $subnet_split4 ||=100
 $subnet_ipv6 ||= "fd3c:b398:0698:0756"
 $netmask ||= "255.255.255.0"
 $gateway ||= "172.18.8.1"
+$dns_server ||= "8.8.8.8"
 $bridge_nic ||= "eth0"
 $os ||= "rockylinux9"
 $network_plugin ||= "flannel"
@@ -98,7 +99,6 @@ $playbook ||= "cluster.yml"
 $extra_vars ||= {}
 
 node_instances_begin = [$etcd_instances, $kube_master_instances].max
-upm_instances_end = 
 host_vars = {}
 
 # throw error if os is not supported
@@ -271,6 +271,8 @@ Vagrant.configure("2") do |config|
         sudo nmcli connection modify "System eth1" ipv4.gateway "#{$gateway}"
         sudo nmcli connection up "eth0"
         sudo nmcli connection up "System eth1"
+        sudo echo -e "[main]\ndns=default\n\n[global-dns-domain-*]\nservers=#{$dns_server}" | sudo tee /etc/NetworkManager/conf.d/dns.conf
+        sudo systemctl restart NetworkManager
       SHELL
 
       # Disable swap for each vm
