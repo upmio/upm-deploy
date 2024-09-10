@@ -19,8 +19,8 @@
 readonly CHART="containeroo/local-path-provisioner"
 readonly RELEASE="local-path-provisioner"
 readonly TIME_OUT_SECOND="600s"
-readonly CHART_VERSION="0.0.30"
-readonly APP_VERSION="v0.0.28"
+readonly CHART_VERSION="0.0.29"
+readonly APP_VERSION="v0.0.29"
 
 OFFLINE_INSTALL="${OFFLINE_INSTALL:-false}"
 LOCAL_PATH_KUBE_NAMESPACE="${LOCAL_PATH_KUBE_NAMESPACE:-local-path-storage}"

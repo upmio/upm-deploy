@@ -4,7 +4,7 @@
 
 ## 快速安装指南
 
-local-path-provisioner helm chart版本为`0.0.30`
+local-path-provisioner helm chart版本为`0.0.29`
 
 
 ### 2. 设置必要的环境变量
