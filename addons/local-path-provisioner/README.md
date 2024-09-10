@@ -18,7 +18,7 @@ LOCAL_PATH_NODE_PATH：指定节点路径，必填项。
 LOCAL_PATH_KUBE_NAMESPACE：指定安装命名空间，非必填项，默认值为`local-path-storage`。
 
 ```console
-export LOCAL_PATH_CONTROLLER_NODE_NAMES="node1"
+export LOCAL_PATH_CONTROLLER_NODE_NAMES="k8s-2"
 export LOCAL_PATH_STORAGECLASS_NAME="local-path"
 export LOCAL_PATH_NODE_PATH="/data/local-path"
 export LOCAL_PATH_KUBE_NAMESPACE="local-path-storage"
