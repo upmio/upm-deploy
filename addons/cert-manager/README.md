@@ -23,7 +23,7 @@ export CERT_MANAGER_NODE_NAMES="master01,master02"
 运行安装脚本
 ```console
 # BASH
-curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/v1.1/addons/cert-manager/install_el7.sh | sh -
+curl -sSL https://raw.githubusercontent.com/upmio/upm-deploy/v1.2/addons/cert-manager/install_el7.sh | sh -
 ```
 
 等几分钟。 如果所有 cert-manager  pod 都在运行，则 cert-manager 将成功安装。
