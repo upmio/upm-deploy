@@ -4,7 +4,7 @@
 
 ## 快速安装指南
 
-cert-manager helm chart版本为`1.3.16`
+cert-manager helm chart版本为`1.3.18`
 
 ### 1. 设置必要的环境变量
 
