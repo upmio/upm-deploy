@@ -270,6 +270,8 @@ Vagrant.configure("2") do |config|
         sudo nmcli connection up "System eth1"
         sudo echo -e "[main]\ndns=default\n\n[global-dns-domain-*]\nservers=#{$dns_server}" | sudo tee /etc/NetworkManager/conf.d/dns.conf
         sudo systemctl restart NetworkManager
+        sudo ethtool -K eth0 tx-checksum-ip-generic off
+        sudo ethtool -K eth1 tx-checksum-ip-generic off
       SHELL
 
       # Disable swap for each vm
