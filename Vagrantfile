@@ -21,8 +21,6 @@ SUPPORTED_OS = {
   "ubuntu2404"          => {box: "bento/ubuntu-24.04",         user: "vagrant"},
   "centos8"             => {box: "centos/8",                   user: "vagrant"},
   "centos8-bento"       => {box: "bento/centos-8",             user: "vagrant"},
-  "almalinux8"          => {box: "almalinux/8",                user: "vagrant"},
-  "almalinux8-bento"    => {box: "bento/almalinux-8",          user: "vagrant"},
   "rockylinux8"         => {box: "rockylinux/8",               user: "vagrant"},
   "rockylinux9"         => {box: "bento/rockylinux-9.4",       user: "vagrant"},
   "fedora37"            => {box: "fedora/37-cloud-base",       user: "vagrant"},
@@ -272,6 +270,8 @@ Vagrant.configure("2") do |config|
         sudo systemctl restart NetworkManager
         sudo ethtool -K eth0 tx-checksum-ip-generic off
         sudo ethtool -K eth1 tx-checksum-ip-generic off
+        sudo nmcli conn modify eth0 ethtool.feature-tx-checksum-ip-generic off
+        sudo nmcli conn modify 'System eth1' ethtool.feature-tx-checksum-ip-generic off
       SHELL
 
       # Disable swap for each vm
