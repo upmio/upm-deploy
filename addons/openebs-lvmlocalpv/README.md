@@ -4,7 +4,7 @@
 
 ## 快速安装指南
 
-openebs-lvmlocalpv helm chart版本为`1.5.1`
+openebs-lvmlocalpv helm chart版本为`1.6.2`
 
 ### 1. 创建VolumeGroup
 
